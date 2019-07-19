@@ -198,12 +198,8 @@ function shuffle(array) {
 }
 
 function removeAllCards(gameObject){
-  // gameObject.resetCards();
-  // is there a way to do gameObject.playerList[*].cards = []; where * is a wildcard / all
-  if (gameObject.playerList[1].cards != []) {
-    for (var i = 0; i < gameObject.playerList.length; i++){
-    gameObject.playerList[i].cards = [];
-    }
+  for (let player of gameObject.playerList) {
+      player.cards = [];
   }
 }
 
@@ -272,7 +268,7 @@ function newGame(playerCount, initialChips, playerName, playerChips) {
             spawnCards(newGame.playerList[i].cards,'seat'+(i+1).toString(), 'opponentcard');
           //spawnCards(newGame.cards,'board','table-card:nth-of-type('[i]'n)');
         }
-        spawnCards(newGame.playerList[2].cards,'seat1','usercard');
+        spawnCards(newGame.playerList[0].cards,'seat1','usercard');
         theGame = newGame;
 }
 
