@@ -194,23 +194,23 @@ function shuffle(array) {
   }
 }
 
-function removeAllCards(gameObject){
+function removeAllCards(gameObject) {
   // gameObject.resetCards();
-  for (var i = 0; i < gameObject.playerList.length; i++){
+  for (var i = 0; i < gameObject.playerList.length; i++) {
     gameObject.playerList[i].cards = [];
   }
 }
 
 // Removes a single card from an array and pushes to another
-function dealCard(senderArray,recieverArray){
+function dealCard(senderArray,recieverArray) {
   recieverArray.push(senderArray[0]);
   senderArray.shift()
 }
 
 // Function to deal cards from cardList to players/table
-function dealCards(gameObject, cardlist) {
+function dealCards(gameObject, cardList) {
   removeAllCards(gameObject);
-  shuffle(cardlist);
+  shuffle(cardList);
   for (var i = 0; i < 2; i++){
     for (var j = 0; j < gameObject.playerList.length; j++){
       dealCard(gameObject.cardList , gameObject.playerList[j].cards)
