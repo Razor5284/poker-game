@@ -13,12 +13,14 @@
 				</div>
 				<div id="navbar">
 					<div id="menu">Play Game | Choose Opponents | Chip Count | End Game (forfeit)</div>
-					<div id="button" onclick="dealCards(theGame, cardList)"><button type="button">Shuffle</button></div>
+					<div id="button" onclick="newGame(playerCount, initialChips, playerName, playerChips)"><button type="button">Play Game</button></div>
+
+					<div id="button" onclick="dealCards(newGame, cardList)"><button type="button">Shuffle</button></div>
 				</div>
 			</div>
 			<div id="container">
 				<div id="game-table">
-					<div id="seat1" class="seat" style="visibility: visible;">
+					<div id="seat3" class="seat" style="visibility: visible;">
 						<div id="opponentcards" class="card">
 							<div class="opponentcard1"></div>
 							<div class="opponentcard2"></div>
@@ -30,7 +32,7 @@
 							<div class="opponentcard2"></div>
 						</div>
 					</div>
-					<div id="seat3" class="seat" style="visibility: visible;">
+					<div id="seat1" class="seat" style="visibility: visible;">
 						<div id="usercards" class="card">
 							<div class="usercard1"></div>
 							<div class="usercard2"></div>
@@ -99,11 +101,12 @@
 		// shuffle(cardList);
 		// spawnCard(shuffledList[1].card, shuffledList[1].address);
 		//spawnCards(theGame.cards,'board', 'table-card');
-		for (var i = 0; i < theGame.playerList.length; i++){
-				spawnCards(theGame.playerList[i].cards,'seat'+(i+1).toString(), 'opponentcard');
-			//spawnCards(theGame.cards,'board','table-card:nth-of-type('[i]'n)');
-		}
-		spawnCards(theGame.playerList[2].cards,'seat3','usercard');
+
+		// for (var i = 0; i < theGame.playerList.length; i++){
+		// 		spawnCards(theGame.playerList[i].cards,'seat'+(i+1).toString(), 'opponentcard');
+		// 	//spawnCards(theGame.cards,'board','table-card:nth-of-type('[i]'n)');
+		// }
+		// spawnCards(theGame.playerList[2].cards,'seat3','usercard');
 
 		// spawnCard(theGame.playerList[0].cards[1].card, theGame.playerList[0].cards[1].address);
 	</script>

@@ -1,4 +1,4 @@
-var playerCount, cardImage = [], chips, cardList = [], shuffledList = [], cardListAddress = [];
+var playerCount, chips, cardList = [], shuffledList = [], cardListAddress = [];
 var cardSymbols = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 var suitSymbols = ["C", "D", "H", "S"];
 
@@ -199,8 +199,11 @@ function shuffle(array) {
 
 function removeAllCards(gameObject){
   // gameObject.resetCards();
-  for (var i = 0; i < gameObject.playerList.length; i++){
+  // is there a way to do gameObject.playerList[*].cards = []; where * is a wildcard / all
+  if (gameObject.playerList[1].cards != []) {
+    for (var i = 0; i < gameObject.playerList.length; i++){
     gameObject.playerList[i].cards = [];
+    }
   }
 }
 
@@ -211,9 +214,9 @@ function dealCard(senderArray,recieverArray){
 }
 
 // Function to deal cards from cardList to players/table
-function dealCards(gameObject, cardlist) {
+function dealCards(gameObject, cardList) {
   removeAllCards(gameObject);
-  shuffle(cardlist);
+  shuffle(cardList);
   for (var i = 0; i < 2; i++){
     for (var j = 0; j < gameObject.playerList.length; j++){
       dealCard(gameObject.cardList, gameObject.playerList[j].cards)
@@ -232,27 +235,47 @@ const rootElement = document.getElementById('root');
  *
  *
  */
-var theGame = new Game(8, 100, shuffledList)
+// var theGame = new Game(8, 100, shuffledList)
+//
+// var player1 = new Player(0, 'Ryan Lea-Noon', 100)
+// var player2 = new Player(1, 'Neeft2', 100)
+// var player3 = new Player(2, 'Vlad', 100)
+// var player4 = new Player(3, 'Bloodrhen', 100)
+// var player5 = new Player(4, 'Sam', 100)
+// var player6 = new Player(5, 'Fabi', 100)
+// var player7 = new Player(6, 'Tom', 100)
+// var player8 = new Player(7, 'Waddy', 100)
+// createCardList()
+// // shuffle(cardList)
+// theGame.addPlayer(player1)
+// theGame.addPlayer(player2)
+// theGame.addPlayer(player3)
+// theGame.addPlayer(player4)
+// theGame.addPlayer(player5)
+// theGame.addPlayer(player6)
+// theGame.addPlayer(player7)
+// theGame.addPlayer(player8)
+// dealCards(theGame, cardList)
 
-var player1 = new Player(0, 'Ryan Lea-Noon', 100)
-var player2 = new Player(1, 'Neeft2', 100)
-var player3 = new Player(2, 'Vlad', 100)
-var player4 = new Player(3, 'Coj', 100)
-var player5 = new Player(4, 'Sam', 100)
-var player6 = new Player(5, 'Bloodrhen', 100)
-var player7 = new Player(6, 'Tom', 100)
-var player8 = new Player(7, 'Waddy', 100)
-createCardList()
-// shuffle(cardList)
-theGame.addPlayer(player1)
-theGame.addPlayer(player2)
-theGame.addPlayer(player3)
-theGame.addPlayer(player4)
-theGame.addPlayer(player5)
-theGame.addPlayer(player6)
-theGame.addPlayer(player7)
-theGame.addPlayer(player8)
-dealCards(theGame, cardList)
+var theGame;
+function newGame(playerCount, initialChips, playerName, playerChips) {
+    createCardList();
+    let newGame = new Game(8, 100, shuffledList);
+    newGame.addPlayer(new Player(0, playerName, playerChips));
+    for (var i = 1; i < playerCount; i++) {
+      newGame.addPlayer(new Player(i, 'Player ' + i, playerChips));
+    }
+    dealCards(newGame, cardList);
+
+
+        for (var i = 0; i < newGame.playerList.length; i++){
+            spawnCards(newGame.playerList[i].cards,'seat'+(i+1).toString(), 'opponentcard');
+          //spawnCards(newGame.cards,'board','table-card:nth-of-type('[i]'n)');
+        }
+        spawnCards(newGame.playerList[2].cards,'seat1','usercard');
+        theGame = newGame;
+}
+
 
 // TEST code
 function spawnCards(tempList, idString, classString) {
