@@ -111,7 +111,7 @@ class Game {
     }
 
     // Removes a single card from an array and pushes to another
-    dealCard(senderArray,recieverArray){
+    dealCardToTable(senderArray,recieverArray){
       recieverArray.push(senderArray[0]);
       senderArray.shift()
     }
