@@ -213,12 +213,12 @@ function dealCards(gameObject, cardList) {
   shuffle(cardList);
   for (var i = 0; i < 2; i++){
     for (var j = 0; j < gameObject.playerList.length; j++){
-      dealCard(gameObject.cardList , gameObject.playerList[j].cards)
+      dealCard(gameObject.cardList, gameObject.playerList[j].cards)
     }
   }
   // Only for testing purposes rn
   for (var i = 0; i < 3; i++) {
-    dealCard(gameObject.cardList , gameObject.cards)
+    dealCard(gameObject.cardList, gameObject.cards)
   }
 }
 
@@ -232,14 +232,14 @@ const rootElement = document.getElementById('root');
  */
 var theGame = new Game(8,100,shuffledList)
 
-var player1 = new Player(0,'Ryan Lea-Noon',100)
-var player2 = new Player(1,'Neeft2',100)
-var player3 = new Player(2,'Vlad',100)
-var player4 = new Player(3,'Coj',100)
-var player5 = new Player(4,'Sam',100)
-var player6 = new Player(5,'Bloodrhen',100)
-var player7 = new Player(6,'Tom',100)
-var player8 = new Player(7,'Waddy',100)
+var player1 = new Player(0, 'Ryan Lea-Noon', 100)
+var player2 = new Player(1, 'Neeft2', 100)
+var player3 = new Player(2, 'Vlad', 100)
+var player4 = new Player(3, 'Coj', 100)
+var player5 = new Player(4, 'Sam', 100)
+var player6 = new Player(5, 'Bloodrhen', 100)
+var player7 = new Player(6, 'Tom', 100)
+var player8 = new Player(7, 'Waddy', 100)
 createCardList()
 // shuffle(cardList)
 theGame.addPlayer(player1)
@@ -250,7 +250,7 @@ theGame.addPlayer(player5)
 theGame.addPlayer(player6)
 theGame.addPlayer(player7)
 theGame.addPlayer(player8)
-dealCards(theGame,cardList)
+dealCards(theGame, cardList)
 
 
 
