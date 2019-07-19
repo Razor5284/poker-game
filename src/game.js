@@ -1,7 +1,4 @@
-// const Player = require('/player.js')
-// import Player from "/src/player.js";
-// import * as Player from './player.js';
-// import './player.js';
+
 
 var playerCount, cardImage = [], chips, cardList = [], shuffledList = [], cardListAddress = [];
 var cardSymbols = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
@@ -148,11 +145,6 @@ class Player {
     this.cards.push(card);
   }
 
-  // Removes all cards from players hand
-  // removeCards() {
-  //   this.cards = [];
-  // }
-
   Bet() {
     //pass
   }
@@ -260,15 +252,7 @@ theGame.addPlayer(player7)
 theGame.addPlayer(player8)
 dealCards(theGame,cardList)
 
-// How to access player cards within the theGame class
-// theGame.playerList[0].cards[0].card
-// theGame.playerList[0].cards[0].address
-// theGame.playerList[0].cards[1].card
-// theGame.playerList[0].cards[1].address
-// spawnCard(theGame.playerList[0].cards[0].card, theGame.playerList[0].cards[0].address)
-// spawnCard(theGame.playerList[0].cards[1].card, theGame.playerList[0].cards[1].address)
 
-//spawnCard(theGame.playerList[whoever].cards)
 
 // TEST code
 function spawnCards(tempList, idString, classString) {
@@ -280,40 +264,4 @@ function spawnCards(tempList, idString, classString) {
      $(str).css('background-image',"url(" + node.src + ")");
      // $('#seat1 .opponentcard1')[0].appendChild(node); // Only needs to be run once for the local player
    }
-  //  var node = document.createElement('img');
-  //  node.src = cardAddress; // Temporarily at position 1
-  //  node.alt = cardName; // Temporarily at position 1
-  // $('#card')[0].appendChild(theGame.playerList[2].cards[0]);
 }
-
-// $('#A94.m').append('<b>Hello world!</b>');
- // $('#seat1 .usercard2').css('background-image', "url(" + node2.src + ")");
-// var str = "'#"+ 'hello' + "." + 'boo' + (1).toString()+"'";
-//   var node = document.createElement('img');
-//   var node2 = document.createElement('img');
-//   node.src = cardAddress; // Temporarily at position 1
-//   node.alt = cardName; // Temporarily at position 1
-//
-//   node2.src = cardAddress2; // Temporarily at position 1
-//   node2.alt = cardName2; // Temporarily at position 1
-//   $('.usercard1').css('background-image', "url(" + node.src + ")");
-//   $('.usercard2').css('background-image', "url(" + node2.src + ")");
-//   $('#card')[0].appendChild(node);
-//   $('#card')[0].appendChild(node2);
-//   //document.getElementById(Card)[0].appendChild(node);
-// }
-//
-// function spawnCard(cardName, cardAddress, cardName2, cardAddress2) {
-//   var node = document.createElement('img');
-//   var node2 = document.createElement('img');
-//   node.src = cardAddress; // Temporarily at position 1
-//   node.alt = cardName; // Temporarily at position 1
-//
-//   node2.src = cardAddress2; // Temporarily at position 1
-//   node2.alt = cardName2; // Temporarily at position 1
-//   $('.usercard1').css('background-image', "url(" + node.src + ")");
-//   $('.usercard2').css('background-image', "url(" + node2.src + ")");
-//   $('#card')[0].appendChild(node);
-//   $('#card')[0].appendChild(node2);
-//   document.getElementById(Card)[0].appendChild(node);
-// }
