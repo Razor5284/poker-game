@@ -223,7 +223,7 @@ function dealCards(gameObject, cardList) {
 }
 
 const rootElement = document.getElementById('root');
-// ReactDOM.render( <App/> , rootElement);
+
 
 /*
  *  Everything below here is made for testing purposes
@@ -251,8 +251,6 @@ theGame.addPlayer(player6)
 theGame.addPlayer(player7)
 theGame.addPlayer(player8)
 dealCards(theGame, cardList)
-
-
 
 // TEST code
 function spawnCards(tempList, idString, classString) {
