@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="public/style.css">
+		<title>Ryan's Poker Game</title>
+	</head>
+	<body>
+		<div id="root">
+			<div id="header-container">
+				<div id="header">
+					<div id="title"><h1>Ryan's Poker Game</h1></div>
+				</div>
+				<div id="navbar">
+					<div id="menu">Play Game | Choose Opponents | Chip Count | End Game (forfeit)</div>
+					<div id="button" onclick="dealCards()"><button type="button" onclick="dealCards(theGame, cardList)">Shuffle</button></div>
+				</div>
+			</div>
+			<div id="container">
+				<div id="game-table">
+					<div id="seat1" class="seat" style="visibility: visible;">
+						<div id="opponentcards" class="card">
+							<div class="opponentcard1"></div>
+							<div class="opponentcard2"></div>
+						</div>
+					</div>
+					<div id="seat2" class="seat" style="visibility: visible;">
+						<div id="opponentcards" class="card">
+							<div class="opponentcard1"></div>
+							<div class="opponentcard2"></div>
+						</div>
+					</div>
+					<div id="seat3" class="seat" style="visibility: visible;">
+						<div id="usercards" class="card">
+							<div class="usercard1"></div>
+							<div class="usercard2"></div>
+						</div>
+					</div>
+					<div id="seat4" class="seat" style="visibility: visible;">
+						<div id="opponentcards" class="card">
+							<div class="opponentcard1"></div>
+							<div class="opponentcard2"></div>
+						</div>
+					</div>
+					<div id="seat5" class="seat" style="visibility: visible;">
+						<div id="opponentcards" class="card">
+							<div class="opponentcard1"></div>
+							<div class="opponentcard2"></div>
+						</div>
+					</div>
+					<div id="seat6" class="seat" style="visibility: visible;">
+						<div id="opponentcards" class="card">
+							<div class="opponentcard1"></div>
+							<div class="opponentcard2"></div>
+						</div>
+					</div>
+					<div id="seat7" class="seat" style="visibility: visible;">
+						<div id="opponentcards" class="card">
+							<div class="opponentcard1"></div>
+							<div class="opponentcard2"></div>
+						</div>
+					</div>
+					<div id="seat8" class="seat" style="visibility: visible;">
+						<div id="opponentcards" class="card">
+							<div class="opponentcard1"></div>
+							<div class="opponentcard2"></div>
+						</div>
+					</div>
+					<div id="pot">
+						<div id="current-pot"></div>
+						<div id="total-pot">Total pot: 75</div>
+					</div>
+					<div id="board">
+						<div id="flop1" class="table-card"></div>
+						<div id="flop2" class="table-card"></div>
+						<div id="flop3" class="table-card"></div>
+						<div id="turn" class="table-card"></div>
+						<div id="river" class="table-card"></div>
+					</div>
+				</div>
+				<div id="card">Cards at the Side
+				</div>
+			</div>
+		</div>
+	</body>
+	<footer>
+		<div id="controls-container">
+			<div id="controls">
+				Controls / Bid / Pass / Add Money
+			</div>
+		</div>
+	</footer>
+	<script type="text/javascript" src="/src/game.js"></script>
+	<!-- <script type="text/javascript" src="/src/player.js"></script> -->
+	<!-- <script src="/src/player.js" type="class"></script> -->
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		// createCardList();
+		// shuffle(cardList);
+		// spawnCard(shuffledList[1].card, shuffledList[1].address);
+		//spawnCards(theGame.cards,'board', 'table-card');
+		for (var i = 0; i < theGame.playerList.length; i++){
+				spawnCards(theGame.playerList[i].cards,'seat'+(i+1).toString(), 'opponentcard');
+			//spawnCards(theGame.cards,'board','table-card:nth-of-type('[i]'n)');
+		}
+		spawnCards(theGame.playerList[2].cards,'seat3','usercard');
+
+		// spawnCard(theGame.playerList[0].cards[1].card, theGame.playerList[0].cards[1].address);
+	</script>
+</html>
