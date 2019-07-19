@@ -1,8 +1,3 @@
-// const Player = require('/player.js')
-// import Player from "/src/player.js";
-// import * as Player from './player.js';
-// import './player.js';
-
 var playerCount, cardImage = [], chips, cardList = [], shuffledList = [], cardListAddress = [];
 var cardSymbols = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 var suitSymbols = ["C", "D", "H", "S"];
@@ -221,33 +216,32 @@ function dealCards(gameObject, cardlist) {
   shuffle(cardlist);
   for (var i = 0; i < 2; i++){
     for (var j = 0; j < gameObject.playerList.length; j++){
-      dealCard(gameObject.cardList , gameObject.playerList[j].cards)
+      dealCard(gameObject.cardList, gameObject.playerList[j].cards)
     }
   }
   // Only for testing purposes rn
   for (var i = 0; i < 3; i++) {
-    dealCard(gameObject.cardList , gameObject.cards)
+    dealCard(gameObject.cardList, gameObject.cards)
   }
 }
 
 const rootElement = document.getElementById('root');
-// ReactDOM.render( <App/> , rootElement);
 
 /*
  *  Everything below here is made for testing purposes
  *
  *
  */
-var theGame = new Game(8,100,shuffledList)
+var theGame = new Game(8, 100, shuffledList)
 
-var player1 = new Player(0,'Ryan Lea-Noon',100)
-var player2 = new Player(1,'Neeft2',100)
-var player3 = new Player(2,'Vlad',100)
-var player4 = new Player(3,'Coj',100)
-var player5 = new Player(4,'Sam',100)
-var player6 = new Player(5,'Bloodrhen',100)
-var player7 = new Player(6,'Tom',100)
-var player8 = new Player(7,'Waddy',100)
+var player1 = new Player(0, 'Ryan Lea-Noon', 100)
+var player2 = new Player(1, 'Neeft2', 100)
+var player3 = new Player(2, 'Vlad', 100)
+var player4 = new Player(3, 'Coj', 100)
+var player5 = new Player(4, 'Sam', 100)
+var player6 = new Player(5, 'Bloodrhen', 100)
+var player7 = new Player(6, 'Tom', 100)
+var player8 = new Player(7, 'Waddy', 100)
 createCardList()
 // shuffle(cardList)
 theGame.addPlayer(player1)
@@ -258,17 +252,7 @@ theGame.addPlayer(player5)
 theGame.addPlayer(player6)
 theGame.addPlayer(player7)
 theGame.addPlayer(player8)
-dealCards(theGame,cardList)
-
-// How to access player cards within the theGame class
-// theGame.playerList[0].cards[0].card
-// theGame.playerList[0].cards[0].address
-// theGame.playerList[0].cards[1].card
-// theGame.playerList[0].cards[1].address
-// spawnCard(theGame.playerList[0].cards[0].card, theGame.playerList[0].cards[0].address)
-// spawnCard(theGame.playerList[0].cards[1].card, theGame.playerList[0].cards[1].address)
-
-//spawnCard(theGame.playerList[whoever].cards)
+dealCards(theGame, cardList)
 
 // TEST code
 function spawnCards(tempList, idString, classString) {
@@ -277,43 +261,7 @@ function spawnCards(tempList, idString, classString) {
      node.src = tempList[i].address;
      node.alt = tempList[i].card;
      let str = '#' + idString + " ." + classString + (i+1).toString();
-     $(str).css('background-image',"url(" + node.src + ")");
+     $(str).css('background-image', "url(" + node.src + ")");
      // $('#seat1 .opponentcard1')[0].appendChild(node); // Only needs to be run once for the local player
    }
-  //  var node = document.createElement('img');
-  //  node.src = cardAddress; // Temporarily at position 1
-  //  node.alt = cardName; // Temporarily at position 1
-  // $('#card')[0].appendChild(theGame.playerList[2].cards[0]);
 }
-
-// $('#A94.m').append('<b>Hello world!</b>');
- // $('#seat1 .usercard2').css('background-image', "url(" + node2.src + ")");
-// var str = "'#"+ 'hello' + "." + 'boo' + (1).toString()+"'";
-//   var node = document.createElement('img');
-//   var node2 = document.createElement('img');
-//   node.src = cardAddress; // Temporarily at position 1
-//   node.alt = cardName; // Temporarily at position 1
-//
-//   node2.src = cardAddress2; // Temporarily at position 1
-//   node2.alt = cardName2; // Temporarily at position 1
-//   $('.usercard1').css('background-image', "url(" + node.src + ")");
-//   $('.usercard2').css('background-image', "url(" + node2.src + ")");
-//   $('#card')[0].appendChild(node);
-//   $('#card')[0].appendChild(node2);
-//   //document.getElementById(Card)[0].appendChild(node);
-// }
-//
-// function spawnCard(cardName, cardAddress, cardName2, cardAddress2) {
-//   var node = document.createElement('img');
-//   var node2 = document.createElement('img');
-//   node.src = cardAddress; // Temporarily at position 1
-//   node.alt = cardName; // Temporarily at position 1
-//
-//   node2.src = cardAddress2; // Temporarily at position 1
-//   node2.alt = cardName2; // Temporarily at position 1
-//   $('.usercard1').css('background-image', "url(" + node.src + ")");
-//   $('.usercard2').css('background-image', "url(" + node2.src + ")");
-//   $('#card')[0].appendChild(node);
-//   $('#card')[0].appendChild(node2);
-//   document.getElementById(Card)[0].appendChild(node);
-// }
