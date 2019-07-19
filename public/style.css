@@ -93,8 +93,8 @@ body {
 }
 
 #seat1 {
-  top: 0%;
-  left: 13%;
+  top: 18%;
+  left: 18%;
 }
 
 #seat2 {
@@ -103,8 +103,8 @@ body {
 }
 
 #seat3 {
-  top: 18%;
-  left: 18%;
+  top: 1%;
+  left: 13%;
 }
 
 #seat4 {
@@ -128,7 +128,7 @@ body {
 }
 
 #seat8 {
-  bottom: 175%;
+  bottom: 174%;
   left: 78%;
 }
 
