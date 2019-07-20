@@ -111,9 +111,14 @@ class Game {
     }
 
     // Removes a single card from an array and pushes to another
-    dealCardToTable(senderArray,recieverArray){
-      recieverArray.push(senderArray[0]);
+    shiftArray(senderArray,recieverArray) {
+      recieverArray.push(senderArray[0])
       senderArray.shift()
+    }
+
+    dealCardToTable() {
+        this.cards.push(this.cardList[0]);
+        this.cardList.shift()
     }
 
     // Function to deal cards from cardList to players
@@ -164,11 +169,13 @@ class Game {
  *
  */
 class Player {
-    constructor(ID, name, chips) {
+    constructor(ID, name, chips, game) {
         this.ID = ID;
         this.name = name;
         this.chips = chips;
         this.cards = [];
+        this.game = theGame;
+        this.status = 'active';
     }
 
     // Gets ID number of player
@@ -206,16 +213,17 @@ class Player {
         this.cards.push(card);
     }
 
-    // Removes all cards from players hand
+
     // removeCards() {
+          // Removes all cards from players hand
     //   this.cards = [];
     // }
 
-    Bet() {
-        //pass
+    Bet(amount) {
+
     }
 
-    Raise() {
+    Raise(amount) {
         //pass
     }
 
@@ -224,7 +232,8 @@ class Player {
     }
 
     Fold() {
-        //pass
+        // Changes the player's status to folded.
+        this.status = 'folded';
     }
 }
 
@@ -274,9 +283,9 @@ var theGame;
 function newGame(playerCount, initialChips, playerName, playerChips) {
 
     let game = new Game(playerCount, initialChips);
-    game.addPlayer(new Player(0, playerName, playerChips));
+    game.addPlayer(new Player(0, playerName, playerChips, game));
     for (var i = 1; i < playerCount; i++) {
-        game.addPlayer(new Player(i, 'Player ' + i, playerChips));
+        game.addPlayer(new Player(i, 'Player ' + i, playerChips, game));
     }
     game.dealCards();
 
@@ -287,8 +296,67 @@ function newGame(playerCount, initialChips, playerName, playerChips) {
     }
     spawnCards(game.playerList[0].cards, 'seat1', 'usercard');
     theGame = game;
+
+    // Start betting + 1 if raised again
+
+    // Increment Round
+
+    // Deal river
+
+    // second betting Round + 1 if raised again
+
+    // Increment Round
+
+    // deal flop
+
+    // third betting Round +1 if raised again
+
+    // Increment Round
+
+    // deal Turn
+
+    // final betting Round + 1 if raised again
+
+    // Finish - evaluate winner
 }
 
+function simulateRound(amount) {
+  for (let i = 0; i < theGame.playerList.length; i++) {
+    if (theGame.playerList[i].chips != 0 || theGame.playerList[i].status != 'folded') {
+
+
+
+
+    }
+  }
+
+  // call(); bet(amount); raise(amount); or fold();
+    theGame.addToPot(amount)
+    theGame.playerList[0].removeChips(amount)
+  theGame.advanceTurn()
+  theGame.incrementRound()
+  // Flop has already been set, spawn cards only needed
+  // spawnCards(theGame.cards[i], 'flop' + (i + 1).toString(),, 'tablecard') // Remember to increment i for flop cards
+
+
+  // call(); bet(amount); raise(amount); or fold();
+  theGame.dealCardToTable(theGame.cardList, theGame.cards)
+  spawnCards(theGame.cards[0], 'turn', 'tablecard')
+    theGame.addToPot(amount)
+    theGame.playerList[0].removeChips()
+  theGame.advanceTurn()
+  theGame.incrementRound()
+
+
+  // call(); bet(amount); raise(amount); or fold();
+  theGame.dealCardToTable(theGame.cardList, theGame.cards)
+  spawnCards(theGame.cards[0], 'river', 'tablecard')
+    theGame.addToPot(amount)
+    theGame.playerList[0].removeChips()
+  theGame.advanceTurn()
+  theGame.incrementRound()
+  // evaluateWinner()
+}
 
 // TEST code
 function spawnCards(tempList, idString, classString) {
