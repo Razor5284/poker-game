@@ -387,7 +387,7 @@ function simulatePlayer(player) {
         break;
       }
     }
-    doPlayerAction(player,someoneRaised);
+    doPlayerAction(player, someoneRaised);
     /*
     for (let otherPlayer of theGame.playerList) {
         if(otherPlayer != player && otherPlayer.status == 'raised') {
@@ -428,7 +428,7 @@ function simulateBetting() {
           break;
           case 'raised':
             didSomeoneRaise = true;
-            break;
+          break;
         }
       }
     }
@@ -439,7 +439,7 @@ function simulateBetting() {
 function resetRaises() {
   for (let player of theGame.playerList) {
 
-      if (player.chips > 0 && (player.status == 'raised' || player.status == 'matched' )) {
+      if (player.chips > 0 && (player.status == 'raised' || player.status == 'matched')) {
         player.status = 'active'
       }
     }
