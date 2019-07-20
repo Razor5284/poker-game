@@ -93,18 +93,18 @@ body {
 }
 
 #seat1 {
-  top: 18%;
-  left: 18%;
+  top: 1%;
+  left: 13%;
 }
 
 #seat2 {
-  top: 3.5%;
-  left: 2%;
+  top: 9.5%;
+  left: 6%;
 }
 
 #seat3 {
-  top: 1%;
-  left: 13%;
+  top: 18%;
+  left: 18%;
 }
 
 #seat4 {
@@ -123,7 +123,7 @@ body {
 }
 
 #seat7 {
-  bottom: 120%;
+  bottom: 115%;
   left: 85%;
 }
 
@@ -138,27 +138,27 @@ body {
   z-index: 10;
 }
 
-.usercard1 {
-  background-image: url(/public/images/cards/2C.png);
+#usercards > .card1 {
+  background-image: url(/public/images/cards/2C.png); /* used for testing to ensure users cards appear correctly */
   background-size: 100%;
-  height: 75%;
-  width: 35%;
+  height: 80%;
+  width: 44%;
   position: absolute;
   left: 0;
   background-repeat: no-repeat;
 }
 
-.usercard2 {
-  background-image: url(/public/images/cards/2C.png);
+#usercards > .card2 {
+  background-image: url(/public/images/cards/2C.png); /* used for testing to ensure users cards appear correctly */
   background-size: 100%;
-  height: 75%;
-  width: 35%;
+  height: 80%;
+  width: 44%;
   position: absolute;
-  left: 37%;
+  left: 50%;
   background-repeat: no-repeat;
 }
 
-.opponentcard1 {
+#opponentcards > .card1 {
   background-image: url(/public/images/cards/purple_back.png);
   background-size: 100%;
   height: 75%;
@@ -168,7 +168,7 @@ body {
   background-repeat: no-repeat;
 }
 
-.opponentcard2 {
+#opponentcards > .card2 {
   background-image: url(/public/images/cards/purple_back.png);
   background-size: 100%;
   height: 75%;

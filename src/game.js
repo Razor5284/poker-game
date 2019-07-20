@@ -176,6 +176,8 @@ class Player {
         this.cards = [];
         this.game = theGame;
         this.status = 'active';
+        this.isHuman = false;
+        this.bet = 0;
     }
 
     // Gets ID number of player
@@ -219,16 +221,37 @@ class Player {
     //   this.cards = [];
     // }
 
+    Check() {
+
+    }
+
     Bet(amount) {
 
     }
 
     Raise(amount) {
+      if(this.chips <= amount) {
+        return false;
+      } else {
+        this.bet += amount;
+        this.removeChips(amount);
+        this.status = 'raised';
+        return true;
+      }
         //pass
     }
 
-    Call() {
-        //pass
+    Call(otherPlayersBet) {
+      let betDifference = otherPlayersBet - this.bet;
+      if(this.chips <= betDifference) {
+        return false;
+      }
+      else {
+        this.bet += betDifference;
+        this.removeChips(betDifference);
+        this.status = 'matched';
+        return true;
+      }
     }
 
     Fold() {
@@ -239,18 +262,12 @@ class Player {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-const rootElement = document.getElementById('root');
+class HumanPlayer extends Player {
+  constructor(ID, name, chips, game) {
+    super(ID, name, chips, game);
+    this.isHuman = true;
+  }
+}
 
 /*
  *  Everything below here is made for testing purposes
@@ -283,19 +300,29 @@ var theGame;
 function newGame(playerCount, initialChips, playerName, playerChips) {
 
     let game = new Game(playerCount, initialChips);
-    game.addPlayer(new Player(0, playerName, playerChips, game));
-    for (var i = 1; i < playerCount; i++) {
+    for (var i = 0; i < playerCount; i++) {
+      if(i===2) {
+        game.addPlayer(new HumanPlayer(i, playerName, playerChips, game));
+
+      } else {
         game.addPlayer(new Player(i, 'Player ' + i, playerChips, game));
+      }
     }
     game.dealCards();
-
-
-    for (var i = 0; i < game.playerList.length; i++) {
-        spawnCards(game.playerList[i].cards, 'seat' + (i + 1).toString(), 'opponentcard');
-        //spawnCards(newGame.cards,'board','table-card:nth-of-type('[i]'n)');
+    for (let player of game.playerList) {
+      if(player.isHuman) {
+        spawnCards(player.cards, 'seat' + (player.IDNumber + 1).toString(), 'card');
+      }
     }
-    spawnCards(game.playerList[0].cards, 'seat1', 'usercard');
     theGame = game;
+
+    // Code for a training / open cards on the table game mode
+    // for (var i = 0; i < game.playerList.length; i++) {
+    //     spawnCards(game.playerList[i].cards, 'seat' + (i + 1).toString(), 'card');
+    //     //spawnCards(newGame.cards,'board','table-card:nth-of-type('[i]'n)');
+    // }
+    // spawnCards(game.playerList[0].cards, 'seat1', 'usercard');
+
 
     // Start betting + 1 if raised again
 
@@ -320,21 +347,130 @@ function newGame(playerCount, initialChips, playerName, playerChips) {
     // Finish - evaluate winner
 }
 
-function simulateRound(amount) {
-  for (let i = 0; i < theGame.playerList.length; i++) {
-    if (theGame.playerList[i].chips != 0 || theGame.playerList[i].status != 'folded') {
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}
 
+function doPlayerAction(player, otherPlayer) {
 
+  console.log("doPlayerAction");
+  switch(getRandomInt(0,5)) {
+    case 0: case 1:
+      return player.Fold();
+      break;
+    case 2: case 3:
+      if(!otherPlayer) {
+        return player.Check();
 
-
-    }
+      } else if (!player.Call(otherPlayer.bet)) {
+        return player.Fold();
+      } // need to get the amount raised by to input here.
+      break;
+    case 4:
+    console.log("raise");
+      if (!player.Raise(getRandomInt(Math.round(player.chips*0.25), player.chips))) {
+        return doPlayerAction(player, otherPlayer);
+      }
+      break;
   }
+}
 
-  // call(); bet(amount); raise(amount); or fold();
+// IF SOMEONE RAISES, everyone has to do playeraction again
+function simulatePlayer(player) {
+    let raisedSomeoneElsesBet = false;
+    let someoneRaised = false;
+    for (let otherPlayer of theGame.playerList) {
+      if(otherPlayer.status == "raised" && otherPlayer != player) {
+        someoneRaised = otherPlayer;
+        break;
+      }
+    }
+    doPlayerAction(player,someoneRaised);
+    /*
+    for (let otherPlayer of theGame.playerList) {
+        if(otherPlayer != player && otherPlayer.status == 'raised') {
+
+            doPlayerAction(player, otherPlayer);
+            if(player.status === 'raised') {
+              raisedSomeoneElsesBet = true;
+            }
+
+          //Only Raise once
+          break;
+        }
+      }
+      if(!raisedSomeoneElsesBet && player.status !== 'folded') {
+        doPlayerAction(player);
+      }
+*/
+    // A person can raise in each Round. This can happen twice in the same round by any person.
+    // but then the other people left in the game have to either match the amount of money the person raised,
+    // or they have to fold. They can also re-raise which makes peopel have to match it again.
+
+    // This happens each round until all 5 cards are out, after which another two rounds of betting are done and cards must
+    //be released afterwards.
+
+    // each person who raised changes status to raised
+    // but then after everyone else has matched that bet (raise) their status needs to be set back to active (normal)
+
+}
+
+function simulateBetting() {
+  let didSomeoneRaise = false;
+  for (let player of theGame.playerList) {
+      if (player.chips > 0 && player.status != 'folded') {
+      // Let Players Raise/Match/Fold
+        simulatePlayer(player);
+        switch(player.status){
+          case 'matched':
+          break;
+          case 'raised':
+            didSomeoneRaise = true;
+            break;
+        }
+      }
+    }
+    return didSomeoneRaise;
+
+}
+
+function resetRaises() {
+  for (let player of theGame.playerList) {
+
+      if (player.chips > 0 && (player.status == 'raised' || player.status == 'matched' )) {
+        player.status = 'active'
+      }
+    }
+}
+
+function simulateRound(amount) {
+      for(let i = 0; i < 1; i++) {
+        if(!simulateBetting()) {
+
+          //resetRaises();
+          break;
+        } else {
+
+          resetRaises();
+
+        }
+      }
+      for (let player of theGame.playerList) {
+        console.log(player,player.status,player.bet)
+      }
+      console.log(theGame.Pot)
+      // if(player.isHuman) {
+      //
+      // }
+
+
+
     theGame.addToPot(amount)
     theGame.playerList[0].removeChips(amount)
-  theGame.advanceTurn()
-  theGame.incrementRound()
+  theGame.advanceTurn() // Can be done when check is called OR matched with other players' raises, OR if folded.
+  theGame.incrementRound() // Can be done when each player has matched all other players' raises.
   // Flop has already been set, spawn cards only needed
   // spawnCards(theGame.cards[i], 'flop' + (i + 1).toString(),, 'tablecard') // Remember to increment i for flop cards
 
@@ -344,8 +480,8 @@ function simulateRound(amount) {
   spawnCards(theGame.cards[0], 'turn', 'tablecard')
     theGame.addToPot(amount)
     theGame.playerList[0].removeChips()
-  theGame.advanceTurn()
-  theGame.incrementRound()
+  theGame.advanceTurn() // Can be done when check is called OR matched with other players' raises, OR if folded.
+  theGame.incrementRound() // Can be done when each player has matched all other players' raises.
 
 
   // call(); bet(amount); raise(amount); or fold();
@@ -353,12 +489,12 @@ function simulateRound(amount) {
   spawnCards(theGame.cards[0], 'river', 'tablecard')
     theGame.addToPot(amount)
     theGame.playerList[0].removeChips()
-  theGame.advanceTurn()
-  theGame.incrementRound()
+  theGame.advanceTurn() // Can be done when check is called OR matched with other players' raises, OR if folded.
+  theGame.incrementRound() // Can be done when each player has matched all other players' raises.
   // evaluateWinner()
 }
 
-// TEST code
+// Code for training round
 function spawnCards(tempList, idString, classString) {
     for (let i = 0; i < tempList.length; i++) {
         let node = document.createElement('img');
@@ -369,3 +505,5 @@ function spawnCards(tempList, idString, classString) {
         // $('#seat1 .opponentcard1')[0].appendChild(node); // Only needs to be run once for the local player
     }
 }
+newGame(8,100,"ryan",100);
+simulateRound();
