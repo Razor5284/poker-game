@@ -100,7 +100,7 @@ class Game {
         }
         // Only for testing purposes rn
         for (var i = 0; i < 3; i++) {
-            this.dealCardToTable()
+            this.dealCardToTable(this.cardList, this.cards)
         }
     }
 
@@ -285,7 +285,7 @@ function newGame(playerCount, initialChips, playerName, playerChips) {
         spawnCards(game.playerList[i].cards, 'seat' + (i + 1).toString(), 'opponentcard');
         //spawnCards(newGame.cards,'board','table-card:nth-of-type('[i]'n)');
     }
-    spawnCards(game.playerList[2].cards, 'seat3', 'usercard');
+    spawnCards(game.playerList[0].cards, 'seat1', 'usercard');
     theGame = game;
 }
 
@@ -297,7 +297,7 @@ function spawnCards(tempList, idString, classString) {
         node.src = tempList[i].address;
         node.alt = tempList[i].card;
         let str = '#' + idString + " ." + classString + (i + 1).toString();
-        //$(str).css('background-image', "url(" + node.src + ")");
+        $(str).css('background-image', "url(" + node.src + ")");
         // $('#seat1 .opponentcard1')[0].appendChild(node); // Only needs to be run once for the local player
     }
 }
