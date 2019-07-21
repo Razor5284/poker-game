@@ -52,6 +52,7 @@ class Game {
     incrementRound() {
         if (this.round < 5) {
             this.round++;
+            this.resetTurn();
         } else {
             //Check for win condition.
         }
@@ -69,6 +70,10 @@ class Game {
         } else {
             this.turn = 0;
         }
+    }
+
+    resetTurn() {
+      this.turn = 0;
     }
 
     // Returns the total pot value
@@ -178,6 +183,7 @@ class Player {
         this.status = 'active';
         this.isHuman = false;
         this.bet = 0;
+        this.isTurn = false;
     }
 
     // Gets ID number of player
@@ -257,6 +263,8 @@ class Player {
     Fold() {
         // Changes the player's status to folded.
         this.status = 'folded';
+        //in jquery, change graphics of cards to folded
+        //add chips to pot
     }
 }
 
@@ -353,9 +361,9 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function doPlayerAction(player, otherPlayer) {
+function doRandomPlayerAction(player, otherPlayer) {
 
-  console.log("doPlayerAction");
+  console.log("doRandomPlayerAction");
   switch(getRandomInt(0,5)) {
     case 0: case 1:
       return player.Fold();
@@ -371,7 +379,7 @@ function doPlayerAction(player, otherPlayer) {
     case 4:
     console.log("raise");
       if (!player.Raise(getRandomInt(Math.round(player.chips*0.25), player.chips))) {
-        return doPlayerAction(player, otherPlayer);
+        return doRandomPlayerAction(player, otherPlayer);
       }
       break;
   }
@@ -387,12 +395,12 @@ function simulatePlayer(player) {
         break;
       }
     }
-    doPlayerAction(player, someoneRaised);
+    doRandomPlayerAction(player, someoneRaised);
     /*
     for (let otherPlayer of theGame.playerList) {
         if(otherPlayer != player && otherPlayer.status == 'raised') {
 
-            doPlayerAction(player, otherPlayer);
+            doRandomPlayerAction(player, otherPlayer);
             if(player.status === 'raised') {
               raisedSomeoneElsesBet = true;
             }
@@ -402,7 +410,7 @@ function simulatePlayer(player) {
         }
       }
       if(!raisedSomeoneElsesBet && player.status !== 'folded') {
-        doPlayerAction(player);
+        doRandomPlayerAction(player);
       }
 */
     // A person can raise in each Round. This can happen twice in the same round by any person.
@@ -457,14 +465,29 @@ function simulateRound(amount) {
 
         }
       }
+
       for (let player of theGame.playerList) {
         console.log(player,player.status,player.bet)
+        if (!player.isHuman && player.status != 'folded'){
+          simulateBetting()
+          theGame.advanceTurn()
+        }
+        else if (player.isHuman && player.status != 'folded') {
+          player.isTurn = true;
+          // Use jquery to add a class to buttons to make them visible / available
+          $(Raise).addEventListener("click", function(){
+            Raise($amount);
+          });
+          $(Call).addEventListener("click", function(){
+            Call();
+          });
+          $(Fold).addEventListener("click", function(){
+            Fold();
+          });
+          theGame.advanceTurn()
+        }
       }
       console.log(theGame.Pot)
-      // if(player.isHuman) {
-      //
-      // }
-
 
 
     theGame.addToPot(amount)
@@ -501,7 +524,10 @@ function spawnCards(tempList, idString, classString) {
         node.src = tempList[i].address;
         node.alt = tempList[i].card;
         let str = '#' + idString + " ." + classString + (i + 1).toString();
-        $(str).css('background-image', "url(" + node.src + ")");
+        className = '.' + classString + (i + 1).toString()
+        // $(str).css('background-image', "url(" + node.src + ")");
+        // console.log(  $('#' + idString).children('.' + classString + (i + 1).toString()).children('img'))
+        $('#' + idString).children(className).children('img').attr('src', node.src);
         // $('#seat1 .opponentcard1')[0].appendChild(node); // Only needs to be run once for the local player
     }
 }

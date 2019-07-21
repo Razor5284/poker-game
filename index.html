@@ -11,43 +11,112 @@
 			<div class="header wrapper">
 				<h1>Poker Elite</h1>
 			</div>
+			<div class="container wrapper" id="navbar">
+				<div id="menu">Play Game | Choose Opponents | Chip Count | End Game (forfeit)</div>
+				<div class="popup" onclick="popup()">Menu Button
+					<span class="popuptext" id="Popup">
+							<label for="playercount">Number of Opponents: </label> <input id="playerCount">
+							<label for="initialChips">Starting Chip Count: </label> <input id="initialChips">
+							<label for="playerName">Your name: </label> <input id="playerName">
+							<!-- <div id="button" onclick="newGame($('#playerCount').val(), $('#initialChips').val(), $('#playerName').val(), $('#initialChips').val())"> -->
+							<button onclick="newGame($('#playerCount').val(), $('#initialChips').val(), $('#playerName').val(), $('#initialChips').val())">Play Game</button>
+									<!-- </div> -->
+					</span>
+				</div>
+			</div>
 			<div class="content wrapper">
-				<div class="content-inner">
-					<div id="p1" class="player">
-						<img src="assets/cards/2C.png" alt="">
-						<img src="assets/cards/2D.png" alt="">
+				<div class="content-inner" id="game-table">
+					<div id="seat1" class="player" style="visibility: visible;">
+						<div class="card1"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player1">
+							<div class="chips"></div>
+						</div>
 					</div>
-					<div id="p2" class="player">
-						<img src="assets/cards/purple_back.png" alt="">
-						<img src="assets/cards/purple_back.png" alt="">
+					<div id="seat2" class="player" style="visibility: visible;">
+						<div class="card1"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player2">
+							<div class="chips"></div>
+						</div>
 					</div>
-					<div id="p3" class="player">
-						<img src="assets/cards/purple_back.png" alt="">
-						<img src="assets/cards/purple_back.png" alt="">
+					<div id="seat3" class="player" style="visibility: visible;">
+						<div class="card1"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player3">
+							<div class="chips"></div>
+						</div>
 					</div>
-					<div id="p4" class="player">
-						<img src="assets/cards/purple_back.png" alt="">
-						<img src="assets/cards/purple_back.png" alt="">
+					<div id="seat4" class="player" style="visibility: visible;">
+						<div class="card1"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player4">
+							<div class="chips"></div>
+						</div>
 					</div>
-					<div id="p5" class="player">
-						<img src="assets/cards/purple_back.png" alt="">
-						<img src="assets/cards/purple_back.png" alt="">
+					<div id="seat5" class="player" style="visibility: visible;">
+						<div class="card1"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player5">
+							<div class="chips"></div>
+						</div>
 					</div>
-					<div id="p6" class="player">
-						<img src="assets/cards/purple_back.png" alt="">
-						<img src="assets/cards/purple_back.png" alt="">
+					<div id="seat6" class="player" style="visibility: visible;">
+						<div class="card1"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player6">
+							<div class="chips"></div>
+						</div>
 					</div>
-					<div id="p7" class="player">
-						<img src="assets/cards/purple_back.png" alt="">
-						<img src="assets/cards/purple_back.png" alt="">
+					<div id="seat7" class="player" style="visibility: visible;">
+						<div class="card1"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player7">
+							<div class="chips"></div>
+						</div>
 					</div>
-					<div id="p8" class="player">
-						<img src="assets/cards/purple_back.png" alt="">
-						<img src="assets/cards/purple_back.png" alt="">
+					<div id="seat8" class="player" style="visibility: visible;">
+						<div class="card1"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="assets/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player8">
+							<div class="chips"></div>
+						</div>
+					</div>
+					<div id="pot">
+						<div id="current-pot"></div>
+						<div id="total-pot">Total pot: 75</div>
+					</div>
+					<div id="board">
+						<div id="flop1" class="tablecard"></div>
+						<div id="flop2" class="tablecard"></div>
+						<div id="flop3" class="tablecard"></div>
+						<div id="turn" class="tablecard"></div>
+						<div id="river" class="tablecard"></div>
+					</div>
+				</div>
+				<div class="sidebar">
+					<div id="left-sidebar">Left Sidebar
+					</div>
+					<div id="right-sidebar">Right Sidebar
 					</div>
 				</div>
 			</div>
-			<div class="footer wrapper"></div>
+			<div class="footer wrapper">
+				<div id="controls-container">
+					<div id="controls">
+						Controls / Bid / Pass / Add Money
+					</div>
+				</div>
+			</div>
 		</div>
 	</body>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="/src/game.js"></script>
+	<script>
+		// Opens popup when user clicks on menu.
+		function popup() {
+		  var popup = document.getElementById("Popup");
+		  popup.classList.toggle("show");
+		}
+	</script>
 </html>
