@@ -4,12 +4,17 @@
  *
  *
  */
-class Player {
-  constructor(ID, name, chips) {
+export default class Player {
+  constructor(ID, name, chips, game) {
     this.ID = ID;
     this.name = name;
     this.chips = chips;
     this.cards = [];
+    this.game = game;
+    this.status = "active";
+    this.isHuman = false;
+    this.bet = 0;
+    this.isTurn = false;
   }
 
   // Gets ID number of player
@@ -47,24 +52,60 @@ class Player {
     this.cards.push(card);
   }
 
-  // Removes all cards from players hand
   // removeCards() {
+  // Removes all cards from players hand
   //   this.cards = [];
   // }
 
-  Bet() {
-    //pass
+  Check() {
+    this.status = "checked";
+    this.game.advanceTurn();
   }
 
-  Raise() {
-    //pass
+  Bet(amount) {
+    this.game.advanceTurn();
   }
 
-  Call() {
-    //pass
+  Raise(amount) {
+    if (this.chips <= amount) {
+      return false;
+    } else {
+      // console.log("In Raise: amount " + amount + " this.bet " + this.bet)
+      this.bet += amount;
+      // console.log(this.bet + " this.bet final")
+      this.removeChips(amount);
+      this.game.addToPot(amount);
+      this.game.raiseAmount = amount;
+      this.status = "raised";
+      this.game.subRoundStatus = "raised"
+      this.game.advanceTurn();
+      return true;
+    }
+  }
+
+  Call(otherPlayersBet) {
+    // console.log(this.ID)
+    // console.log("Value supposed to be passed through: " + (this.game.raiseAmount - this.bet))
+    let betDifference = otherPlayersBet - this.bet;
+    // console.log("In call: betDifference= " + betDifference + " otherPlayersBet("+otherPlayersBet+") - " + "this.bet("+this.bet+")")
+    if (this.chips <= betDifference) {
+      return false;
+    } else {
+      this.bet += betDifference;
+      // console.log("new this.bet " + this.bet)
+      this.removeChips(betDifference);
+      this.game.addToPot(betDifference);
+      this.status = "called";
+      this.game.advanceTurn();
+      return true;
+    }
   }
 
   Fold() {
-    //pass
+    // Changes the player's status to folded.
+    this.status = "folded";
+    this.game.advanceTurn();
+    //in jquery, change graphics of cards to folded
+    //add chips to pot
   }
 }

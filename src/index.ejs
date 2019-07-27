@@ -1,0 +1,134 @@
+<body>
+	<div class="container">
+		<div class="header wrapper">
+			<h1>Poker Elite</h1>
+		</div>
+		<div class="container wrapper" id="navbar">
+			<div id="menu">Play Game | Choose Opponents | Chip Count | End Game (forfeit)</div>
+			<div id="popup" class="popup" >Menu Button
+				<span class="popuptext" id="Popup">
+						<label for="playercount">Number of Opponents: </label> <input id="playerCount">
+						<label for="initialChips">Starting Chip Count: </label> <input id="initialChips">
+						<label for="playerName">Your name: </label> <input id="playerName">
+						<!-- <div id="button" onclick="newGame($('#playerCount').val(), $('#initialChips').val(), $('#playerName').val())"> -->
+						<button id="playnewgame">Play Game</button>
+						<!-- </div> -->
+				</span>
+			</div>
+		</div>
+		<div class="main">
+			<div id="left-sidebar">Left Sidebar</div>
+				<div class="content wrapper">
+				<div class="content-inner" id="game-table">
+					<div id="seat0" class="player" style="visibility: visible;">
+						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player1">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+					</div>
+					<div id="seat1" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player2">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+					</div>
+					<div id="seat2" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player3">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+					</div>
+					<div id="seat3" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player4">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+					</div>
+					<div id="seat4" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player5">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+					</div>
+					<div id="seat5" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player6">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+					</div>
+					<div id="seat6" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player7">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+					</div>
+					<div id="seat7" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player8">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+					</div>
+					<div id="pot">
+						<div id="current-pot"></div>
+						<div id="total-pot">Total pot: 75</div>
+					</div>
+					<div id="board">
+						<div id="flop1" class="tablecard">
+							<img src="/cards/blue_back.png" alt="tablecard">
+						</div>
+						<div id="flop2" class="tablecard">
+							<img src="/cards/blue_back.png" alt="tablecard">
+						</div>
+						<div id="flop3" class="tablecard">
+							<img src="/cards/blue_back.png" alt="tablecard">
+						</div>
+						<div id="turn" class="tablecard">
+							<img src="/cards/blue_back.png" alt="tablecard">
+						</div>
+						<div id="river" class="tablecard">
+							<img src="/cards/blue_back.png" alt="tablecard" style="visibility: hidden">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="right-sidebar">Right Sidebar</div>
+		</div>
+		<div class="footer wrapper">
+			<div id="controls-container">
+				<div id="controls">
+					<div class="control-button"><button id="Check">Check</button></div>
+					<div class="control-button"><button id="Call">Call</button></div>
+					<div class="control-button">
+						Amount: <input id="RaiseAmount" type="number" name="amount" max="" min="10" step="5" value="10" style="width: 50px;"> <!-- Max = value of chips -->
+						<button id="Raise" value="Raise">Raise</button>
+					</div>
+					<div class="control-button"><button id="Fold">Fold</button></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body
