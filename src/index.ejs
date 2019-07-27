@@ -23,19 +23,25 @@
 					<div id="seat0" class="player" style="visibility: visible;">
 						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
 						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player1">
+						<div class="playerinfo" id="player1" style="padding-left: 100px;">
 							<div class="name"><p></p></div>
 							<div class="chips"><p></p></div>
 							<div class="status"><p></p></div>
+						</div>
+						<div id="cards" style="top: 73px; right: 228px;	position: absolute;">
+							<img src="/cards/purple_back_pair.png" style="transform: scaleY(-1) rotateZ(-40deg);">
 						</div>
 					</div>
 					<div id="seat1" class="player" style="visibility: hidden;">
 						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
 						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player2">
+						<div class="playerinfo" id="player2" style="padding-left: 100px;">
 							<div class="name"><p></p></div>
 							<div class="chips"><p></p></div>
 							<div class="status"><p></p></div>
+						</div>
+						<div id="cards" style="top: 0px; right: 245px;	position: absolute;">
+							<img src="/cards/purple_back_pair.png" style="transform: scaleY(-1) rotateZ(-92deg);">
 						</div>
 					</div>
 					<div id="seat2" class="player" style="visibility: hidden;">
@@ -46,6 +52,9 @@
 							<div class="chips"><p></p></div>
 							<div class="status"><p></p></div>
 						</div>
+						<div id="cards" style="top: -67px; right: 123px; position: absolute;">
+							<img src="/cards/purple_back_pair.png" style="transform: scaleX(-1) rotateZ(45deg);">
+						</div>
 					</div>
 					<div id="seat3" class="player" style="visibility: hidden;">
 						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
@@ -54,6 +63,9 @@
 							<div class="name"><p></p></div>
 							<div class="chips"><p></p></div>
 							<div class="status"><p></p></div>
+						</div>
+						<div id="cards" style="top: -69px; right: 48px; position: absolute;">
+							<img src="/cards/purple_back_pair.png">
 						</div>
 					</div>
 					<div id="seat4" class="player" style="visibility: hidden;">
@@ -64,6 +76,9 @@
 							<div class="chips"><p></p></div>
 							<div class="status"><p></p></div>
 						</div>
+						<div id="cards" style="top: -69px; right: 48px; position: absolute;">
+							<img src="/cards/purple_back_pair.png">
+						</div>
 					</div>
 					<div id="seat5" class="player" style="visibility: hidden;">
 						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
@@ -73,29 +88,39 @@
 							<div class="chips"><p></p></div>
 							<div class="status"><p></p></div>
 						</div>
+						<div id="cards" style="top: -68px; right: -32px; position: absolute;">
+							<img src="/cards/purple_back_pair.png" style="transform: rotateZ(45deg);">
+						</div>
 					</div>
 					<div id="seat6" class="player" style="visibility: hidden;">
-						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player7">
+						<div class="card1" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="card2" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player7" style="float: left">
 							<div class="name"><p></p></div>
 							<div class="chips"><p></p></div>
 							<div class="status"><p></p></div>
 						</div>
+						<div id="cards" style="top: 0px; right: -77px; position: absolute;">
+							<img src="/cards/purple_back_pair.png" style="transform: rotateZ(90deg);">
+						</div>
 					</div>
 					<div id="seat7" class="player" style="visibility: hidden;">
-						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player8">
+						<div class="card1" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="card2" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player8" style="float: left">
 							<div class="name"><p></p></div>
 							<div class="chips"><p></p></div>
 							<div class="status"><p></p></div>
+						</div>
+						<div id="cards" style="top: 67px; right: -60px; position: absolute;">
+							<img src="/cards/purple_back_pair.png" style="transform: rotateZ(130deg);">
 						</div>
 					</div>
 					<div id="pot">
 						<div id="current-pot"></div>
 						<div id="total-pot">Total pot: 75</div>
 					</div>
+					<div id="carddeck"><img src="/cards/carddeck2.png"></div>
 					<div id="board">
 						<div id="flop1" class="tablecard">
 							<img src="/cards/blue_back.png" alt="tablecard">
@@ -110,7 +135,7 @@
 							<img src="/cards/blue_back.png" alt="tablecard">
 						</div>
 						<div id="river" class="tablecard">
-							<img src="/cards/blue_back.png" alt="tablecard">
+							<img src="/cards/blue_back.png" alt="tablecard" style="visibility: hidden">
 						</div>
 					</div>
 				</div>
