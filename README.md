@@ -1,3 +1,6 @@
+=======
+# poker-game
+A single player web-based poker game
 Poker Game
 
 Install node using 'npm install' via powershell in the root folder.
