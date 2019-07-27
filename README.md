@@ -1,8 +1,9 @@
 =======
 # poker-game
 A single player web-based poker game
-Poker Game
 
+
+## Instructions
 Install node using 'npm install' via powershell in the root folder.
 
 Then do 'npm install -g webpack-dev-server'
