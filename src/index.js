@@ -116,10 +116,11 @@ class Game {
     }
   }
 
-  dealFlopCards() {
+  async dealFlopCards() {
     for (let i = 0; i < 3; i++) {
       this.dealCardToTable(this.cardList, this.cards);
       $("#board").children(".tablecard:nth-of-type("+[i+1]+")").children("img").attr("src", theGame.cards[i].address).attr("alt", theGame.cards[i].card).css("visibility", "visible");
+      await timeout(500)
     }
   }
 
@@ -262,7 +263,7 @@ function newGame(playerCount, initialChips, playerName) {
   }
   theGame = game;
 
-  simulateRound();
+  simulateRounds();
   playerDisplay();
 
   // Code for a training / open cards on the table game mode
@@ -522,14 +523,14 @@ function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function simulateRound() {
+async function simulateRounds() {
   // async function waits for response from user to continue (doesn't yet)
   for (let i = 0; i < 2; i++) {
     if (theGame.subRound == 1 || (theGame.subRound < 3 && didSomeoneRaise == true)) {
       for (let player of theGame.playerList) {
         if (!player.isHuman && player.status != "folded") {
           player.isTurn = true;
-          await timeout(getRandomInt(500, 500))
+          await timeout(getRandomInt(500, 500)) // change this back to 5000 or 8000 (ms)
           simulateBetting(player);
           updateDisplay(player);
           player.isTurn = false;
@@ -556,13 +557,16 @@ async function simulateRound() {
 
   if (theGame.round == 1) {
     theGame.dealFlopCards()
-    simulateRound()
+    await timeout(2000)
+    simulateRounds()
   } else if (theGame.round == 2) {
     theGame.dealTurnCard()
-    simulateRound()
+    await timeout(1000)
+    simulateRounds()
   } else if (theGame.round == 3) {
     theGame.dealRiverCard()
-    simulateRound()
+    await timeout(1000)
+    simulateRounds()
   }
 }
 
@@ -605,6 +609,7 @@ function updateDisplay(info) {
     $("#total-pot").text("Total pot: " + theGame.Pot);
 
     if (player.status == "folded") {
+      $(idString  + player.ID).addClass("folded");
       $(idString  + player.ID).children(".card1").children("img").attr("src", "/cards/gray_back.png");
       $(idString + player.ID).children(".card2").children("img").attr("src", "/cards/gray_back.png");
     }

@@ -86,12 +86,6 @@ body .container {
   visibility: hidden;
 }
 
-.content .content-inner .tablecard:nth-of-type(1) img {
-  width: 45px;
-  float: left;
-  visibility: visible;
-}
-
 #seat0 {
   top: 2px;
   left: 630px;
@@ -217,4 +211,8 @@ body .container {
 .control-button {
   padding-right: 5px;
   line-height: 0px;
+}
+
+.folded {
+  filter: brightness(0.5);
 }
