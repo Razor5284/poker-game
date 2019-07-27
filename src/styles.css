@@ -231,3 +231,158 @@ body .container {
 .folded {
   filter: brightness(0.5);
 }
+
+
+/* CSS for menu popup*/
+
+.menu-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-button {
+  transition: all 0.3s ease;
+  background-color: #FFC145;
+  height: 45px;
+  width: 125px;
+  border-radius: 72px;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.07);
+  cursor: pointer;
+}
+.menu-button.open {
+  background-color: #FAFAFA;
+  padding: 18px 32px;
+  border-radius: 5px;
+  width: 420px;
+  height: 233px;
+  cursor: default;
+  z-index: 2;
+  position: absolute;
+  top: 12.5%;
+}
+.menu-button.open form {
+  opacity: 1;
+  transition: opacity 0.1s ease;
+  transition-delay: 0.3s;
+  height: auto;
+}
+.menu-button .button-copy {
+  text-align: center;
+  line-height: 45px;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #f7f7f7;
+}
+.menu-button form {
+  transition: none;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+}
+.menu-button .cancel {
+  font-size: 12px;
+  text-align: center;
+  margin-top: 1em;
+  color: black;
+}
+.menu-button .cancel span {
+  cursor: pointer;
+}
+.menu-button .cancel span:hover {
+  text-decoration: underline;
+}
+
+.submit-button {
+  display: block;
+  background-color: #3498DB;
+  height: 40px;
+  border-radius: 20px;
+  line-height: 36px;
+  text-align: center;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 0.875em;
+  border: none;
+  font-weight: 700;
+  padding: 0 34px;
+  margin: 0 auto;
+}
+.submit-button img {
+  position: relative;
+  top: 3px;
+  right: 6px;
+}
+.submit-button:hover {
+  background-color: #217dbb;
+  cursor: pointer;
+}
+
+form * {
+  outline: none;
+}
+
+.menu-container label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  user-select: none;
+}
+
+.form--field {
+  width: 420px;
+  margin: 10px 0;
+  color: black;
+}
+.form--field.-short {
+  width: 120px;
+  color: black;
+}
+
+.form--price {
+  position: absolute;
+  line-height: 38px;
+  width: 16px;
+  color: #C7C7C7;
+  text-align: center;
+}
+.form--price + input {
+  padding-left: 14px;
+}
+
+.form--container {
+  width: 420px;
+}
+.form--container.-inline {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: -12px;
+}
+
+.form--element {
+  background-color: #fff;
+  border: 1px solid #ECECEC;
+  border-radius: 3px;
+  font-size: 14px;
+  line-height: 28px;
+  padding: 0 4px;
+  color: #3D3D3D;
+  width: 100%;
+  margin: 4px 0;
+  box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+}
+.form--element:focus {
+  border: 1px solid #FFC145;
+  border-radius: 2px;
+}
+.form--element:not(.textarea) {
+  height: 30px;
+}
+.form--element.textarea {
+  height: 80px;
+  resize: none;
+}

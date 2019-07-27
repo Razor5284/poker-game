@@ -618,17 +618,8 @@ function updateDisplay(info) {
   }
 }
 
-function popup() {
-  var popup = document.getElementById("Popup");
-  popup.classList.toggle("show");
-}
-
 // Runs when the page has finished loading.
 $(document).ready(function() {
-  $("#popup").click(_ => {
-    popup();
-  });
-
   $("#playnewgame").click(_ => {
     newGame(
       $("#playerCount").val(),
@@ -636,6 +627,22 @@ $(document).ready(function() {
       $("#playerName").val(),
     );
   });
+
+  $(".button-copy").click(_ => {
+      $(".menu-button").addClass('open');
+      $(".button-copy").css('display', 'none');
+  });
+
+  $(".submit-button").click(_ => {
+      $(".menu-button").removeClass('open');
+      $(".button-copy").css('display', 'initial');
+  });
+
+  $(".cancel").click(_ => {
+    $(".menu-button").removeClass('open');
+    $(".button-copy").css('display', 'initial');
+});
+
 
   newGame(8, 100, "ryan");
   // for (var i = 0; i < theGame.playerList.length; i++) {
@@ -647,6 +654,7 @@ $(document).ready(function() {
   //   //spawnCards(theGame.cards,'board','table-card:nth-of-type('[i]'n)');
   // }
   // spawnCards(theGame.playerList[2].cards, "seat3", "usercard");
+
 
 
   console.log(theGame)

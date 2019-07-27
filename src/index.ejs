@@ -5,22 +5,35 @@
 		</div>
 		<div class="container wrapper" id="navbar">
 			<div id="menu">Play Game | Choose Opponents | Chip Count | End Game (forfeit)</div>
-			<div id="popup" class="popup" >Menu Button
-				<span class="popuptext" id="Popup">
-						<label for="playercount">Number of Opponents: </label> <input id="playerCount">
-						<label for="initialChips">Starting Chip Count: </label> <input id="initialChips">
-						<label for="playerName">Your name: </label> <input id="playerName">
-						<!-- <div id="button" onclick="newGame($('#playerCount').val(), $('#initialChips').val(), $('#playerName').val())"> -->
-						<button id="playnewgame">Play Game</button>
-						<!-- </div> -->
-				</span>
+			<div class="menu-container">
+				<div class="menu-button">
+					<div class="button-copy">Play</div>
+					<form>
+						<div class="form--field">
+							<label for="playerName">Your name: </label>
+							<input class="form--element" id="playerName" required>
+						</div>
+						<div class="form--container -inline">
+							<div class="form--field -short">
+							<label for="initialChips">Starting Chip Count: </label>
+							<input type="number" class="form--element" id="initialChips" required min="100" max="50000" step="50" value="100">
+							</div>
+							<div class="form--field -short">
+							<label for="playercount">Number of Opponents: </label>
+							<input id="playerCount" class="form--element" type="number" max="8" value="8" required>
+							</div>
+						</div>
+						<div class="submit-button" id="playnewgame">Play Game</div>
+						<div class="cancel"><span>Cancel</span></div>
+					</form>
+				</div>
 			</div>
 		</div>
 		<div class="main">
 			<div id="left-sidebar">Left Sidebar</div>
 				<div class="content wrapper">
 				<div class="content-inner" id="game-table">
-					<div id="seat0" class="player" style="visibility: visible;">
+					<div id="seat0" class="player" style="visibility: hidden;">
 						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
 						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
 						<div class="playerinfo" id="player1" style="padding-left: 100px;">
@@ -118,7 +131,7 @@
 					</div>
 					<div id="pot">
 						<div id="current-pot"></div>
-						<div id="total-pot">Total pot: 75</div>
+						<div id="total-pot">Total pot: 0</div>
 					</div>
 					<div id="carddeck"><img src="/cards/carddeck2.png"></div>
 					<div id="board">
