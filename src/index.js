@@ -252,8 +252,12 @@ function newGame(playerCount, initialChips, playerName) {
       game.addPlayer(new Player(i, "Player " + i, initialChips, game));
     }
   }
+
   game.dealCards();
+  theGame = game;
+
   for (let player of game.playerList) {
+    updateDisplay(player);
     if (player.isHuman) {
       spawnCards(player.cards,
         "seat" + (player.IDNumber).toString(),
@@ -261,7 +265,6 @@ function newGame(playerCount, initialChips, playerName) {
       );
     }
   }
-  theGame = game;
 
   simulateRounds();
   playerDisplay();
@@ -608,24 +611,36 @@ function updateDisplay(info) {
     $(idString + player.ID).children(".playerinfo").children(".status").text(player.status)
     $("#total-pot").text("Total pot: " + theGame.Pot);
 
+    if (player.status == "active" && player.isHuman) {
+      $(idString  + player.ID).removeClass("folded");
+    }
+
     if (player.status == "folded") {
       $(idString  + player.ID).addClass("folded");
       $(idString  + player.ID).children(".card1").children("img").attr("src", "/cards/gray_back.png");
       $(idString + player.ID).children(".card2").children("img").attr("src", "/cards/gray_back.png");
+    } else if (player.status == "active" && !player.isHuman) {
+      $(idString  + player.ID).removeClass("folded");
+      $(idString  + player.ID).children(".card1").children("img").attr("src", "/cards/purple_back.png");
+      $(idString + player.ID).children(".card2").children("img").attr("src", "/cards/purple_back.png");
     }
-  } else if (info == 'table' ) {
-    console.log(info)
+  }
+  if (info == "reset") {
+    $("#board").children(".tablecard").children("img").css("visibility", "hidden");
+    $(".player").css("visibility", "hidden");
   }
 }
 
 // Runs when the page has finished loading.
 $(document).ready(function() {
   $("#playnewgame").click(_ => {
+    theGame = 0;
+    updateDisplay("reset");
     newGame(
       $("#playerCount").val(),
       $("#initialChips").val(),
-      $("#playerName").val(),
-    );
+      $("#playerName").val());
+    console.log(theGame)
   });
 
   $(".button-copy").click(_ => {
