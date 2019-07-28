@@ -627,7 +627,10 @@ function updateDisplay(info) {
   }
   if (info == "reset") {
     $("#board").children(".tablecard").children("img").css("visibility", "hidden");
+    $("#pot").css("visibility", "hidden");
     $(".player").css("visibility", "hidden");
+    $("#seat2").children(".card1").children("img").css("visibility", "hidden");
+    $("#seat2").children(".card2").children("img").css("visibility", "hidden");
   }
 }
 
@@ -640,7 +643,6 @@ $(document).ready(function() {
       $("#playerCount").val(),
       $("#initialChips").val(),
       $("#playerName").val());
-    console.log(theGame)
   });
 
   $(".button-copy").click(_ => {
@@ -650,14 +652,18 @@ $(document).ready(function() {
 
   $(".submit-button").click(_ => {
       $(".menu-button").removeClass('open');
-      $(".button-copy").css('display', 'initial');
+      $(".button-copy").css('display', 'block');
   });
 
   $(".cancel").click(_ => {
     $(".menu-button").removeClass('open');
-    $(".button-copy").css('display', 'initial');
-});
+    $(".button-copy").css('display', 'block');
+  });
 
+  $("#endgame").click(_ => {
+    theGame = 0;
+    updateDisplay("reset");
+  });
 
   newGame(8, 100, "ryan");
   // for (var i = 0; i < theGame.playerList.length; i++) {
