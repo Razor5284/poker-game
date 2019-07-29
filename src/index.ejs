@@ -1,172 +1,176 @@
 <body>
-	<div class="container">
-		<div class="header wrapper">
-			<h1>Poker Elite</h1>
-		</div>
-		<div class="container wrapper" id="navbar">
-			<div id="menu">Play Game | Choose Opponents | Chip Count | End Game (forfeit)</div>
-			<div class="menu-container">
-				<div class="menu-button">
-					<div class="button-copy">Play</div>
-					<form>
-						<div class="form--field">
-							<label for="playerName">Your name: </label>
-							<input class="form--element" id="playerName" required>
-						</div>
-						<div class="form--container -inline">
-							<div class="form--field -short">
-							<label for="initialChips">Starting Chip Count: </label>
-							<input type="number" class="form--element" id="initialChips" required min="100" max="50000" step="50" value="100">
+		<div class="container">
+			<div class="header wrapper">
+				<h1>Poker Elite</h1>
+			</div>
+			<div class="container wrapper" id="navbar">
+				<div class="menu-container">
+					<div class="menu-button">
+						<div class="button-copy">Play</div>
+						<form>
+							<div class="form--field">
+								<label for="playerName">Your name: </label>
+								<input class="form--element" id="playerName" required>
 							</div>
-							<div class="form--field -short">
-							<label for="playercount">Number of Opponents: </label>
-							<input id="playerCount" class="form--element" type="number" max="8" value="8" required>
+							<div class="form--container -inline">
+								<div class="form--field -short">
+								<label for="initialChips">Starting Chip Count: </label>
+								<input type="number" class="form--element" id="initialChips" required min="100" max="50000" step="50" value="100">
+								</div>
+								<div class="form--field -short">
+								<label for="playercount">Number of Opponents: </label>
+								<input id="playerCount" class="form--element" type="number" max="8" value="8" required>
+								</div>
+							</div>
+							<div type="submit" class="submit-button" id="playnewgame">Play Game</div>
+							<div class="cancel"><span>Cancel</span></div>
+						</form>
+					</div>
+					<div class="end-button" id="endgame">End Game</div>
+				</div>
+			</div>
+			<div class="main">
+				<div class="sidebar" id="left-sidebar">Left Sidebar</div>
+					<div class="content wrapper">
+					<div class="content-inner" id="game-table">
+						<div id="seat0" class="player" style="visibility: hidden;">
+							<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="playerinfo" id="player1" style="padding-left: 100px;">
+								<div class="name"><p></p></div>
+								<div class="chips"><p></p></div>
+								<div class="status"><p></p></div>
+							</div>
+							<div id="cards" style="top: 73px; right: 228px;	position: absolute;">
+								<img src="/cards/purple_back_pair.png" style="transform: scaleY(-1) rotateZ(-40deg);">
 							</div>
 						</div>
-						<div type="submit" class="submit-button" id="playnewgame">Play Game</div>
-						<div class="cancel"><span>Cancel</span></div>
-					</form>
-				</div>
-			</div>
-		</div>
-		<div class="main">
-			<div id="left-sidebar">Left Sidebar</div>
-				<div class="content wrapper">
-				<div class="content-inner" id="game-table">
-					<div id="seat0" class="player" style="visibility: hidden;">
-						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player1" style="padding-left: 100px;">
-							<div class="name"><p></p></div>
-							<div class="chips"><p></p></div>
-							<div class="status"><p></p></div>
+						<div id="seat1" class="player" style="visibility: hidden;">
+							<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="playerinfo" id="player2" style="padding-left: 100px;">
+								<div class="name"><p></p></div>
+								<div class="chips"><p></p></div>
+								<div class="status"><p></p></div>
+							</div>
+							<div id="cards" style="top: 0px; right: 245px;	position: absolute;">
+								<img src="/cards/purple_back_pair.png" style="transform: scaleY(-1) rotateZ(-92deg);">
+							</div>
 						</div>
-						<div id="cards" style="top: 73px; right: 228px;	position: absolute;">
-							<img src="/cards/purple_back_pair.png" style="transform: scaleY(-1) rotateZ(-40deg);">
+						<div id="seat2" class="player" style="visibility: hidden;">
+							<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="playerinfo" id="player3">
+								<div class="name"><p></p></div>
+								<div class="chips"><p></p></div>
+								<div class="status"><p></p></div>
+							</div>
+							<div id="cards" style="top: -67px; right: 123px; position: absolute;">
+								<img src="/cards/purple_back_pair.png" style="transform: scaleX(-1) rotateZ(45deg);">
+							</div>
 						</div>
-					</div>
-					<div id="seat1" class="player" style="visibility: hidden;">
-						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player2" style="padding-left: 100px;">
-							<div class="name"><p></p></div>
-							<div class="chips"><p></p></div>
-							<div class="status"><p></p></div>
+						<div id="seat3" class="player" style="visibility: hidden;">
+							<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="playerinfo" id="player4">
+								<div class="name"><p></p></div>
+								<div class="chips"><p></p></div>
+								<div class="status"><p></p></div>
+							</div>
+							<div id="cards" style="top: -69px; right: 48px; position: absolute;">
+								<img src="/cards/purple_back_pair.png">
+							</div>
 						</div>
-						<div id="cards" style="top: 0px; right: 245px;	position: absolute;">
-							<img src="/cards/purple_back_pair.png" style="transform: scaleY(-1) rotateZ(-92deg);">
+						<div id="seat4" class="player" style="visibility: hidden;">
+							<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="playerinfo" id="player5">
+								<div class="name"><p></p></div>
+								<div class="chips"><p></p></div>
+								<div class="status"><p></p></div>
+							</div>
+							<div id="cards" style="top: -69px; right: 48px; position: absolute;">
+								<img src="/cards/purple_back_pair.png">
+							</div>
 						</div>
-					</div>
-					<div id="seat2" class="player" style="visibility: hidden;">
-						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player3">
-							<div class="name"><p></p></div>
-							<div class="chips"><p></p></div>
-							<div class="status"><p></p></div>
+						<div id="seat5" class="player" style="visibility: hidden;">
+							<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="playerinfo" id="player6">
+								<div class="name"><p></p></div>
+								<div class="chips"><p></p></div>
+								<div class="status"><p></p></div>
+							</div>
+							<div id="cards" style="top: -68px; right: -32px; position: absolute;">
+								<img src="/cards/purple_back_pair.png" style="transform: rotateZ(45deg);">
+							</div>
 						</div>
-						<div id="cards" style="top: -67px; right: 123px; position: absolute;">
-							<img src="/cards/purple_back_pair.png" style="transform: scaleX(-1) rotateZ(45deg);">
+						<div id="seat6" class="player" style="visibility: hidden;">
+							<div class="card1" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="card2" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="playerinfo" id="player7" style="float: left">
+								<div class="name"><p></p></div>
+								<div class="chips"><p></p></div>
+								<div class="status"><p></p></div>
+							</div>
+							<div id="cards" style="top: 0px; right: -77px; position: absolute;">
+								<img src="/cards/purple_back_pair.png" style="transform: rotateZ(90deg);">
+							</div>
 						</div>
-					</div>
-					<div id="seat3" class="player" style="visibility: hidden;">
-						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player4">
-							<div class="name"><p></p></div>
-							<div class="chips"><p></p></div>
-							<div class="status"><p></p></div>
+						<div id="seat7" class="player" style="visibility: hidden;">
+							<div class="card1" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="card2" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
+							<div class="playerinfo" id="player8" style="float: left">
+								<div class="name"><p></p></div>
+								<div class="chips"><p></p></div>
+								<div class="status"><p></p></div>
+							</div>
+							<div id="cards" style="top: 67px; right: -60px; position: absolute;">
+								<img src="/cards/purple_back_pair.png" style="transform: rotateZ(130deg);">
+							</div>
 						</div>
-						<div id="cards" style="top: -69px; right: 48px; position: absolute;">
-							<img src="/cards/purple_back_pair.png">
+						<div id="pot">
+							<div id="total-pot"></div>
 						</div>
-					</div>
-					<div id="seat4" class="player" style="visibility: hidden;">
-						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player5">
-							<div class="name"><p></p></div>
-							<div class="chips"><p></p></div>
-							<div class="status"><p></p></div>
-						</div>
-						<div id="cards" style="top: -69px; right: 48px; position: absolute;">
-							<img src="/cards/purple_back_pair.png">
-						</div>
-					</div>
-					<div id="seat5" class="player" style="visibility: hidden;">
-						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="card2"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player6">
-							<div class="name"><p></p></div>
-							<div class="chips"><p></p></div>
-							<div class="status"><p></p></div>
-						</div>
-						<div id="cards" style="top: -68px; right: -32px; position: absolute;">
-							<img src="/cards/purple_back_pair.png" style="transform: rotateZ(45deg);">
-						</div>
-					</div>
-					<div id="seat6" class="player" style="visibility: hidden;">
-						<div class="card1" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="card2" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player7" style="float: left">
-							<div class="name"><p></p></div>
-							<div class="chips"><p></p></div>
-							<div class="status"><p></p></div>
-						</div>
-						<div id="cards" style="top: 0px; right: -77px; position: absolute;">
-							<img src="/cards/purple_back_pair.png" style="transform: rotateZ(90deg);">
-						</div>
-					</div>
-					<div id="seat7" class="player" style="visibility: hidden;">
-						<div class="card1" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="card2" style="float: right"><img src="/cards/purple_back.png" alt=""></div>
-						<div class="playerinfo" id="player8" style="float: left">
-							<div class="name"><p></p></div>
-							<div class="chips"><p></p></div>
-							<div class="status"><p></p></div>
-						</div>
-						<div id="cards" style="top: 67px; right: -60px; position: absolute;">
-							<img src="/cards/purple_back_pair.png" style="transform: rotateZ(130deg);">
-						</div>
-					</div>
-					<div id="pot">
-						<div id="current-pot"></div>
-						<div id="total-pot">Total pot: 0</div>
-					</div>
-					<div id="carddeck"><img src="/cards/carddeck2.png"></div>
-					<div id="board">
-						<div id="flop1" class="tablecard">
-							<img src="/cards/blue_back.png" alt="tablecard">
-						</div>
-						<div id="flop2" class="tablecard">
-							<img src="/cards/blue_back.png" alt="tablecard">
-						</div>
-						<div id="flop3" class="tablecard">
-							<img src="/cards/blue_back.png" alt="tablecard">
-						</div>
-						<div id="turn" class="tablecard">
-							<img src="/cards/blue_back.png" alt="tablecard">
-						</div>
-						<div id="river" class="tablecard">
-							<img src="/cards/blue_back.png" alt="tablecard" style="visibility: hidden">
+						<div id="carddeck"><img src="/cards/carddeck2.png"></div>
+						<div id="board">
+							<div id="flop1" class="tablecard">
+								<img src="/cards/blue_back.png" alt="tablecard">
+							</div>
+							<div id="flop2" class="tablecard">
+								<img src="/cards/blue_back.png" alt="tablecard">
+							</div>
+							<div id="flop3" class="tablecard">
+								<img src="/cards/blue_back.png" alt="tablecard">
+							</div>
+							<div id="turn" class="tablecard">
+								<img src="/cards/blue_back.png" alt="tablecard">
+							</div>
+							<div id="river" class="tablecard">
+								<img src="/cards/blue_back.png" alt="tablecard" style="visibility: hidden">
+							</div>
 						</div>
 					</div>
 				</div>
+				<div class="sidebar" id="right-sidebar"><a>Right Sidebar</a>
+				    <div id="card-evaluation" style="text-align: left;">
+			        <p>
+				    	</p>
+				    </div>
+				</div>
 			</div>
-			<div id="right-sidebar">Right Sidebar</div>
-		</div>
-		<div class="footer wrapper">
-			<div id="controls-container">
-				<div id="controls">
-					<div class="control-button"><button id="Check">Check</button></div>
-					<div class="control-button"><button id="Call">Call</button></div>
-					<div class="control-button">
-						Amount: <input id="RaiseAmount" type="number" name="amount" max="" min="10" step="5" value="10" style="width: 50px;"> <!-- Max = value of chips -->
-						<button id="Raise" value="Raise">Raise</button>
+			<div class="footer wrapper">
+				<div id="controls-container">
+					<div id="controls">
+						<div class="control-button"><button id="Check">Check</button></div>
+						<div class="control-button"><button id="Call">Call</button></div>
+						<div class="control-button">
+							Amount: <input id="RaiseAmount" type="number" name="amount" max="" min="10" step="5" value="10" style="width: 50px;"> <!-- Max = value of chips -->
+							<button id="Raise" value="Raise">Raise</button>
+						</div>
+						<div class="control-button"><button id="Fold">Fold</button></div>
 					</div>
-					<div class="control-button"><button id="Fold">Fold</button></div>
 				</div>
 			</div>
 		</div>
-	</div>
-</body
+	</body
