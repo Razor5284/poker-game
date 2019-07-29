@@ -1,7 +1,9 @@
 import $ from "jquery";
 import "./styles.css";
 import Player from './player';
-import HumanPlayer from './humanplayer'
+import HumanPlayer from './humanplayer';
+// require ('./node_modules/phe/phe.js');
+const { rankBoard, rankDescription } = require('phe')
 
 /*
  *
@@ -21,7 +23,7 @@ class Game {
     this.humanPlayer;
     this.playerTurn = [];
     this.raiseAmount = 0;
-    this.subRound = 1;
+    this.subRound = 0;
     this.subRoundStatus = "active";
   }
 
@@ -119,19 +121,19 @@ class Game {
   async dealFlopCards() {
     for (let i = 0; i < 3; i++) {
       this.dealCardToTable(this.cardList, this.cards);
-      $("#board").children(".tablecard:nth-of-type("+[i+1]+")").children("img").attr("src", theGame.cards[i].address).attr("alt", theGame.cards[i].card).css("visibility", "visible");
+      $("#board").children(".tablecard:nth-of-type("+[i+1]+")").children("img").attr("src", "/cards/" + theGame.cards[i] + ".png").attr("alt", theGame.cards[i]).css("visibility", "visible");
       await timeout(500)
     }
   }
 
   dealTurnCard() {
     this.dealCardToTable(this.cardList, this.cards);
-    $("#board").children(".tablecard:nth-of-type(4)").children("img").attr("src", theGame.cards[3].address).attr("alt", theGame.cards[3].card).css("visibility", "visible");
+    $("#board").children(".tablecard:nth-of-type(4)").children("img").attr("src", "/cards/" + theGame.cards[3] + ".png").attr("alt", theGame.cards[3]).css("visibility", "visible");
   }
 
   dealRiverCard() {
     this.dealCardToTable(this.cardList, this.cards);
-    $("#board").children(".tablecard:nth-of-type(5)").children("img").attr("src", theGame.cards[4].address).attr("alt", theGame.cards[4].card).css("visibility", "visible");
+    $("#board").children(".tablecard:nth-of-type(5)").children("img").attr("src", "/cards/" + theGame.cards[4] + ".png").attr("alt", theGame.cards[4]).css("visibility", "visible");
   }
 
   removeAllPlayerCards() {
@@ -186,20 +188,17 @@ class Game {
       "7",
       "8",
       "9",
-      "10",
+      "T",
       "J",
       "Q",
       "K"
     ];
-    let suitSymbols = ["C", "D", "H", "S"];
+    let suitSymbols = ["c", "d", "h", "s"];
     this.cardList = [];
     for (let suit = 0; suit < 4; suit++) {
       for (let value = 0; value < 13; value++) {
         let tempCard = cardSymbols[value] + suitSymbols[suit];
-        this.cardList.push({
-          card: tempCard,
-          address: "/cards/" + tempCard + ".png"
-        });
+        this.cardList.push(tempCard);
       }
     }
   }
@@ -231,9 +230,9 @@ class Game {
     // console.log(theGame.raiseAmount)
     if (!this.humanPlayer.Raise(newAmount)) {
       return alert("You cannot raise now, you need more chips.")
-      // NEed to fix this because this will return the alert and advance the turn, not giving chance to take another turn
+    } else {
+      theGame.advanceTurn();
     }
-    theGame.advanceTurn();
   }
 
   playerCheck() {
@@ -253,8 +252,8 @@ function newGame(playerCount, initialChips, playerName) {
     }
   }
 
-  game.dealCards();
   theGame = game;
+  theGame.dealCards();
 
   for (let player of game.playerList) {
     updateDisplay(player);
@@ -268,13 +267,14 @@ function newGame(playerCount, initialChips, playerName) {
 
   simulateRounds();
   playerDisplay();
-
+  console.log(theGame)
+}
   // Code for a training / open cards on the table game mode
   // for (var i = 0; i < game.playerList.length; i++) {
-  //     spawnCards(game.playerList[i].cards, 'seat' + (i + 1).toString(), 'card');
+  //     spawnCards(game.playerList[i], 'seat' + (i + 1).toString(), 'card');
   //     //spawnCards(newGame.cards,'board','table-card:nth-of-type('[i]'n)');
   // }
-  // spawnCards(game.playerList[0].cards, 'seat1', 'usercard');
+  // spawnCards(game.playerList[0], 'seat1', 'usercard');
 
   // Start betting + 1 if raised again
 
@@ -309,12 +309,11 @@ function newGame(playerCount, initialChips, playerName) {
   // theGame.incrementRound(); // Can be done when each player has matched all other players' raises.
 
   // theGame.dealCardToTable(theGame.cardList, theGame.cards);
-  // console.log(theGame.cards[0].length)
   // spawnCards(theGame.cards,'board','tablecard:nth-of-type(1)'); //come back to this - need i to increment along with round
   // theGame.advanceTurn(); // Can be done when check is called OR matched with other players' raises, OR if folded.
   // theGame.incrementRound(); // Can be done when each player has matched all other players' raises.
   // // evaluateWinner()
-}
+
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -325,8 +324,6 @@ function getRandomInt(min, max) {
 function doRandomPlayerAction(player, otherPlayer){
   switch (getRandomInt(0, 6)) {
     case 0:
-      //fold
-      return player.Fold();
     case 1:
     case 2:
     case 3:
@@ -341,8 +338,11 @@ function doRandomPlayerAction(player, otherPlayer){
     case 5:
       //raise
       let oldRaise = theGame.raiseAmount;
-      let newRaise = getRandomInt(Math.round(player.chips * 0.25), (player.chips - oldRaise))
-      // newRaise += oldRaise
+      console.log("In normal: oldraise: "+ oldRaise)
+      let newRaise = getRandomInt(Math.round(player.chips * 0.02), (theGame.initialChips - oldRaise - 1))
+      console.log("newraise: " + newRaise)
+      newRaise += oldRaise
+      console.log("thegame.raise: "+ newRaise)
       theGame.raiseAmount = newRaise
       if ( !player.Raise (theGame.raiseAmount)
       ) {
@@ -353,54 +353,28 @@ function doRandomPlayerAction(player, otherPlayer){
 }
 
 function doSubRoundPlayerAction(player, otherPlayer) {
-  if (otherPlayer != false && otherPlayer.bet != player.bet) {
+  if (otherPlayer.bet != player.bet) {
     switch (getRandomInt(0, 6)) {
       case 0:
-        //fold
-        return player.Fold();
       case 1:
       case 2:
       case 3:
         //check or fold if not able to call
-        // console.log("!otherplayer" + !otherPlayer)
         if (!otherPlayer) {
           return player.Check();
-        } else if (!player.Call((theGame.raiseAmount - player.bet))) {
+        } else if (!player.Call(theGame.raiseAmount)) {
           return player.Fold();
         }
         break;
       case 4:
       case 5:
         //raise
-        let oldRaise = theGame.raiseAmount;
-        let newRaise = getRandomInt(Math.round(player.chips * 0.05), (player.chips - oldRaise))
-        // newRaise += oldRaise
-        // console.log("in case raise " + newRaise + " += " + oldRaise)
+        let oldRaise = theGame.raiseAmount; // player1 has raised 50 & player2 called. means 50 left.
+        let newRaise = getRandomInt(Math.round(player.chips * 0.05), (theGame.initialChips - oldRaise)) // 0
+        newRaise += oldRaise
+         console.log("in case raise " + newRaise + " += " + oldRaise)
         theGame.raiseAmount = newRaise
-        // console.log("raiseAmount " + theGame.raiseAmount)
-        if ( !player.Raise (theGame.raiseAmount)
-        ) {
-          return doSubRoundPlayerAction(player, otherPlayer);
-        }
-      break;
-    }
-  } else {
-    switch (getRandomInt(0, 6)) {
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-        // Check when no-one else has raised
-        return player.Check();
-      case 5:
-        // Small chance of a re-raise
-        let oldRaise = theGame.raiseAmount;
-        let newRaise = getRandomInt(Math.round(player.chips * 0.05), (player.chips - oldRaise))
-        // newRaise += oldRaise
-        // console.log("in case raise " + newRaise + " += " + oldRaise)
-        theGame.raiseAmount = newRaise
-        // console.log("raiseAmount " + theGame.raiseAmount)
+         console.log("case raiseAmount " + theGame.raiseAmount)
         if ( !player.Raise (theGame.raiseAmount)
         ) {
           return doSubRoundPlayerAction(player, otherPlayer);
@@ -415,7 +389,7 @@ function simulatePlayer(player) {
   let raisedSomeoneElsesBet = false;
   let someoneRaised = false;
 
-  if (theGame.subRound == 1) {
+  if (theGame.subRound == 0) {
     for (let otherPlayer of theGame.playerList) {
       if (otherPlayer.status == "raised" && otherPlayer != player) {
         someoneRaised = otherPlayer;
@@ -462,7 +436,6 @@ function simulatePlayer(player) {
 }
 
 function simulateBetting(player) {
-  let didSomeoneRaise = false;
   if (player.chips > 0 && player.status != "folded") {
     // Let Players Raise/Match/Fold
     simulatePlayer(player);
@@ -470,11 +443,11 @@ function simulateBetting(player) {
       case "matched":
       break;
       case "raised":
-        didSomeoneRaise = true;
+        theGame.didSomeoneRaise = true;
       break;
     }
   }
-  return didSomeoneRaise;
+  return theGame.didSomeoneRaise;
 }
 
 function resetRaises() {
@@ -529,7 +502,7 @@ function timeout(ms) {
 async function simulateRounds() {
   // async function waits for response from user to continue (doesn't yet)
   for (let i = 0; i < 2; i++) {
-    if (theGame.subRound == 1 || (theGame.subRound < 3 && didSomeoneRaise == true)) {
+    if (theGame.subRound == 0 || (theGame.subRound == 1 && theGame.didSomeoneRaise == true)) {
       for (let player of theGame.playerList) {
         if (!player.isHuman && player.status != "folded") {
           player.isTurn = true;
@@ -546,30 +519,40 @@ async function simulateRounds() {
           player.isTurn = false;
         }
       }
+      theGame.subRound ++;
+      console.log("          theGame.subround: =========================" + theGame.subRound);
     } else {
-      didSomeoneRaise = false;
+      theGame.subRound = 0;
+      theGame.didSomeoneRaise = false;
       resetRaises();
       theGame.raiseAmount = 0;
       theGame.subRoundStatus = "active"
-      theGame.incrementRound();
     }
   }
   theGame.subRoundStatus = "active"
   theGame.incrementRound();
-  console.log("round" + theGame.round)
+  console.log("              Round ========================" + theGame.round)
 
   if (theGame.round == 1) {
     theGame.dealFlopCards()
     await timeout(2000)
     simulateRounds()
+    evaluatePlayerCards()
   } else if (theGame.round == 2) {
     theGame.dealTurnCard()
     await timeout(1000)
     simulateRounds()
+    evaluatePlayerCards()
   } else if (theGame.round == 3) {
     theGame.dealRiverCard()
     await timeout(1000)
     simulateRounds()
+    evaluatePlayerCards()
+  } else if (theGame.round == 4) {
+    for (let player of theGame.playerList) {
+      evaluateCards(theGame.cards + player.cards)
+      console.log(evaluateCards)
+    }
   }
 }
 
@@ -577,8 +560,8 @@ async function simulateRounds() {
 function spawnCards(tempList, idString, classString) {
   for (let i = 0; i < tempList.length; i++) {
     let node = document.createElement("img");
-    node.src = tempList[i].address;
-    node.alt = tempList[i].card;
+    node.src = "/cards/" + tempList[i] + ".png";
+    node.alt = tempList[i];
     let className;
 
     if (idString.includes("seat2")) {
@@ -634,15 +617,38 @@ function updateDisplay(info) {
   }
 }
 
+function evaluatePlayerCards() {
+  console.log(theGame.cards.join(" ").toString() +" "+ theGame.humanPlayer.cards[0] +" "+ theGame.humanPlayer.cards[1])
+  const board = theGame.cards.join(" ") +" "+ theGame.humanPlayer.cards[0] +" "+ theGame.humanPlayer.cards[1]
+  const rank = rankBoard(board)
+  const name = rankDescription[rank]
+  $("#card-evaluation").children("p").text("With the cards on the table, and your cards (" + board + "), you have a " + name + ".");
+  return '%s is a %s', board, name
+}
+
+function evaluateCards() {
+  const board = theGame.cards.join(" ") +" "+ theGame.humanPlayer.cards[0] +" "+ theGame.humanPlayer.cards[1]
+  const rank = rankBoard(board)
+  const name = rankDescription[rank]
+  console.log('%s is a %s', board, name)
+  return '%s is a %s', board, name
+}
+
+// TODO: Add rank strength function which displays a meter/bar
+// function rankStrength() { 
+//
+// }
+
+
 // Runs when the page has finished loading.
 $(document).ready(function() {
   $("#playnewgame").click(_ => {
     theGame = 0;
     updateDisplay("reset");
     newGame(
-      $("#playerCount").val(),
-      $("#initialChips").val(),
-      $("#playerName").val());
+      Number($("#playerCount").val()),
+      Number($("#initialChips").val()),
+      $("#playerName").val())
   });
 
   $(".button-copy").click(_ => {
@@ -668,15 +674,13 @@ $(document).ready(function() {
   newGame(8, 100, "ryan");
   // for (var i = 0; i < theGame.playerList.length; i++) {
   //   spawnCards(
-  //     theGame.playerList[i].cards,
+  //     theGame.playerList[i],
   //     "seat" + (i + 1).toString(),
   //     "opponentcard"
   //   );
   //   //spawnCards(theGame.cards,'board','table-card:nth-of-type('[i]'n)');
   // }
-  // spawnCards(theGame.playerList[2].cards, "seat3", "usercard");
-
-
+  // spawnCards(theGame.playerList[2], "seat3", "usercard");
 
   console.log(theGame)
 });

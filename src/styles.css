@@ -112,6 +112,10 @@ body .container {
   border-radius: 7px 0px 0px 7px;
 }
 
+#card-evaluation {
+  text-align: left;
+}
+
 #seat0 {
   top: 2px;
   left: 637px;
