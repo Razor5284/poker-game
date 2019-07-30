@@ -121,19 +121,19 @@ class Game {
   async dealFlopCards() {
     for (let i = 0; i < 3; i++) {
       this.dealCardToTable(this.cardList, this.cards);
-      $("#board").children(".tablecard:nth-of-type("+[i+1]+")").children("img").attr("src", "/cards/" + theGame.cards[i] + ".png").attr("alt", theGame.cards[i]).css("visibility", "visible");
+      $("#board").children(".tablecard:nth-of-type("+[i+1]+")").children("img").attr("src", "/cards/" + theGame.cards[i].toUpperCase() + ".png").attr("alt", theGame.cards[i]).css("visibility", "visible");
       await timeout(500)
     }
   }
 
   dealTurnCard() {
     this.dealCardToTable(this.cardList, this.cards);
-    $("#board").children(".tablecard:nth-of-type(4)").children("img").attr("src", "/cards/" + theGame.cards[3] + ".png").attr("alt", theGame.cards[3]).css("visibility", "visible");
+    $("#board").children(".tablecard:nth-of-type(4)").children("img").attr("src", "/cards/" + theGame.cards[3].toUpperCase() + ".png").attr("alt", theGame.cards[3]).css("visibility", "visible");
   }
 
   dealRiverCard() {
     this.dealCardToTable(this.cardList, this.cards);
-    $("#board").children(".tablecard:nth-of-type(5)").children("img").attr("src", "/cards/" + theGame.cards[4] + ".png").attr("alt", theGame.cards[4]).css("visibility", "visible");
+    $("#board").children(".tablecard:nth-of-type(5)").children("img").attr("src", "/cards/" + theGame.cards[4].toUpperCase() + ".png").attr("alt", theGame.cards[4]).css("visibility", "visible");
   }
 
   removeAllPlayerCards() {
@@ -269,51 +269,6 @@ function newGame(playerCount, initialChips, playerName) {
   playerDisplay();
   console.log(theGame)
 }
-  // Code for a training / open cards on the table game mode
-  // for (var i = 0; i < game.playerList.length; i++) {
-  //     spawnCards(game.playerList[i], 'seat' + (i + 1).toString(), 'card');
-  //     //spawnCards(newGame.cards,'board','table-card:nth-of-type('[i]'n)');
-  // }
-  // spawnCards(game.playerList[0], 'seat1', 'usercard');
-
-  // Start betting + 1 if raised again
-
-  // Increment Round
-
-  // Deal river
-
-  // second betting Round + 1 if raised again
-
-  // Increment Round
-
-  // deal flop
-
-  // third betting Round +1 if raised again
-
-  // Increment Round
-
-  // deal Turn
-
-  // final betting Round + 1 if raised again
-
-  // Finish - evaluate winner
-
-  // theGame.advanceTurn(); // Can be done when check is called OR matched with other players' raises, OR if folded.
-  // theGame.incrementRound(); // Can be done when each player has matched all other players' raises.
-  // // Flop has already been set, spawn cards only needed
-
-
-  // theGame.dealCardToTable(theGame.cardList, theGame.cards);
-  // spawnCards(theGame.cards[0],'board','tablecard:nth-of-type(4)');
-  // theGame.advanceTurn(); // Can be done when check is called OR matched with other players' raises, OR if folded.
-  // theGame.incrementRound(); // Can be done when each player has matched all other players' raises.
-
-  // theGame.dealCardToTable(theGame.cardList, theGame.cards);
-  // spawnCards(theGame.cards,'board','tablecard:nth-of-type(1)'); //come back to this - need i to increment along with round
-  // theGame.advanceTurn(); // Can be done when check is called OR matched with other players' raises, OR if folded.
-  // theGame.incrementRound(); // Can be done when each player has matched all other players' raises.
-  // // evaluateWinner()
-
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -560,8 +515,8 @@ async function simulateRounds() {
 function spawnCards(tempList, idString, classString) {
   for (let i = 0; i < tempList.length; i++) {
     let node = document.createElement("img");
-    node.src = "/cards/" + tempList[i] + ".png";
-    node.alt = tempList[i];
+    node.src = "/cards/" + tempList[i].toUpperCase() + ".png";
+    node.alt = tempList[i].toUpperCase();
     let className;
 
     if (idString.includes("seat2")) {
@@ -624,7 +579,7 @@ function evaluatePlayerCards() {
   const name = rankDescription[rank]
   $("#card-evaluation").children("p").text("Combined with the cards on the table, you have " + name + ". ");
   if (name == 'One Pair') {
-    $("#card-evaluation").children("p").append("<p>With a pair, there is a low chance of you having a winning hand. The higher the pair is, the stronger the chance of winning (e.g. a pair of Jacks vs a pair of 2s).</p><p>If you have a pair with the board, and someone else also has this pair, whoever has the highest other card in their hand wins (e.g. both players have a pair of Kings, one has a 3, and the other has a 5, the player with a 5 wins), otherwise the pot is split between the winners.</p>");
+    $("#card-evaluation").children("p").append("<p>With a pair, there is a low chance of you having a winning hand. The higher the pair is, the stronger the chance of winning (e.g. a pair of Jacks vs a pair of 2s).</p><p>If you have a pair with the table, and someone else also has this pair, whoever has the highest other card in their hand wins (e.g. both players have a pair of Kings, one has a 3, and the other has a 5, the player with a 5 wins), otherwise the pot is split between the winners.</p>");
   } else if (name == 'Two Pair') {
     $("#card-evaluation").children("p").append("<p>With two pairs, you have a higher chance of winning than a single pair, but is still a very low chance. Like a pair, the higher each pair is, the stronger the chance of winning (e.g. a pair of Jacks vs a pair of 2s).</p><p>If in the small chance someone else also has two pairs, the player with the highest cards wins, or if both pairs are the same, the winners split the pot.</p>");
   } else if (name == 'Three of a Kind') {
@@ -636,7 +591,7 @@ function evaluatePlayerCards() {
   } else if (name == 'High Card') {
     $("#card-evaluation").children("p").append("<p>You have the worst hand possible. You should not raise or call others' raises unless you are planning on bluffing.</p><p>If someone else calls your bluff, and also has only a high card, whoever has the highest cards wins, the highest single card being an Ace.</p>");
   } else if (name == 'Flush') {
-    $("#card-evaluation").children("p").append("<p>You have a good hand. A straight is stronger than a flush.</p><p>A flush is where all cards are the same suit.</p><p>Another player can also have a flush, and whoever has the highest cards in their hand to make up the flush wins.</p>");
+    $("#card-evaluation").children("p").append("<p>You have a good hand. A flush is stronger than a straight.</p><p>A flush is where all cards are the same suit.</p><p>Another player can also have a flush, and whoever has the highest cards in their hand to make up the flush wins.</p>");
   } else if (name == 'Full House') {
     $("#card-evaluation").children("p").append("<p>You have a great hand. A full house is stronger than a flush.</p><p>A full house is a combination of three of a kind and a pair. E.g. Three Aces and Two Sixes.</p><p>If there is a three of a kind on the table, it is possible another player could have a pair, which could be stronger than yours.</p>");
   } else if (name == 'Straight Flush' && !(board.includes('A') && board.includes('J') && board.includes('Q') && board.includes('K') && board.includes('T'))) {
@@ -645,8 +600,6 @@ function evaluatePlayerCards() {
     $("#card-evaluation").children("p").text("With the cards on the table, you have a Royal Flush!");
     $("#card-evaluation").children("p").append("<p>You have the strongest hand in the game, play as you please!</p><p>You should probably raise to increase your possible winnings.</p><p>Bear in mind, playing too aggressively may cause other players to fold too early.</p>");
   }
-  console.log('%s is a %s', board, name);
-
 }
 
 function evaluateCards() {
