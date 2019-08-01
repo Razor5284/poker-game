@@ -60,6 +60,7 @@ body .container {
 
 .content {
   width: 800px;
+  min-width: 800px;
   min-height: 400px;
   max-height: 400px;
   background-image: url("images/table.png");
@@ -93,11 +94,16 @@ body .container {
   width: 800px;
   background-color: #8d0301;
   border-radius: 16px;
+  display: flex;
+  position: sticky;
+  bottom: 0;
+  justify-content: center;
 }
 
 .sidebar {
   width: 360px;
   text-align: center;
+  height: fit-content;
 }
 
 #left-sidebar {
@@ -184,6 +190,69 @@ body .container {
   height: 88px;
 }
 
+/* Poker Hands popup modal */
+#poker-hands {
+  border-radius: 5px;
+  transition: 0.3s;
+}
+.modal {
+  display: none;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.8);
+}
+.modal-content {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 75%;
+}
+#caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+}
+.modal-content, #caption {
+  -webkit-animation-name: zoom;
+  -webkit-animation-duration: 0.6s;
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+div#poker-hands-button {
+    position: inherit;
+    display: block;
+}
+@-webkit-keyframes zoom {
+  from {-webkit-transform:scale(0)}
+  to {-webkit-transform:scale(1)}
+}
+@keyframes zoom {
+  from {transform:scale(0)}
+  to {transform:scale(1)}
+}
+.close {
+  position: relative;
+  right: -40%;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+.close:hover, .close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+@media only screen and (max-width: 700px){
+  .modal-content {
+    width: 100%;
+  }
+}
+
+/* Changes players brightness when folded */
 .folded {
   filter: brightness(0.5);
 }
@@ -207,7 +276,6 @@ body .container {
   justify-content: center;
   align-items: center;
 }
-
 .menu-button {
   transition: all 0.3s ease;
   background-color: #FFC145;
@@ -259,16 +327,14 @@ body .container {
 .menu-button .cancel span:hover {
   text-decoration: underline;
 }
-
 .menu-button:hover {
   background-color: #e0aa3d;
 }
-
 .menu-button.open:hover {
   background-color: #fff;
 }
 
-.submit-button {
+.button {
   display: block;
   background-color: #3498DB;
   height: 40px;
@@ -283,12 +349,12 @@ body .container {
   padding: 0 34px;
   margin: 0 auto;
 }
-.submit-button img {
+.button img {
   position: relative;
   top: 3px;
   right: 6px;
 }
-.submit-button:hover {
+.button:hover {
   background-color: #217dbb;
   cursor: pointer;
 }
@@ -307,7 +373,6 @@ body .container {
   font-weight: 700;
   padding: 0 34px;
 }
-
 .end-button:hover {
   background-color: #217dbb;
   cursor: pointer;
@@ -333,7 +398,6 @@ form * {
   width: 120px;
   color: black;
 }
-
 .form--price {
   position: absolute;
   line-height: 38px;
@@ -344,7 +408,6 @@ form * {
 .form--price + input {
   padding-left: 14px;
 }
-
 .form--container {
   width: 420px;
 }
@@ -354,7 +417,6 @@ form * {
   justify-content: space-between;
   margin-bottom: -12px;
 }
-
 .form--element {
   background-color: #fff;
   border: 1px solid #ECECEC;

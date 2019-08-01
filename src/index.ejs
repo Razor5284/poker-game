@@ -22,7 +22,7 @@
 								<input id="playerCount" class="form--element" type="number" max="8" value="8" required>
 								</div>
 							</div>
-							<div type="submit" class="submit-button" id="playnewgame">Play Game</div>
+							<div type="submit" class="button" id="playnewgame">Play Game</div>
 							<div class="cancel"><span>Cancel</span></div>
 						</form>
 					</div>
@@ -153,10 +153,18 @@
 					</div>
 				</div>
 				<div class="sidebar" id="right-sidebar"><a>Card Ranking</a>
-				    <div id="card-evaluation" style="text-align: left;">
-			        <p>
-				    	</p>
-				    </div>
+			    <div id="card-evaluation" style="text-align: left;">
+		        <p>
+			    	</p>
+			    </div>
+					<div id="poker-hands">
+						<div class="button" id="poker-hands-button">Poker Hands</div>
+						<div id="modal-popup" class="modal">
+						  <span class="close">&times;</span>
+						  <img class="modal-content" id="poker-hands-image" src="images/poker-hand-rankings.png">
+						  <div id="caption">Credit: <a href="https://www.cardschat.com/poker-hands.php" target="_blank">Cardschat.com</a></div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="footer wrapper">

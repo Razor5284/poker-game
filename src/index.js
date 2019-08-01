@@ -276,7 +276,7 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function doRandomPlayerAction(player, otherPlayer){
+function doRandomPlayerAction(player, otherPlayer) {
   switch (getRandomInt(0, 6)) {
     case 0:
     case 1:
@@ -504,10 +504,7 @@ async function simulateRounds() {
     simulateRounds()
     evaluatePlayerCards()
   } else if (theGame.round == 4) {
-    for (let player of theGame.playerList) {
-      evaluateCards(theGame.cards + player.cards)
-      console.log(evaluateCards)
-    }
+    evaluateWinner()
   }
 }
 
@@ -602,12 +599,19 @@ function evaluatePlayerCards() {
   }
 }
 
-function evaluateCards() {
-  const board = theGame.cards.join(" ") +" "+ theGame.humanPlayer.cards[0] +" "+ theGame.humanPlayer.cards[1]
-  const rank = rankBoard(board)
-  const name = rankDescription[rank]
-  console.log('%s is a %s', board, name)
-  return '%s is a %s', board, name
+function evaluateWinner() { // don't forget about the royal flush if someone has a straight
+  for (let player of theGame.playerList) {
+    if (player.status != "folded") {
+      const board = theGame.cards.join(" ") +" "+ player.cards[0] +" "+ player.cards[1]
+      const rank = rankBoard(board)
+      const name = rankDescription[rank]
+      console.log('%s is a %s', board, name," " + rank, " " + player.ID)
+      // theGame.playerList.sort((a,b)=>{return rankBoard(a)<rankBoard(b)})
+      // spawnCards
+      // show winner using JS
+      // php cookies to increase win count, % and games played?
+    }
+  }
 }
 
 // TODO: Add rank strength function which displays a meter/bar
@@ -615,9 +619,8 @@ function evaluateCards() {
 //
 // }
 
-
-// Runs when the page has finished loading.
 $(document).ready(function() {
+  // JQuery scripts for buttons on menu popup
   $("#playnewgame").click(_ => {
     theGame = 0;
     updateDisplay("reset");
@@ -647,20 +650,29 @@ $(document).ready(function() {
     updateDisplay("reset");
   });
 
+  // Script for modal popup and close buttons
+  var modal = document.getElementById("modal-popup");
+  var btn = document.getElementById("poker-hands-button");
+  var modalImg = document.getElementById("poker-hands-image");
+  var captionText = document.getElementById("caption");
+  $("#poker-hands-button").click(function() {
+    $('#modal-popup').toggle();
+  });
+  var span = document.getElementsByClassName("close")[0];
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+
   newGame(8, 100, "ryan");
-  // for (var i = 0; i < theGame.playerList.length; i++) {
-  //   spawnCards(
-  //     theGame.playerList[i],
-  //     "seat" + (i + 1).toString(),
-  //     "opponentcard"
-  //   );
-  //   //spawnCards(theGame.cards,'board','table-card:nth-of-type('[i]'n)');
-  // }
-  // spawnCards(theGame.playerList[2], "seat3", "usercard");
-  // const board = 'Ah Jh Qh Kh Th';
-  // var regex = /"A" "J" "Q" "K" "T"/gi;
-  // var found = board.match(regex);
-  // // console.log(board.split('h'))
-  // console.log(board.search(/AJQKT/))
   console.log(theGame)
 });
+
+// for (var i = 0; i < theGame.playerList.length; i++) {
+//   spawnCards(
+//     theGame.playerList[i],
+//     "seat" + (i + 1).toString(),
+//     "opponentcard"
+//   );
+//   //spawnCards(theGame.cards,'board','table-card:nth-of-type('[i]'n)');
+// }
+// spawnCards(theGame.playerList[2], "seat3", "usercard");
