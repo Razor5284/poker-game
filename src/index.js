@@ -566,6 +566,7 @@ function updateDisplay(info) {
     $(".player").css("visibility", "hidden");
     $("#seat2").children(".card1").children("img").css("visibility", "hidden");
     $("#seat2").children(".card2").children("img").css("visibility", "hidden");
+    $("#card-evaluation").children("p").text("");
   }
 }
 
