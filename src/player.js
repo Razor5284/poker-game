@@ -15,6 +15,8 @@ export default class Player {
     this.isHuman = false;
     this.bet = 0;
     this.isTurn = false;
+    this.cardRank;
+    this.cardEval;
   }
 
   // Gets ID number of player
