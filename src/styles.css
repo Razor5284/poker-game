@@ -78,7 +78,15 @@ body .container {
 .content .content-inner .player {
   position: absolute;
   width: 110px;
+  border: #e2e2e2 ridge;
+  border-width: 1px;
+  border-radius: 5px;
 }
+
+.active {
+  border: #e00000 ridge !important;
+}
+
 .content .content-inner .player img {
   width: 45px;
   float: left;
@@ -137,6 +145,8 @@ body .container {
 #seat2 {
   top: 310px;
   left: 635px;
+  border: #0071a5 ridge;
+  border-width: 3px;
 }
 
 #seat3 {
@@ -264,8 +274,27 @@ div#poker-hands-button {
 }
 
 .control-button {
-  padding-right: 5px;
-  line-height: 0px;
+  padding-right: 13px;
+  padding-left: 13px;
+  transition: all 0.3s ease;
+  background-color: #FFC145;
+  height: 25px;
+  width: 70px;
+  border-radius: 72px;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.07);
+  cursor: pointer;
+  text-align: center;
+  line-height: 24px;
+  color: #f7f7f7;
+  display: block;
+}
+
+.inactive {
+  cursor: default;
+  background-color: #d0cbc2;
+}
+.inactive input {
+  visibility: hidden;
 }
 
 /* Menu popup*/

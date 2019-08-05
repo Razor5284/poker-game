@@ -170,13 +170,13 @@
 			<div class="footer wrapper">
 				<div id="controls-container">
 					<div id="controls">
-						<div class="control-button"><button id="Check">Check</button></div>
-						<div class="control-button"><button id="Call">Call</button></div>
-						<div class="control-button">
-							Amount: <input id="RaiseAmount" type="number" name="amount" max="" min="10" step="5" value="10" style="width: 50px;"> <!-- Max = value of chips -->
-							<button id="Raise" value="Raise">Raise</button>
+						<div class="control-button inactive"><div id="Check">Check</div></div>
+						<div class="control-button inactive"><div id="Call">Call</div></div>
+						<div class="control-button inactive">
+							<div id="Raise" value="Raise">Raise</div>
+							<input id="RaiseAmount" type="number" name="amount" min="10" max="100" step="5" value="10" style="width: 50px;"> <!-- Max = value of chips -->
 						</div>
-						<div class="control-button"><button id="Fold">Fold</button></div>
+						<div class="control-button inactive"><div id="Fold">Fold</div></div>
 					</div>
 				</div>
 			</div>

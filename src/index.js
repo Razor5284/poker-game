@@ -2,7 +2,7 @@ import $ from "jquery";
 import "./styles.css";
 import Player from './player';
 import HumanPlayer from './humanplayer';
-const { rankBoard, rankDescription, rankCards, evaluateCards, rankCardCodes} = require('phe')
+const { rankBoard, rankDescription, rankCards, evaluateCards} = require('phe')
 
 /*
  *
@@ -291,18 +291,24 @@ async function simulateRounds() {
     if (theGame.subRound == 0 || (theGame.subRound == 1 && theGame.didSomeoneRaise == true)) {
       for (let player of theGame.playerList) {
         if (!player.isHuman && player.status != "folded") {
-          player.isTurn = true;
+          player.isTurn = true; //check if there's any use in this
+          $("#seat" + player.ID).toggleClass("active");
           await timeout(getRandomInt(500, 500)) // change this back to 5000 or 8000 (ms)
           simulateBetting(player);
           updateDisplay(player);
           player.isTurn = false;
+          $("#seat" + player.ID).toggleClass("active");
         }
         else if (player.isHuman && player.status != "folded") {
           player.isTurn = true;
+          $("#seat" + player.ID).toggleClass("active");
+          $("#controls").children(".control-button").toggleClass("inactive");
           theGame.humanPlayer = player;
           await playerFinished();
           updateDisplay(player);
           player.isTurn = false;
+          $("#seat" + player.ID).toggleClass("active");
+          $("#controls").children(".control-button").toggleClass("inactive");
         }
       }
       theGame.subRound ++;
@@ -617,7 +623,6 @@ function evaluateWinner() { // don't forget about the royal flush if someone has
   for (let player of theGame.playerList) {
     if (player.status != "folded") {
       spawnCards(player.cards, "seat" + (player.IDNumber).toString(), "card");
-
       let boards = theGame.cards
       let newboards = boards.concat(player.cards)
       let rank = evaluateCards(newboards)
@@ -626,10 +631,11 @@ function evaluateWinner() { // don't forget about the royal flush if someone has
       player.cardRank = rank
       player.cardEval = name
       ranks.push([player.ID, player.cardRank, player.cardEval]);
-
     }
   }
+  var newranks = ranks.map(i => i[1]).reduce((lowest, current) => current < lowest ? current : lowest);
   console.log(ranks)
+  console.log(newranks)
   // const min = Math.min(...ranks{1})
   // console.log(min)
   // show winner using JS
