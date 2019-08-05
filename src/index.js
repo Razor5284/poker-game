@@ -41,13 +41,6 @@ class Game {
     this.playerList.push(player);
   }
 
-  // Remove player from the game
-  /*removePlayer(playerID) {
-        if (playerID > -1) {
-            this.playerList.splice(playerID, 1);
-        }
-    }*/
-
   // Returns initial chip count
   get InitialChips() {
     return this.initialChips;
@@ -120,19 +113,19 @@ class Game {
   async dealFlopCards() {
     for (let i = 0; i < 3; i++) {
       this.dealCardToTable(this.cardList, this.cards);
-      $("#board").children(".tablecard:nth-of-type("+[i+1]+")").children("img").attr("src", "/cards/" + theGame.cards[i].toUpperCase() + ".png").attr("alt", theGame.cards[i]).css("visibility", "visible");
+      $("#board").children(".tablecard:nth-of-type("+[i+1]+")").children("img").attr("src", "/cards/" + this.cards[i] + ".png").attr("alt", theGame.cards[i]).css("visibility", "visible");
       await timeout(500)
     }
   }
 
   dealTurnCard() {
     this.dealCardToTable(this.cardList, this.cards);
-    $("#board").children(".tablecard:nth-of-type(4)").children("img").attr("src", "/cards/" + theGame.cards[3].toUpperCase() + ".png").attr("alt", theGame.cards[3]).css("visibility", "visible");
+    $("#board").children(".tablecard:nth-of-type(4)").children("img").attr("src", "/cards/" + this.cards[3] + ".png").attr("alt", theGame.cards[3]).css("visibility", "visible");
   }
 
   dealRiverCard() {
     this.dealCardToTable(this.cardList, this.cards);
-    $("#board").children(".tablecard:nth-of-type(5)").children("img").attr("src", "/cards/" + theGame.cards[4].toUpperCase() + ".png").attr("alt", theGame.cards[4]).css("visibility", "visible");
+    $("#board").children(".tablecard:nth-of-type(5)").children("img").attr("src", "/cards/" + this.cards[4] + ".png").attr("alt", theGame.cards[4]).css("visibility", "visible");
   }
 
   removeAllPlayerCards() {
@@ -160,11 +153,11 @@ class Game {
 
   // Shuffles an array, which is then assigned to shuffledList
   shuffleCardList() {
-    var tempList = [];
+    var tempList = this.cardList;
     // COPY CARD LIST FOR POSSIBLE CARDS
-    for (var i = 0; i < this.cardList.length; i++) {
-      tempList[i] = this.cardList[i];
-    }
+    // for (var i = 0; i < this.cardList.length; i++) {
+    //   tempList[i] = this.cardList[i];
+    // }
 
     for (var j = 0; j < this.cardList.length; j++) {
       var index = Math.floor(Math.random() * tempList.length);
@@ -279,7 +272,7 @@ function spawnCards(tempList, idString, classString) {
       className = "." + classString;
     }
     // $(str).css('background-image', "url(" + node.src + ")");
-    $("#" + idString).children(className).children("img").attr("src", node.src).attr("alt", node.alt).css("visibility", "visible");
+    $("#" + idString).children(className).children("img").attr("src", node.src).attr("alt", node.alt);
     //code for adding controls to the local player - adapt it for chips for everyone
     // $("#" + idString).children(".playerinfo").append(" <div id='controls-container'> <div id='controls'><div><button id='Check'>Check</button></div><div><button id='Call'>Call</button></div><div>Amount: <input id='RaiseAmount' type='number' name='amount' max='' min='10' step='5' value='10'><br> <!-- Max = value of chips --><button id='Raise' value='Raise'></div><div><button id='Fold'>Fold</button></div>Controls / Bid / Pass / Add Money</div></div> ");
   }
@@ -327,16 +320,19 @@ async function simulateRounds() {
 
   if (theGame.round == 1) {
     theGame.dealFlopCards()
+    console.log(theGame.cards)
     await timeout(2000)
     simulateRounds()
     evaluatePlayerCards()
   } else if (theGame.round == 2) {
     theGame.dealTurnCard()
+    console.log(theGame.cards)
     await timeout(1000)
     simulateRounds()
     evaluatePlayerCards()
   } else if (theGame.round == 3) {
     theGame.dealRiverCard()
+    console.log(theGame.cards)
     await timeout(1000)
     simulateRounds()
     evaluatePlayerCards()
@@ -431,11 +427,11 @@ function doRandomPlayerAction(player, otherPlayer) {
     case 5:
       //raise
       let oldRaise = theGame.raiseAmount;
-      console.log("In normal: oldraise: "+ oldRaise)
+      // console.log("In normal: oldraise: "+ oldRaise)
       let newRaise = getRandomInt(Math.round(player.chips * 0.02), (theGame.initialChips - oldRaise - 1))
-      console.log("newraise: " + newRaise)
+      // console.log("newraise: " + newRaise)
       newRaise += oldRaise
-      console.log("thegame.raise: "+ newRaise)
+      // console.log("thegame.raise: "+ newRaise)
       theGame.raiseAmount = newRaise
       if ( !player.Raise (theGame.raiseAmount)
       ) {
@@ -465,9 +461,9 @@ function doSubRoundPlayerAction(player, otherPlayer) {
         let oldRaise = theGame.raiseAmount; // player1 has raised 50 & player2 called. means 50 left.
         let newRaise = getRandomInt(Math.round(player.chips * 0.05), (theGame.initialChips - oldRaise)) // 0
         newRaise += oldRaise
-         console.log("in case raise " + newRaise + " += " + oldRaise)
+         // console.log("in case raise " + newRaise + " += " + oldRaise)
         theGame.raiseAmount = newRaise
-         console.log("case raiseAmount " + theGame.raiseAmount)
+         // console.log("case raiseAmount " + theGame.raiseAmount)
         if ( !player.Raise (theGame.raiseAmount)
         ) {
           return doSubRoundPlayerAction(player, otherPlayer);
@@ -633,11 +629,25 @@ function evaluateWinner() { // don't forget about the royal flush if someone has
       ranks.push([player.ID, player.cardRank, player.cardEval]);
     }
   }
-  var newranks = ranks.map(i => i[1]).reduce((lowest, current) => current < lowest ? current : lowest);
   console.log(ranks)
-  console.log(newranks)
-  // const min = Math.min(...ranks{1})
-  // console.log(min)
+  var winner = []
+  winner.push(ranks.reduce((lowest, current) => current[1] < lowest[1] ? current : lowest));
+  console.log(winner)
+  if (winner.length == 1) {
+    let winnerName = theGame.playerList[winner[0][0]].name
+    $("#right-sidebar").children("a").text("Winner")
+    $("#card-evaluation").text("The winner is " + winnerName + ", who won with " + winner[0][2] + " and a score of " + winner[0][1]);
+  } else {
+    // If there are multiple winners
+    $("#right-sidebar").children("a").text("Winner")
+    $("#card-evaluation").text("The winners are ");
+    for (let i = 0; i < winner.length; i++) {
+      let winnerName = theGame.playerList[winner[i][0]].name
+      $("#card-evaluation").append(winnerName + ", ");
+    }
+    $("#card-evaluation").append("who won with " + winner[0][2] + " and a score of " + winner[0][1]);
+  }
+
   // show winner using JS
   // JS user storage to increase win count, win %, games played, overall profit etc
   // console.log(theGame.playerList.sort((a,b)=>{return rankBoard(a)<rankBoard(b)}))
@@ -652,11 +662,27 @@ $(document).ready(function() {
   // JQuery scripts for buttons on menu popup
   $("#playnewgame").click(_ => {
     theGame = 0;
+    this.playerList = [];
+    this.round = 0;
+    this.turn = 0;
+    this.pot = 0;
+    this.cards = [];
+    this.humanPlayer;
+    this.playerTurn = [];
+    this.raiseAmount = 0;
+    this.subRound = 0;
+    this.subRoundStatus = "active";
     updateDisplay("reset");
     newGame(
       Number($("#playerCount").val()),
       Number($("#initialChips").val()),
       $("#playerName").val())
+    $("#seat2").children("[class^=card]").children("img").css("visibility", "visible");
+    $("#seat2").children("[class^=card]").children("img").css("visibility", "visible");
+    $("#controls").children(".control-button").addClass("inactive");
+    $(".menu-button").toggleClass("open");
+    $(".button-copy").css("display", "block");
+    console.log(theGame)
   });
 
   $(".button-copy").click(_ => {
