@@ -22,7 +22,7 @@
 								<input id="playerCount" class="form--element" type="number" max="8" value="8" required>
 								</div>
 							</div>
-							<div type="submit" class="submit-button" id="playnewgame">Play Game</div>
+							<div type="submit" class="button" id="playnewgame">Play Game</div>
 							<div class="cancel"><span>Cancel</span></div>
 						</form>
 					</div>
@@ -41,7 +41,7 @@
 								<div class="chips"><p></p></div>
 								<div class="status"><p></p></div>
 							</div>
-							<div id="cards" style="top: 73px; right: 228px;	position: absolute;">
+							<div id="table-player-cards" style="top: 73px; right: 228px;	position: absolute;">
 								<img src="/cards/purple_back_pair.png" style="transform: scaleY(-1) rotateZ(-40deg);">
 							</div>
 						</div>
@@ -53,7 +53,7 @@
 								<div class="chips"><p></p></div>
 								<div class="status"><p></p></div>
 							</div>
-							<div id="cards" style="top: 0px; right: 245px;	position: absolute;">
+							<div id="table-player-cards" style="top: 0px; right: 245px;	position: absolute;">
 								<img src="/cards/purple_back_pair.png" style="transform: scaleY(-1) rotateZ(-92deg);">
 							</div>
 						</div>
@@ -65,7 +65,7 @@
 								<div class="chips"><p></p></div>
 								<div class="status"><p></p></div>
 							</div>
-							<div id="cards" style="top: -67px; right: 123px; position: absolute;">
+							<div id="table-player-cards" style="top: -67px; right: 123px; position: absolute;">
 								<img src="/cards/purple_back_pair.png" style="transform: scaleX(-1) rotateZ(45deg);">
 							</div>
 						</div>
@@ -77,7 +77,7 @@
 								<div class="chips"><p></p></div>
 								<div class="status"><p></p></div>
 							</div>
-							<div id="cards" style="top: -69px; right: 48px; position: absolute;">
+							<div id="table-player-cards" style="top: -69px; right: 48px; position: absolute;">
 								<img src="/cards/purple_back_pair.png">
 							</div>
 						</div>
@@ -89,7 +89,7 @@
 								<div class="chips"><p></p></div>
 								<div class="status"><p></p></div>
 							</div>
-							<div id="cards" style="top: -69px; right: 48px; position: absolute;">
+							<div id="table-player-cards" style="top: -69px; right: 48px; position: absolute;">
 								<img src="/cards/purple_back_pair.png">
 							</div>
 						</div>
@@ -101,7 +101,7 @@
 								<div class="chips"><p></p></div>
 								<div class="status"><p></p></div>
 							</div>
-							<div id="cards" style="top: -68px; right: -32px; position: absolute;">
+							<div id="table-player-cards" style="top: -68px; right: -32px; position: absolute;">
 								<img src="/cards/purple_back_pair.png" style="transform: rotateZ(45deg);">
 							</div>
 						</div>
@@ -113,7 +113,7 @@
 								<div class="chips"><p></p></div>
 								<div class="status"><p></p></div>
 							</div>
-							<div id="cards" style="top: 0px; right: -77px; position: absolute;">
+							<div id="table-player-cards" style="top: 0px; right: -77px; position: absolute;">
 								<img src="/cards/purple_back_pair.png" style="transform: rotateZ(90deg);">
 							</div>
 						</div>
@@ -125,7 +125,7 @@
 								<div class="chips"><p></p></div>
 								<div class="status"><p></p></div>
 							</div>
-							<div id="cards" style="top: 67px; right: -60px; position: absolute;">
+							<div id="table-player-cards" style="top: 67px; right: -60px; position: absolute;">
 								<img src="/cards/purple_back_pair.png" style="transform: rotateZ(130deg);">
 							</div>
 						</div>
@@ -153,22 +153,36 @@
 					</div>
 				</div>
 				<div class="sidebar" id="right-sidebar"><a>Card Ranking</a>
-				    <div id="card-evaluation" style="text-align: left;">
-			        <p>
-				    	</p>
-				    </div>
+			    <div id="card-evaluation" style="text-align: left;">
+		        <p>
+			    	</p>
+			    </div>
+					<div id='strength-meter-container'>
+						<div id="strength-meter">
+							<a style="color: black;">Card Strength Meter</a>
+							<div id="background"></div>
+						</div>
+					</div>
+					<div id="poker-hands">
+						<div class="button" id="poker-hands-button">Poker Hands</div>
+						<div id="modal-popup" class="modal">
+						  <span class="close">&times;</span>
+						  <img class="modal-content" id="poker-hands-image" src="images/poker-hand-rankings.png">
+						  <div id="caption">Credit: <a href="https://www.cardschat.com/poker-hands.php" target="_blank">Cardschat.com</a></div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="footer wrapper">
 				<div id="controls-container">
 					<div id="controls">
-						<div class="control-button"><button id="Check">Check</button></div>
-						<div class="control-button"><button id="Call">Call</button></div>
-						<div class="control-button">
-							Amount: <input id="RaiseAmount" type="number" name="amount" max="" min="10" step="5" value="10" style="width: 50px;"> <!-- Max = value of chips -->
-							<button id="Raise" value="Raise">Raise</button>
+						<div class="control-button inactive"><div id="Check">Check</div></div>
+						<div class="control-button inactive"><div id="Call">Call</div></div>
+						<div class="control-button inactive">
+							<div id="Raise" value="Raise">Raise</div>
+							<input id="RaiseAmount" type="number" name="amount" min="10" max="100" step="5" value="10" style="width: 50px;"> <!-- Max = value of chips -->
 						</div>
-						<div class="control-button"><button id="Fold">Fold</button></div>
+						<div class="control-button inactive"><div id="Fold">Fold</div></div>
 					</div>
 				</div>
 			</div>

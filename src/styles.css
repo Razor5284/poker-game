@@ -53,13 +53,14 @@ body .container {
   padding-top: 10px;
 }
 
+/* All parts of the main table and area, including player seats, cards, etc. */
 .main {
   display: flex;
   padding-bottom: 100px;
 }
-
 .content {
   width: 800px;
+  min-width: 800px;
   min-height: 400px;
   max-height: 400px;
   background-image: url("images/table.png");
@@ -77,129 +78,211 @@ body .container {
 .content .content-inner .player {
   position: absolute;
   width: 110px;
+  border: #e2e2e2 ridge;
+  border-width: 1px;
+  border-radius: 5px;
 }
 .content .content-inner .player img {
   width: 45px;
   float: left;
 }
-
 .content .content-inner .tablecard img {
   width: 45px;
   float: left;
   visibility: hidden;
 }
-
-.footer {
-  width: 800px;
-  background-color: #8d0301;
-  border-radius: 16px;
-}
-
-.sidebar {
-  width: 360px;
-  text-align: center;
-}
-
-#left-sidebar {
-  border: white ridge;
-  border-width: 3px 3px 3px 0px;
-  border-radius: 0px 7px 7px 0px;
-}
-
-#right-sidebar {
-  border: white ridge;
-  border-width: 3px 0px 3px 3px;
-  border-radius: 7px 0px 0px 7px;
-}
-
-#card-evaluation {
-  text-align: left;
-}
-
 #seat0 {
   top: 2px;
   left: 637px;
   width: 210px;
 }
-
 #seat1 {
   top: 160px;
   left: 710px;
   width: 210px;
 }
-
 #seat2 {
   top: 310px;
   left: 635px;
+  border: #0071a5 ridge;
+  border-width: 3px;
 }
-
 #seat3 {
   top: 320px;
   left: 425px;
 }
-
 #seat4 {
   top: 320px;
   left: 280px;
 }
-
 #seat5 {
   top: 310px;
   left: 78px;
 }
-
 #seat6 {
   top: 160px;
   left: -116px;
   width: 210px;
 }
-
 #seat7 {
   top: 7px;
   left: -51px;
   width: 210px;
 }
-
 #pot {
   top: 125px;
   left: 350px;
   position: absolute;
 }
-
 #board {
   top: 60px;
   left: 285px;
   position: absolute;
   width: 225px;
 }
-
 #carddeck {
   top: -8px;
   left: 346px;
   position: absolute;
 }
-
 #carddeck img {
   width: 100px;
   height: 88px;
 }
 
+/* Shows the active player */
+.active {
+  border: #e00000 ridge !important;
+}
+
+.footer {
+  width: 800px;
+  background-color: #8d0301;
+  border-radius: 16px;
+  display: flex;
+  position: sticky;
+  bottom: 0;
+  justify-content: center;
+}
+
+/* Sidebars and content */
+.sidebar {
+  width: 360px;
+  text-align: center;
+  height: fit-content;
+}
+#left-sidebar {
+  border: white ridge;
+  border-width: 3px 3px 3px 0px;
+  border-radius: 0px 7px 7px 0px;
+}
+#right-sidebar {
+  border: white ridge;
+  border-width: 3px 0px 3px 3px;
+  border-radius: 7px 0px 0px 7px;
+}
+#card-evaluation {
+  text-align: left;
+}
+
+/* Poker Hands popup / modal */
+#poker-hands {
+  border-radius: 5px;
+  margin-top: 4px;
+  transition: 0.3s;
+}
+.modal {
+  display: none;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.8);
+}
+.modal-content {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 75%;
+}
+#caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+}
+.modal-content, #caption {
+  -webkit-animation-name: zoom;
+  -webkit-animation-duration: 0.6s;
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+div#poker-hands-button {
+    position: inherit;
+    display: block;
+}
+@-webkit-keyframes zoom {
+  from {-webkit-transform:scale(0)}
+  to {-webkit-transform:scale(1)}
+}
+@keyframes zoom {
+  from {transform:scale(0)}
+  to {transform:scale(1)}
+}
+.close {
+  position: relative;
+  right: -40%;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+.close:hover, .close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+@media only screen and (max-width: 700px){
+  .modal-content {
+    width: 100%;
+  }
+}
+
+/* Changes players brightness when folded */
 .folded {
   filter: brightness(0.5);
 }
 
+/* User controls & buttons */
 #controls {
   display: flex;
   place-content: center;
   padding-bottom: 25px;
 }
-
 .control-button {
-  padding-right: 5px;
-  line-height: 0px;
+  padding-right: 13px;
+  padding-left: 13px;
+  transition: all 0.3s ease;
+  background-color: #FFC145;
+  height: 25px;
+  width: 70px;
+  border-radius: 72px;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.07);
+  cursor: pointer;
+  text-align: center;
+  line-height: 24px;
+  color: #f7f7f7;
+  display: block;
+}
+.inactive {
+  cursor: default;
+  background-color: #d0cbc2;
+}
+.inactive input {
+  visibility: hidden;
 }
 
-/* Menu popup*/
+/* Menu popup and button */
 .menu-container {
   display: flex;
   width: 100%;
@@ -207,7 +290,6 @@ body .container {
   justify-content: center;
   align-items: center;
 }
-
 .menu-button {
   transition: all 0.3s ease;
   background-color: #FFC145;
@@ -259,16 +341,15 @@ body .container {
 .menu-button .cancel span:hover {
   text-decoration: underline;
 }
-
 .menu-button:hover {
   background-color: #e0aa3d;
 }
-
 .menu-button.open:hover {
   background-color: #fff;
 }
 
-.submit-button {
+/* All buttons */
+.button {
   display: block;
   background-color: #3498DB;
   height: 40px;
@@ -283,16 +364,17 @@ body .container {
   padding: 0 34px;
   margin: 0 auto;
 }
-.submit-button img {
+.button img {
   position: relative;
   top: 3px;
   right: 6px;
 }
-.submit-button:hover {
+.button:hover {
   background-color: #217dbb;
   cursor: pointer;
 }
 
+/* End game button */
 .end-button {
   display: block;
   background-color: #3498DB;
@@ -307,23 +389,21 @@ body .container {
   font-weight: 700;
   padding: 0 34px;
 }
-
 .end-button:hover {
   background-color: #217dbb;
   cursor: pointer;
 }
 
+/* Play button form */
 form * {
   outline: none;
 }
-
 .menu-container label {
   display: block;
   font-size: 14px;
   font-weight: bold;
   user-select: none;
 }
-
 .form--field {
   width: 420px;
   margin: 10px 0;
@@ -333,7 +413,6 @@ form * {
   width: 120px;
   color: black;
 }
-
 .form--price {
   position: absolute;
   line-height: 38px;
@@ -344,7 +423,6 @@ form * {
 .form--price + input {
   padding-left: 14px;
 }
-
 .form--container {
   width: 420px;
 }
@@ -354,7 +432,6 @@ form * {
   justify-content: space-between;
   margin-bottom: -12px;
 }
-
 .form--element {
   background-color: #fff;
   border: 1px solid #ECECEC;
@@ -378,4 +455,67 @@ form * {
 .form--element.textarea {
   height: 80px;
   resize: none;
+}
+
+/* Strength Meter */
+#strength-meter-container {
+  background: gainsboro;
+  height: 2.5em;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.2em;
+  position: relative;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  border-radius: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.75) inset, 0 0 4px 0 rgba(0, 0, 0, 0.5);
+}
+#strength-meter-container #strength-meter {
+  background: #000;
+  width: 100%;
+  height: 100%;
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset, 0 0 1px 3px rgba(255, 255, 255, 0.75) inset;
+  background: transparent;
+}
+#strength-meter-container #strength-meter:before {
+  border-radius: 50px;
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3) inset, 0 0 5px 2px rgba(255, 255, 255, 0.8) inset;
+  background: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+}
+#strength-meter-container #strength-meter:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 2px;
+  width: 96%;
+  left: 50%;
+  margin-left: -48%;
+  border-radius: 20px;
+  height: 10px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 30%, transparent 120%);
+}
+#strength-meter-container #strength-meter #background {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(-90deg, #06e221, yellow, red);
+  -webkit-clip-path: inset(0 100% 0 0);
+  clip-path: inset(0 100% 0 0);
+  transition: all 3s;
+  -webkit-transition: all 3s;
 }
