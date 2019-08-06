@@ -305,7 +305,7 @@ async function simulateRounds() {
         }
       }
       theGame.subRound ++;
-      console.log("          theGame.subround: =========================" + theGame.subRound);
+      console.log("     theGame.subround: ============" + theGame.subRound);
     } else {
       theGame.subRound = 0;
       theGame.didSomeoneRaise = false;
@@ -316,23 +316,23 @@ async function simulateRounds() {
   }
   theGame.subRoundStatus = "active"
   theGame.incrementRound();
-  console.log("              Round ========================" + theGame.round)
+  console.log("     Round =============================" + theGame.round)
 
   if (theGame.round == 1) {
     theGame.dealFlopCards()
-    console.log(theGame.cards)
+    console.log(theGame)
     await timeout(2000)
     simulateRounds()
     evaluatePlayerCards()
   } else if (theGame.round == 2) {
     theGame.dealTurnCard()
-    console.log(theGame.cards)
+    console.log(theGame)
     await timeout(1000)
     simulateRounds()
     evaluatePlayerCards()
   } else if (theGame.round == 3) {
     theGame.dealRiverCard()
-    console.log(theGame.cards)
+    console.log(theGame)
     await timeout(1000)
     simulateRounds()
     evaluatePlayerCards()
@@ -567,25 +567,35 @@ function evaluatePlayerCards() {
     $("#card-evaluation").children("p").text("Combined with the cards on the table, you have " + name + ". ");
     if (name == 'A Pair') {
       $("#card-evaluation").children("p").append("<p>With a pair, there is a low chance of you having a winning hand. The higher the pair is, the stronger the chance of winning (e.g. a pair of Jacks vs a pair of 2s).</p><p>If you have a pair with the table, and someone else also has this pair, whoever has the highest other card in their hand wins (e.g. both players have a pair of Kings, one has a 3, and the other has a 5, the player with a 5 wins), otherwise the pot is split between the winners.</p>");
+      $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 85% 0 0)");
     } else if (name == 'Two Pairs') {
       $("#card-evaluation").children("p").append("<p>With two pairs, you have a higher chance of winning than a single pair, but is still a very low chance. Like a pair, the higher each pair is, the stronger the chance of winning (e.g. a pair of Jacks vs a pair of 2s).</p><p>If in the small chance someone else also has two pairs, the player with the highest cards wins, or if both pairs are the same, the winners split the pot.</p>");
+      $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 75% 0 0)");
     } else if (name == 'Three of a Kind') {
       $("#card-evaluation").children("p").append("<p>You have a moderate hand. A three of a kind is stronger than a pair.</p><p>It is worth noting that the higher your three-of-a-kind hand is, the more likely you are to win.</p><p>If there is a pair on the table, bear in mind someone else could have a three of a kind too, and whoever has the highest other card in their hand will win the pot.</p>");
+      $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 60% 0 0)");
     } else if (name == 'Four of a Kind') {
       $("#card-evaluation").children("p").append("<p>You have a very strong hand, which you are very likely to win with.</p><p>A four of a kind is the third strongest hand. Another player can only beat your hand if they also have a four of a kind (with other, higher cards), if they have a straight flush, or a royal flush.</p><p>Based off other player's actions, you could raise here to yeild more of a winning, or you could check/call dependant on how confident you are you have the winning hand.</p>");
+      $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 15% 0 0)");
     } else if (name == 'A Straight') {
       $("#card-evaluation").children("p").append("<p>You have an OK hand. A straight is when all cards follow on numerically from each other, e.g. 4, 5, 6, 7, 8, or 9, 10, J, Q, K.</p><p>A straight is stronger than three of a kind and two pair, but bear in mind, others can also have a straight.</p>");
+      $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 50% 0 0)");
     } else if (name == 'A High Card') {
       $("#card-evaluation").children("p").append("<p>You have the worst hand possible. You should not raise or call others' raises unless you are planning on bluffing.</p><p>If someone else calls your bluff, and also has only a high card, whoever has the highest cards wins, the highest single card being an Ace.</p>");
+      $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 95% 0 0)");
     } else if (name == 'A Flush') {
       $("#card-evaluation").children("p").append("<p>You have a good hand. A flush is stronger than a straight.</p><p>A flush is where all cards are the same suit.</p><p>Another player can also have a flush, and whoever has the highest cards in their hand to make up the flush wins.</p>");
+      $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 40% 0 0)");
     } else if (name == 'A Full House') {
       $("#card-evaluation").children("p").append("<p>You have a great hand. A full house is stronger than a flush.</p><p>A full house is a combination of three of a kind and a pair. E.g. Three Aces and Two Sixes.</p><p>If there is a three of a kind on the table, it is possible another player could have a pair, which could be stronger than yours.</p>");
+      $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 25% 0 0)");
     } else if (name == 'A Straight Flush' && !(board.includes('A') && board.includes('J') && board.includes('Q') && board.includes('K') && board.includes('T'))) {
       $("#card-evaluation").children("p").append("<p>You have an extremely strong hand. A straight flush is the second strongest hand in the game.</p><p>You could raise in this situation to increase your potential profit.</p>");
+      $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 5% 0 0)");
     } else if (name == 'A Straight Flush' && (board.includes('A') && board.includes('J') && board.includes('Q') && board.includes('K') && board.includes('T'))) {
       $("#card-evaluation").children("p").text("With the cards on the table, you have a Royal Flush!");
       $("#card-evaluation").children("p").append("<p>You have the strongest hand in the game, play as you please!</p><p>You should probably raise to increase your possible winnings.</p><p>Bear in mind, playing too aggressively may cause other players to fold too early.</p>");
+      $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 100% 0 0)");
     }
   } else {
     $("#card-evaluation").children("p").text("Combined with the cards on the table, you had " + name + ". ");

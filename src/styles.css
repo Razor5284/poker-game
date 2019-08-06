@@ -203,6 +203,7 @@ body .container {
 /* Poker Hands popup modal */
 #poker-hands {
   border-radius: 5px;
+  margin-top: 4px;
   transition: 0.3s;
 }
 .modal {
@@ -469,4 +470,67 @@ form * {
 .form--element.textarea {
   height: 80px;
   resize: none;
+}
+
+/* Progress bar */
+#strength-meter-container {
+  background: gainsboro;
+  height: 2.5em;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.2em;
+  position: relative;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  border-radius: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.75) inset, 0 0 4px 0 rgba(0, 0, 0, 0.5);
+}
+#strength-meter-container #strength-meter {
+  background: #000;
+  width: 100%;
+  height: 100%;
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset, 0 0 1px 3px rgba(255, 255, 255, 0.75) inset;
+  background: transparent;
+}
+#strength-meter-container #strength-meter:before {
+  border-radius: 50px;
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3) inset, 0 0 5px 2px rgba(255, 255, 255, 0.8) inset;
+  background: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+}
+#strength-meter-container #strength-meter:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 2px;
+  width: 96%;
+  left: 50%;
+  margin-left: -48%;
+  border-radius: 20px;
+  height: 10px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 30%, transparent 120%);
+}
+#strength-meter-container #strength-meter #background {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(-90deg, #06e221, yellow, red);
+  -webkit-clip-path: inset(0 100% 0 0);
+  clip-path: inset(0 100% 0 0);
+  transition: all 3s;
+  -webkit-transition: all 3s;
 }
