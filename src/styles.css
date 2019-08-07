@@ -150,9 +150,12 @@ body .container {
   height: 88px;
 }
 
-/* Shows the active player */
+/* Shows the active player and winner */
 .active {
   border: #e00000 ridge !important;
+}
+.winner {
+  border: #FBDB0F ridge 4px !important;
 }
 
 .footer {

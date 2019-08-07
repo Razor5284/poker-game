@@ -24,6 +24,7 @@ class Game {
     this.raiseAmount = 0;
     this.subRound = 0;
     this.subRoundStatus = "active";
+    this.winner = 0;
   }
 
   // Returns player count
@@ -113,19 +114,19 @@ class Game {
   async dealFlopCards() {
     for (let i = 0; i < 3; i++) {
       this.dealCardToTable(this.cardList, this.cards);
-      $("#board").children(".tablecard:nth-of-type("+[i+1]+")").children("img").attr("src", "/cards/" + this.cards[i] + ".png").attr("alt", theGame.cards[i]).css("visibility", "visible");
+      $("#board").children(".tablecard:nth-of-type("+[i+1]+")").children("img").attr("src", "/cards/" + this.cards[i].toUpperCase() + ".png").attr("alt", theGame.cards[i]).css("visibility", "visible");
       await timeout(500)
     }
   }
 
   dealTurnCard() {
     this.dealCardToTable(this.cardList, this.cards);
-    $("#board").children(".tablecard:nth-of-type(4)").children("img").attr("src", "/cards/" + this.cards[3] + ".png").attr("alt", theGame.cards[3]).css("visibility", "visible");
+    $("#board").children(".tablecard:nth-of-type(4)").children("img").attr("src", "/cards/" + this.cards[3].toUpperCase() + ".png").attr("alt", theGame.cards[3]).css("visibility", "visible");
   }
 
   dealRiverCard() {
     this.dealCardToTable(this.cardList, this.cards);
-    $("#board").children(".tablecard:nth-of-type(5)").children("img").attr("src", "/cards/" + this.cards[4] + ".png").attr("alt", theGame.cards[4]).css("visibility", "visible");
+    $("#board").children(".tablecard:nth-of-type(5)").children("img").attr("src", "/cards/" + this.cards[4].toUpperCase() + ".png").attr("alt", theGame.cards[4]).css("visibility", "visible");
   }
 
   removeAllPlayerCards() {
@@ -234,7 +235,7 @@ class Game {
 }
 
 var theGame;
-function newGame(playerCount, initialChips, playerName) {
+async function newGame(playerCount, initialChips, playerName) {
   let game = new Game(playerCount, initialChips);
   for (var i = 0; i < playerCount; i++) {
     if (i === 2) {
@@ -243,19 +244,24 @@ function newGame(playerCount, initialChips, playerName) {
       game.addPlayer(new Player(i, "Player " + i, initialChips, game));
     }
   }
-
   theGame = game;
-  theGame.dealCards();
 
-  for (let player of game.playerList) {
-    updateDisplay(player);
-    if (player.isHuman) {
-      spawnCards(player.cards, "seat" + (player.IDNumber).toString(), "card");
+
+  // while (!checkFinalWinner()) {
+    theGame.dealCards();
+    for (let player of theGame.playerList) {
+      updateDisplay(player);
+      if (player.isHuman) {
+        spawnCards(player.cards, "seat" + (player.IDNumber).toString(), "card");
+      }
     }
-  }
 
-  simulateRounds();
-  playerDisplay();
+    simulateRounds();
+    playerDisplay();
+    // await timeout(5000);
+    console.log("done")
+  // }
+
 }
 
 // Use muted Code for training round to show all cards
@@ -279,7 +285,6 @@ function spawnCards(tempList, idString, classString) {
 }
 
 async function simulateRounds() {
-  // async function waits for response from user to continue (doesn't yet)
   for (let i = 0; i < 2; i++) {
     if (theGame.subRound == 0 || (theGame.subRound == 1 && theGame.didSomeoneRaise == true)) {
       for (let player of theGame.playerList) {
@@ -645,8 +650,14 @@ function evaluateWinner() { // don't forget about the royal flush if someone has
   console.log(winner)
   if (winner.length == 1) {
     let winnerName = theGame.playerList[winner[0][0]].name
-    $("#right-sidebar").children("a").text("Winner")
-    $("#card-evaluation").text("The winner is " + winnerName + ", who won with " + winner[0][2] + " and a score of " + winner[0][1]);
+    theGame.winner = theGame.playerList[winner[0][0]]
+    $("#seat" + winner[0][0]).toggleClass("winner");
+    $("#right-sidebar").children("a").text("Winner");
+    $("#card-evaluation").text("The winner is " + theGame.winner.name + ", who won with " + winner[0][2] + " and a score of " + winner[0][1]);
+    theGame.winner.addChips(theGame.pot);
+    theGame.resetPot();
+    console.log(theGame)
+    updateDisplay(theGame.winner);
   } else {
     // If there are multiple winners
     $("#right-sidebar").children("a").text("Winner")
@@ -656,17 +667,25 @@ function evaluateWinner() { // don't forget about the royal flush if someone has
       $("#card-evaluation").append(winnerName + ", ");
     }
     $("#card-evaluation").append("who won with " + winner[0][2] + " and a score of " + winner[0][1]);
+    //split pot between equally
+    theGame.resetPot();
+    updateDisplay(theGame.winner);
   }
-
-  // show winner using JS
+  checkFinalWinner(theGame.winner);
   // JS user storage to increase win count, win %, games played, overall profit etc
-  // console.log(theGame.playerList.sort((a,b)=>{return rankBoard(a)<rankBoard(b)}))
 }
 
-// TODO: Add rank strength function which displays a meter/bar
-// function rankStrength() {
-//
-// }
+function checkFinalWinner() {
+  for (let player of theGame.playerList) {
+    if (player.chips = 0 && player != theGame.winner) {
+      return true
+    }
+    else {
+      return false
+    }
+  }
+}
+
 
 $(document).ready(function() {
   // JQuery scripts for buttons on menu popup
