@@ -4,9 +4,11 @@ A single player web-based poker game
 
 
 ## Instructions
-Install node using 'npm install' via powershell in the root folder.
+Ensure node is installed.
 
-Then do 'npm install -g webpack-dev-server'
+Do 'npm install'
+
+Then do 'npm install -g webpack-dev-server' in command line.
 
 Then 'npm install phe'
 
