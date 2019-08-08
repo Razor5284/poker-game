@@ -25,6 +25,7 @@ class Game {
     this.subRound = 0;
     this.subRoundStatus = "active";
     this.winner = 0;
+    this.didSomeoneRaise = false;
   }
 
   // Returns player count
@@ -132,6 +133,7 @@ class Game {
   removeAllPlayerCards() {
     for (let player of this.playerList) {
       player.cards = [];
+      updateDisplay(player);
     }
   }
 
@@ -206,9 +208,13 @@ class Game {
 
   playerCall() {
     if (!this.humanPlayer.Call(theGame.raiseAmount)) {
-      return alert("You cannot call this bet, you need more chips.")
+      alert("You cannot call this bet, you need more chips.")
+      return false;
     }
-    theGame.advanceTurn();
+    else {
+      theGame.advanceTurn();
+      return true;
+    }
   }
 
   playerFold() {
@@ -217,21 +223,29 @@ class Game {
   }
 
   playerRaise(amount) {
+    let oldRaise = theGame.raiseAmount;
     let newAmount = amount + theGame.raiseAmount;
-    // console.log(theGame.raiseAmount)
+    console.log(theGame.raiseAmount)
     theGame.raiseAmount = newAmount
-    // console.log(theGame.raiseAmount)
+    console.log("New raiseamount " + theGame.raiseAmount)
     if (!this.humanPlayer.Raise(newAmount)) {
-      return alert("You cannot raise now, you need more chips.")
+      theGame.raiseAmount = oldRaise;
+      alert("You cannot raise now, you need more chips.")
+      return false;
     } else {
       theGame.advanceTurn();
+      return true;
     }
   }
 
   playerCheck() {
-    this.humanPlayer.Check();
-    theGame.advanceTurn();
+    if (!theGame.didSomeoneRaise) {
+      this.humanPlayer.Check();
+      theGame.advanceTurn();
+    }
   }
+
+
 }
 
 var theGame;
@@ -245,23 +259,30 @@ async function newGame(playerCount, initialChips, playerName) {
     }
   }
   theGame = game;
-
-
-  // while (!checkFinalWinner()) {
-    theGame.dealCards();
-    for (let player of theGame.playerList) {
-      updateDisplay(player);
-      if (player.isHuman) {
-        spawnCards(player.cards, "seat" + (player.IDNumber).toString(), "card");
+  theGame.dealCards();
+  // do {
+      for (let player of theGame.playerList) {
+        updateDisplay(player);
+        if (player.isHuman) {
+          spawnCards(player.cards, "seat" + (player.ID).toString(), "card");
+        }
       }
-    }
+      playerDisplay();
+      await simulateRounds();
+  // } while (!checkFinalWinner())
+}
 
-    simulateRounds();
-    playerDisplay();
-    // await timeout(5000);
-    console.log("done")
-  // }
-
+function freshGame() {
+  theGame.round = 0;
+  theGame.turn = 0;
+  theGame.pot = 0;
+  theGame.cards = [];
+  theGame.playerTurn = [];
+  theGame.raiseAmount = 0;
+  theGame.subRound = 0;
+  theGame.subRoundStatus = "active";
+  updateDisplay("reset");
+  theGame.dealCards();
 }
 
 // Use muted Code for training round to show all cards
@@ -286,9 +307,9 @@ function spawnCards(tempList, idString, classString) {
 
 async function simulateRounds() {
   for (let i = 0; i < 2; i++) {
-    if (theGame.subRound == 0 || (theGame.subRound == 1 && theGame.didSomeoneRaise == true)) {
+    if (theGame.subRound == 0 || (theGame.subRound == 1 && theGame.didSomeoneRaise)) {
       for (let player of theGame.playerList) {
-        if (!player.isHuman && player.status != "folded") {
+        if (!player.isHuman && player.status != "folded" && player.status != "out") {
           player.isTurn = true; //check if there's any use in this
           $("#seat" + player.ID).toggleClass("active");
           await timeout(getRandomInt(500, 500)) // change this back to 5000 or 8000 (ms)
@@ -297,7 +318,13 @@ async function simulateRounds() {
           player.isTurn = false;
           $("#seat" + player.ID).toggleClass("active");
         }
-        else if (player.isHuman && player.status != "folded") {
+        else if (player.isHuman && player.status != "folded" && player.status != "out") {
+          if (theGame.didSomeoneRaise) {
+            $('.control-button:nth-of-type(1)').css("visibility", "hidden");
+            $('#RaiseAmount').attr("max", theGame.raiseAmount);
+          } else {
+            $('.control-button:nth-of-type(1)').css("visibility", "visible");
+          }
           player.isTurn = true;
           $("#seat" + player.ID).toggleClass("active");
           $("#controls").children(".control-button").toggleClass("inactive");
@@ -315,11 +342,11 @@ async function simulateRounds() {
       theGame.subRound = 0;
       theGame.didSomeoneRaise = false;
       resetRaises();
-      theGame.raiseAmount = 0;
       theGame.subRoundStatus = "active"
     }
   }
   theGame.subRoundStatus = "active"
+  theGame.didSomeoneRaise = false;
   theGame.incrementRound();
   console.log("     Round =============================" + theGame.round)
 
@@ -343,6 +370,7 @@ async function simulateRounds() {
     evaluatePlayerCards()
   } else if (theGame.round == 4) {
     evaluateWinner()
+    return new Promise(resolve => { resolve();});
   }
 }
 
@@ -354,7 +382,7 @@ function simulateBetting(player) {
       case "matched":
       break;
       case "raised":
-        theGame.didSomeoneRaise = true;
+        theGame.didSomeoneRaise = player;
       break;
     }
   }
@@ -364,23 +392,49 @@ function simulateBetting(player) {
 function simulatePlayer(player) {
   let raisedSomeoneElsesBet = false;
   let someoneRaised = false;
+  let otherPlayer = theGame.didSomeoneRaise;
 
   if (theGame.subRound == 0) {
-    for (let otherPlayer of theGame.playerList) {
-      if (otherPlayer.status == "raised" && otherPlayer != player) {
-          someoneRaised = otherPlayer;
-          break;
+    // for (let otherPlayer of theGame.playerList) {
+      if (otherPlayer) {
+        if (otherPlayer.status == "raised" && otherPlayer != player) {
+            someoneRaised = otherPlayer;
+            // break;
+        }
       }
-    } doRandomPlayerAction(player, someoneRaised);
+    // }
+    doRandomPlayerAction(player, someoneRaised);
+  } else if (theGame.subRound == 2) {
+    switch (getRandomInt(0,3)) {
+      case 0:
+      case 1:
+      case 2:
+        //check or fold if not able to call
+        if (!otherPlayer) {
+          return player.Check();
+        } else if (!player.Call(theGame.raiseAmount)) {
+          return player.Fold();
+        }
+        break;
+      case 3:
+        if (!otherPlayer) {
+          return player.Check();
+        } else {
+          player.Fold();
+        }
+    }
   } else {
-    for (let otherPlayer of theGame.playerList) {
+    // for (let otherPlayer of theGame.playerList) {
+    if (otherPlayer) {
       if (otherPlayer.status == "raised" && otherPlayer != player) {
         someoneRaised = otherPlayer;
-        break;
+        // break;
       } else if (otherPlayer.status != "raised" && otherPlayer != player) {
         someoneRaised = false;
       }
-    } doSubRoundPlayerAction(player, someoneRaised);
+    }
+    // }
+    doSubRoundPlayerAction(player, someoneRaised);
   }
 
   // for (let otherPlayer of theGame.playerList) {
@@ -431,18 +485,19 @@ function doRandomPlayerAction(player, otherPlayer) {
     case 4:
     case 5:
       //raise
+      console.log("In Raise: player"+player.ID)
       let oldRaise = theGame.raiseAmount;
-      // console.log("In normal: oldraise: "+ oldRaise)
+      console.log("In normal: oldraise: "+ oldRaise)
       let newRaise = getRandomInt(Math.round(player.chips * 0.02), (theGame.initialChips - oldRaise - 1))
-      // console.log("newraise: " + newRaise)
+      console.log("newraise: " + newRaise)
       newRaise += oldRaise
-      // console.log("thegame.raise: "+ newRaise)
+      console.log("thegame.raise: "+ newRaise)
       theGame.raiseAmount = newRaise
-      if ( !player.Raise (theGame.raiseAmount)
-      ) {
+      if (!player.Raise(theGame.raiseAmount)) {
+        theGame.raiseAmount = oldRaise;
         return doRandomPlayerAction(player, otherPlayer);
       }
-    break;
+      break;
   }
 }
 
@@ -462,17 +517,7 @@ function doSubRoundPlayerAction(player, otherPlayer) {
         break;
       case 4:
       case 5:
-        //raise
-        let oldRaise = theGame.raiseAmount; // player1 has raised 50 & player2 called. means 50 left.
-        let newRaise = getRandomInt(Math.round(player.chips * 0.05), (theGame.initialChips - oldRaise)) // 0
-        newRaise += oldRaise
-         // console.log("in case raise " + newRaise + " += " + oldRaise)
-        theGame.raiseAmount = newRaise
-         // console.log("case raiseAmount " + theGame.raiseAmount)
-        if ( !player.Raise (theGame.raiseAmount)
-        ) {
-          return doSubRoundPlayerAction(player, otherPlayer);
-        }
+        player.Fold();
       break;
     }
   }
@@ -545,12 +590,14 @@ function playerFinished() {
       resolve();
     });
     $("#Call").click(function() {
-      theGame.playerCall();
-      resolve();
+      if (theGame.playerCall()) {
+        resolve();
+      }
     });
     $("#Raise").click(function() {
-      theGame.playerRaise(parseInt($('#RaiseAmount').val()));
-      resolve();
+      if (theGame.playerRaise(parseInt($('#RaiseAmount').val()))) {
+        resolve();
+      }
     });
     $("#Fold").click(function() {
       theGame.playerFold();
@@ -564,7 +611,7 @@ function timeout(ms) {
 }
 
 function evaluatePlayerCards() {
-  console.log(theGame.cards.join(" ").toString() +" "+ theGame.humanPlayer.cards[0] +" "+ theGame.humanPlayer.cards[1])
+  // console.log(theGame.cards.join(" ").toString() +" "+ theGame.humanPlayer.cards[0] +" "+ theGame.humanPlayer.cards[1])
   const board = theGame.cards.join(" ") +" "+ theGame.humanPlayer.cards[0] +" "+ theGame.humanPlayer.cards[1]
   const rank = rankBoard(board)
   const name = rankDescription[rank]
@@ -633,7 +680,7 @@ function evaluateWinner() { // don't forget about the royal flush if someone has
   var ranks = []
   for (let player of theGame.playerList) {
     if (player.status != "folded") {
-      spawnCards(player.cards, "seat" + (player.IDNumber).toString(), "card");
+      spawnCards(player.cards, "seat" + (player.ID).toString(), "card");
       let boards = theGame.cards
       let newboards = boards.concat(player.cards)
       let rank = evaluateCards(newboards)
@@ -644,10 +691,10 @@ function evaluateWinner() { // don't forget about the royal flush if someone has
       ranks.push([player.ID, player.cardRank, player.cardEval]);
     }
   }
-  console.log(ranks)
+  // console.log(ranks)
   var winner = []
   winner.push(ranks.reduce((lowest, current) => current[1] < lowest[1] ? current : lowest));
-  console.log(winner)
+  // console.log(winner)
   if (winner.length == 1) {
     let winnerName = theGame.playerList[winner[0][0]].name
     theGame.winner = theGame.playerList[winner[0][0]]
@@ -671,21 +718,43 @@ function evaluateWinner() { // don't forget about the royal flush if someone has
     theGame.resetPot();
     updateDisplay(theGame.winner);
   }
-  checkFinalWinner(theGame.winner);
+  checkFinalWinner();
   // JS user storage to increase win count, win %, games played, overall profit etc
 }
 
-function checkFinalWinner() {
-  for (let player of theGame.playerList) {
-    if (player.chips = 0 && player != theGame.winner) {
-      return true
-    }
-    else {
-      return false
-    }
-  }
-}
+// function checkFinalWinner() {
+//   for (let player of theGame.playerList) {
+//     if (player.chips == 0 && player != theGame.winner) {
+//       player.status = "out"
+//     }
+//   }
+//
+//   let count = 0;
+//   for (let player of theGame.playerList) {
+//     if (player.status == "out") {
+//       count ++
+//     }
+//   }
+//   if (count == (theGame.playerList.length - 1)) {
+//     return true;
+//   }
+//   if (player.status == "out" && player != theGame.winner) {
+//     return true
+//   }
+//   return false
+// }
 
+async function checkFinalWinner() {
+    for (let player of theGame.playerList) {
+      if (player.chips == 0 && player != theGame.winner)
+          player.status = "out"
+    }
+    let count = 0;
+    theGame.playerList.filter(player => {
+        (player.status == 'out' && player != theGame.winner) ? count++ : null
+    })
+    return (count == (theGame.playerList.length - 1)) ? true : false; // await timeout(5000); freshGame(); false;
+}
 
 $(document).ready(function() {
   // JQuery scripts for buttons on menu popup
@@ -731,6 +800,16 @@ $(document).ready(function() {
 
   $("#endgame").click(_ => {
     theGame = 0;
+    this.playerList = [];
+    this.round = 0;
+    this.turn = 0;
+    this.pot = 0;
+    this.cards = [];
+    this.humanPlayer;
+    this.playerTurn = [];
+    this.raiseAmount = 0;
+    this.subRound = 0;
+    this.subRoundStatus = "active";
     updateDisplay("reset");
   });
 
