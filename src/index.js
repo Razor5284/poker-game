@@ -231,6 +231,7 @@ class Game {
       theGame.raiseAmount = newRaise
       console.log("New raiseamount " + theGame.raiseAmount)
       console.log(this.humanPlayer)
+
       if (!this.humanPlayer.Raise(amount)) {
         theGame.raiseAmount = oldRaise;
         alert("You cannot raise now, you need more chips.")
@@ -262,7 +263,7 @@ class Game {
   }
 
   playerCheck() {
-    if (!theGame.didSomeoneRaise) {
+    if (!theGame.didSomeoneRaise && this.humanPlayer.bet == theGame.raiseAmount) {
       this.humanPlayer.Check();
       theGame.advanceTurn();
     }
@@ -342,7 +343,7 @@ async function simulateRounds() {
           $("#seat" + player.ID).toggleClass("active");
         }
         else if (player.isHuman && player.status != "folded" && player.status != "out") {
-          if (theGame.didSomeoneRaise) {
+          if (theGame.didSomeoneRaise && theGame.didSomeoneRaise != player) {
             $('.control-button:nth-of-type(1)').css("visibility", "hidden");
             $('#RaiseAmount').attr("max", theGame.raiseAmount);
           } else {
@@ -439,14 +440,14 @@ function simulatePlayer(player) {
       case 1:
       case 2:
         //check or fold if not able to call
-        if (!otherPlayer) {
+        if (!otherPlayer && player.bet == theGame.raiseAmount) {
           return player.Check();
         } else if (!player.Call(theGame.raiseAmount)) {
           return player.Fold();
         }
         break;
       case 3:
-        if (!otherPlayer) {
+        if (!otherPlayer && player.bet == theGame.raiseAmount) {
           return player.Check();
         } else {
           player.Fold();
@@ -505,7 +506,7 @@ function doRandomPlayerAction(player, otherPlayer) {
     case 2:
     case 3:
       //check or fold if not able to call
-      if (!otherPlayer) {
+      if (!otherPlayer && player.bet == theGame.raiseAmount) {
         return player.Check();
       } else if (!player.Call(theGame.raiseAmount)) {
         return player.Fold();
@@ -538,7 +539,7 @@ function doSubRoundPlayerAction(player, otherPlayer) {
       case 2:
       case 3:
         //check or fold if not able to call
-        if (!otherPlayer) {
+        if (!otherPlayer && player.bet == theGame.raiseAmount) {
           return player.Check();
         } else if (!player.Call(theGame.raiseAmount)) {
           return player.Fold();
