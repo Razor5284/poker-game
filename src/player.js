@@ -35,16 +35,18 @@ export default class Player {
   }
 
   Check() {
-    this.status = "checked";
-    this.game.advanceTurn();
+    if (!this.game.didSomeoneRaise) {
+      this.status = "checked";
+      this.game.advanceTurn();
+    }
   }
 
   Raise(amount) {
-    if (this.chips <= amount) {
+    if (this.chips < amount) {
       return false;
     } else {
        console.log("In Raise: player"+this.ID+" amount " + amount + " this.bet " + this.bet)
-      this.bet += amount;
+      this.bet = this.game.raiseAmount;
        console.log("new this.bet "+ this.bet + "--------------")
       this.removeChips(amount);
       this.game.addToPot(amount);

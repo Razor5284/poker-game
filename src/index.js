@@ -105,8 +105,8 @@ class Game {
   dealCards() {
     this.removeAllPlayerCards();
     this.shuffleCardList();
-    for (var i = 0; i < 2; i++) {
-      for (var j = 0; j < this.playerList.length; j++) {
+    for (let i = 0; i < 2; i++) {
+      for (let j = 0; j < this.playerList.length; j++) {
         this.dealCardToPlayer(this.playerList[j]);
       }
     }
@@ -156,14 +156,14 @@ class Game {
 
   // Shuffles an array, which is then assigned to shuffledList
   shuffleCardList() {
-    var tempList = this.cardList;
+    let tempList = this.cardList;
     // COPY CARD LIST FOR POSSIBLE CARDS
     // for (var i = 0; i < this.cardList.length; i++) {
     //   tempList[i] = this.cardList[i];
     // }
 
-    for (var j = 0; j < this.cardList.length; j++) {
-      var index = Math.floor(Math.random() * tempList.length);
+    for (let j = 0; j < this.cardList.length; j++) {
+      let index = Math.floor(Math.random() * tempList.length);
       this.cardList[j] = tempList[index];
       // REMOVE ALREADY USED CARDS
       if (index > -1) {
@@ -223,18 +223,41 @@ class Game {
   }
 
   playerRaise(amount) {
-    let oldRaise = theGame.raiseAmount;
-    let newAmount = amount + theGame.raiseAmount;
-    console.log(theGame.raiseAmount)
-    theGame.raiseAmount = newAmount
-    console.log("New raiseamount " + theGame.raiseAmount)
-    if (!this.humanPlayer.Raise(newAmount)) {
-      theGame.raiseAmount = oldRaise;
-      alert("You cannot raise now, you need more chips.")
-      return false;
-    } else {
-      theGame.advanceTurn();
-      return true;
+    if (this.humanPlayer.bet != theGame.raiseAmount) {
+      this.playerCall();
+      let oldRaise = theGame.raiseAmount;
+      let newRaise = amount + theGame.raiseAmount;
+      console.log(theGame.raiseAmount)
+      theGame.raiseAmount = newRaise
+      console.log("New raiseamount " + theGame.raiseAmount)
+      console.log(this.humanPlayer)
+      if (!this.humanPlayer.Raise(amount)) {
+        theGame.raiseAmount = oldRaise;
+        alert("You cannot raise now, you need more chips.")
+        return false;
+      } else {
+        theGame.didSomeoneRaise = this.humanPlayer;
+        theGame.advanceTurn();
+        return true;
+      }
+    }
+    else {
+      let oldRaise = theGame.raiseAmount;
+      let newRaise = amount + theGame.raiseAmount;
+      console.log(theGame.raiseAmount)
+      theGame.raiseAmount = newRaise
+      console.log("New raiseamount " + theGame.raiseAmount)
+
+      if (!this.humanPlayer.Raise(amount)) {
+        theGame.raiseAmount = oldRaise;
+        alert("You cannot raise now, you need more chips.")
+        return false;
+      } else {
+        theGame.didSomeoneRaise = this.humanPlayer;
+        console.log(theGame.didSomeoneRaise)
+        theGame.advanceTurn();
+        return true;
+      }
     }
   }
 
@@ -251,7 +274,7 @@ class Game {
 var theGame;
 async function newGame(playerCount, initialChips, playerName) {
   let game = new Game(playerCount, initialChips);
-  for (var i = 0; i < playerCount; i++) {
+  for (let i = 0; i < playerCount; i++) {
     if (i === 2) {
       game.addPlayer(game.humanPlayer = new HumanPlayer(i, playerName, initialChips, game));
     } else {
@@ -325,6 +348,11 @@ async function simulateRounds() {
           } else {
             $('.control-button:nth-of-type(1)').css("visibility", "visible");
           }
+          if (theGame.subRound == 1) {
+            $('.control-button:nth-of-type(3)').css("visibility", "hidden");
+          } else {
+            $('.control-button:nth-of-type(3)').css("visibility", "visible");
+          }
           player.isTurn = true;
           $("#seat" + player.ID).toggleClass("active");
           $("#controls").children(".control-button").toggleClass("inactive");
@@ -383,6 +411,7 @@ function simulateBetting(player) {
       break;
       case "raised":
         theGame.didSomeoneRaise = player;
+        console.log(theGame.didSomeoneRaise)
       break;
     }
   }
@@ -677,7 +706,7 @@ function evaluatePlayerCards() {
 }
 
 function evaluateWinner() { // don't forget about the royal flush if someone has a straight
-  var ranks = []
+  let ranks = []
   for (let player of theGame.playerList) {
     if (player.status != "folded") {
       spawnCards(player.cards, "seat" + (player.ID).toString(), "card");
@@ -692,7 +721,7 @@ function evaluateWinner() { // don't forget about the royal flush if someone has
     }
   }
   // console.log(ranks)
-  var winner = []
+  let winner = []
   winner.push(ranks.reduce((lowest, current) => current[1] < lowest[1] ? current : lowest));
   // console.log(winner)
   if (winner.length == 1) {
@@ -814,14 +843,14 @@ $(document).ready(function() {
   });
 
   // Script for modal popup and close buttons
-  var modal = document.getElementById("modal-popup");
-  var btn = document.getElementById("poker-hands-button");
-  var modalImg = document.getElementById("poker-hands-image");
-  var captionText = document.getElementById("caption");
+  let modal = document.getElementById("modal-popup");
+  let btn = document.getElementById("poker-hands-button");
+  let modalImg = document.getElementById("poker-hands-image");
+  let captionText = document.getElementById("caption");
   $("#poker-hands-button").click(function() {
     $('#modal-popup').toggle();
   });
-  var span = document.getElementsByClassName("close")[0];
+  let span = document.getElementsByClassName("close")[0];
   span.onclick = function() {
     modal.style.display = "none";
   }
