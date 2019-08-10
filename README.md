@@ -1,4 +1,4 @@
-# poker-game
+# MSc Project - Poker Game
 A single player web-based poker game
 
 
