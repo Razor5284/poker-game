@@ -770,9 +770,6 @@ class Game {
     console.log(this);
     this.startGame();
   }
-
-
-
 }
 
 var theGame;
@@ -806,8 +803,6 @@ async function newGame(playerCount, initialChips, playerName) {
   initializeGame();
   theGame.startGame();
 }
-
-
 
 // Use muted Code for training round to show all cards
 function spawnCards(tempList, idString, classString) {
