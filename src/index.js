@@ -81,8 +81,8 @@ class Game {
   }
 
   // Advances turn count
-  // bot-> advanceTurn(false);
-  // player-> advanceTurn(true);
+  // bot -> advanceTurn(false);
+  // player -> advanceTurn(true);
   advanceTurn(playerType) {
     if (this.turn < this.playerCount) {
       this.turn++;
@@ -177,7 +177,6 @@ class Game {
     for (let j = 0; j < this.cardList.length; j++) {
       let index = Math.floor(Math.random() * tempList.length);
       this.cardList[j] = tempList[index];
-      // REMOVE ALREADY USED CARDS
       if (index > -1) {
         tempList.splice(index, 1);
       }
@@ -344,12 +343,7 @@ class Game {
       this.evaluateWinner()
       console.log('Returning resolve of round')
       return true;
-      /*return new Promise(resolve => {
-        console.log('resolving promise ', resolve)
-        return resolve('Winner is JOHNY', ' or no winner...');
-      });*/
     }
-    console.log('@@ Returning False @@') // not even being called, sometimes called even in round 3??
     return false; // hasn't finished
   }
 
@@ -609,7 +603,6 @@ class Game {
   }
 
    evaluatePlayerCards() {
-    // console.log(this.cards.join(" ").toString() +" "+ this.humanPlayer.cards[0] +" "+ this.humanPlayer.cards[1])
     const board = this.cards.join(" ") +" "+ this.humanPlayer.cards[0] +" "+ this.humanPlayer.cards[1] // GIVES ERRORS IF THERES ONLY 2 PLAYERS
     const rank = rankBoard(board)
     const name = rankDescription[rank]
@@ -674,7 +667,7 @@ class Game {
     }
   }
 
-   evaluateWinner() { // don't forget about the royal flush if someone has a straight
+   evaluateWinner() {
     let ranks = []
     for (let player of this.playerList) {
       if (player.status != "folded") {
@@ -689,10 +682,8 @@ class Game {
         ranks.push([player.ID, player.cardRank, player.cardEval]);
       }
     }
-    // console.log(ranks)
     let winner = []
     winner.push(ranks.reduce((lowest, current) => current[1] < lowest[1] ? current : lowest));
-    // console.log(winner)
     if (winner.length == 1) {
       console.log(this.playerList);
       console.log(winner);
@@ -718,37 +709,11 @@ class Game {
       this.resetPot();
       this.updateDisplay(this.winner);
     }
-   this.checkFinalWinner(); // USELESS BECAUSE FUNCTION RETURNS STUFF AND IT DOESN'T MODIFY ANYTHING GLOBAL.
+   this.checkFinalWinner();
     // JS user storage to increase win count, win %, games played, overall profit etc
   }
 
-  // function checkFinalWinner() {
-  //   for (let player of theGame.playerList) {
-  //     if (player.chips == 0 && player != theGame.winner) {
-  //       player.status = "out"
-  //     }
-  //   }
-  //
-  //   let count = 0;
-  //   for (let player of theGame.playerList) {
-  //     if (player.status == "out") {
-  //       count ++
-  //     }
-  //   }
-  //   if (count == (theGame.playerList.length - 1)) {
-  //     return true;
-  //   }
-  //   if (player.status == "out" && player != theGame.winner) {
-  //     return true
-  //   }
-  //   return false
-  // }
-  // yy
    async checkFinalWinner() {
-    // Bad approach, is this function even necessary?
-    // if(theGame.round != 4)
-      // return false;
-
       for (let player of theGame.playerList) {
         if (player.chips == 0 && player != theGame.winner)
             player.status = "out"
@@ -766,16 +731,6 @@ class Game {
 
       theGame.freshGame();
       return new Promise(resolve => resolve(false));//await timeout(5000), console.log("test"), freshGame(), false;
-    //   (count == (theGame.playerList.length - 1)) ? async() => {
-    //     console.log('test');
-    //     return true;
-    // } : async() => {
-    //     console.log('test for false');
-    //     await timeout(5000);
-    //     console.log("test");
-    //     freshGame();
-    //     return false;
-    // }
   }
 
    freshGame() {
@@ -850,16 +805,6 @@ async function newGame(playerCount, initialChips, playerName) {
 
   initializeGame();
   theGame.startGame();
-
-  /*
-  * gameLoop MUST simulateRounds after each round.
-  * gameLoop MUST have conditions to check if it's 4th round, (because simulateRounds didn't do it properly and I couldn't figure it out)
-  * if it is, check finalWinnerCheck().
-  * based on those conditions, it will be decided if we should refresh the game with initializeGame().
-  *
-  */
-
-  //await gameLoop();
 }
 
 
@@ -884,34 +829,6 @@ function spawnCards(tempList, idString, classString) {
   }
 }
 
-
-
-  // for (let otherPlayer of theGame.playerList) {
-  //     if(otherPlayer != player && otherPlayer.status == 'raised') {
-
-  //         doRandomPlayerAction(player, otherPlayer);
-  //         if(player.status === 'raised') {
-  //           raisedSomeoneElsesBet = true;
-  //         }
-
-  //       //Only Raise once
-  //       break;
-  //     }
-  //   }
-  //   if(!raisedSomeoneElsesBet && player.status !== 'folded') {
-  //     doRandomPlayerAction(player);
-  //   }
-  // A person can raise in each Round. This can happen twice in the same round by any person.
-  // but then the other people left in the game have to either match the amount of money the person raised,
-  // or they have to fold. They can also re-raise which makes peopel have to match it again.
-
-  // This happens each round until all 5 cards are out, after which another two rounds of betting are done and cards must
-  //be released afterwards.
-
-  // each person who raised changes status to raised
-  // but then after everyone else has matched that bet (raise) their status needs to be set back to active (normal)
-
-
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -921,19 +838,7 @@ function getRandomInt(min, max) {
 $(document).ready(function() {
   // JQuery scripts for buttons on menu popup
   $("#playnewgame").click(_ => {
-    /*theGame = 0;
-    this.playerList = [];
-    this.round = 0;
-    this.turn = 0;
-    this.pot = 0;
-    this.cards = [];
-    this.humanPlayer;
-    this.playerTurn = [];
-    this.raiseAmount = 0;
-    this.subRound = 0;
-    this.subRoundStatus = "active";*/
     theGame.updateDisplay("reset");
-
     console.log('%c NEW GAME', 'font-weight: bold; font-size: 28px;')
     newGame(
       Number($("#playerCount").val()),
@@ -994,8 +899,4 @@ $(document).ready(function() {
   newGame(8, 100, "ryan");
   console.log(theGame)
 
-
-
 });
-
-// let board = theGame.cards.join(" ") +" "+ player.cards[0] +" "+ player.cards[1]
