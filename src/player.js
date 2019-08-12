@@ -35,7 +35,7 @@ export default class Player {
   }
 
   Check() {
-    if (!this.game.didSomeoneRaise && this.bet == this.game.raiseAmount) {
+    if (!this.game.didSomeoneRaise) {
       this.status = "checked";
       this.game.advanceTurn();
     }

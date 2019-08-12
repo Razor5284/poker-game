@@ -1,5 +1,0 @@
-install node using npm install via powershell in the root folder.
-then do npm install -g webpack-dev-server
-npm install phe
-npm start
-navigate to localhost:8080 in browser.
