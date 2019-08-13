@@ -63,6 +63,8 @@ export default class Player {
     let betDifference = Math.abs(otherPlayersBet - this.bet);
      console.log(" betDifference= " + betDifference + " otherPlayersBet("+otherPlayersBet+") - " + "this.bet("+this.bet+")")
     if (this.chips < betDifference) {
+      // create a split pot here instead of returning false
+      // this.status = "All-in"
       return false;
     } else {
       this.bet += betDifference;
