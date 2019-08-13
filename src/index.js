@@ -706,7 +706,7 @@ class Game {
       this.winner = this.getPlayerById([winner[0][0]]);
       $("#seat" + winner[0][0]).toggleClass("winner");
       $("#right-sidebar").children("a").text("Winner");
-      $("#card-evaluation").text("The winner is " + this.winner.name + ", who won with " + winner[0][2] + " and a score of " + winner[0][1]);
+      $("#card-evaluation").children("p").append("The winner is " + this.winner.name + ", who won with " + winner[0][2] + " and a score of " + winner[0][1]);
       this.winner.addChips(this.pot);
       this.resetPot();
       console.log(this)
@@ -765,10 +765,9 @@ class Game {
     this.shouldStopRunning = false;
     this.shouldStartRunning = false;
     this.resetRaises();
-    this.updateDisplay("reset");
     this.dealCards();
+    this.updateDisplay("reset");
     $("#right-sidebar").children("a").text("Card Ranking")
-    $("#card-evaluation").text("");
     $("#seat2").children("[class^=card]").children("img").css("visibility", "visible");
     $("#seat2").children("[class^=card]").children("img").css("visibility", "visible");
     $("#controls").children(".control-button").addClass("inactive");
@@ -927,6 +926,5 @@ $(document).ready(function() {
 * - fix red CSS for player in new game
 * take 'folded' class out on new game and change cards back to purple & status to active everyone still has a go even if chips = 0
 * - Make it so that if everyone else has folded, the last player doesn't fold <-- still does.
-* - card ranking doesn't appear after new game
 * - hide humanPlayer's cards when out
 */
