@@ -3,7 +3,7 @@ import "./styles.css";
 import Player from './player';
 import HumanPlayer from './humanplayer';
 import { setInterval } from "timers";
-const { rankBoard, rankDescription, rankCards, evaluateCards} = require('phe')
+const { rankBoard, rankDescription, rankCards, evaluateCards } = require('phe')
 
 /*
  *
@@ -31,10 +31,6 @@ class Game {
     this.shouldStopRunning = false;
   }
 
-  // Returns player count
-  get PlayerCount() {
-    return this.playerCount;
-  }
 
   // Returns player list
   get Players() {
@@ -48,7 +44,7 @@ class Game {
 
   getPlayerById(id) {
     for (const player of this.playerList) {
-      if(player.ID == id) {
+      if (player.ID == id) {
         return player;
       }
     }
@@ -127,7 +123,7 @@ class Game {
   async dealFlopCards() {
     for (let i = 0; i < 3; i++) {
       this.dealCardToTable(this.cardList, this.cards);
-      $("#board").children(".tablecard:nth-of-type("+[i+1]+")").children("img").attr("src", "/cards/" + this.cards[i].toUpperCase() + ".png").attr("alt", theGame.cards[i]).css("visibility", "visible");
+      $("#board").children(".tablecard:nth-of-type(" + [i + 1] + ")").children("img").attr("src", "/cards/" + this.cards[i].toUpperCase() + ".png").attr("alt", theGame.cards[i]).css("visibility", "visible");
       await this.timeout(500)
     }
   }
@@ -281,53 +277,53 @@ class Game {
   }
 
   async  simulateRounds() {
-      for (let i = 0; i < 2; i++) {
-        if (this.subRound == 0 || (this.subRound == 1 && this.didSomeoneRaise)) {
-          for (let player of this.playerList) {
-            if (this.playerList.filter((a)=>{a.status == "folded" && a != player}).length == (this.playerList.length - 1)) {
-              return this.evaluateWinner();
-            } else if (!player.isHuman && player.status != "folded" && player.status != "out") {
-              player.isTurn = true; //check if there's any use in this
-              $("#seat" + player.ID).addClass("active");
-              await this.timeout(getRandomInt(500, 500)) // change this back to 5000 or 8000 (ms)
-              this.simulateBetting(player);
-              this.updateDisplay(player);
-              player.isTurn = false;
-              $("#seat" + player.ID).removeClass("active");
-            }
-            else if (player.isHuman && player.status != "folded" && player.status != "out") {
-              if (this.didSomeoneRaise && this.didSomeoneRaise != player) {
-                $('.control-button:nth-of-type(1)').css("visibility", "hidden");
-                $('.control-button:nth-of-type(2)').css("visibility", "visible");
-              } else {
-                $('.control-button:nth-of-type(1)').css("visibility", "visible");
-                $('.control-button:nth-of-type(2)').css("visibility", "hidden");
-              }
-              if (this.subRound == 1 || player.chips == 0) {
-                $('.control-button:nth-of-type(3)').css("visibility", "hidden");
-              } else {
-                $('.control-button:nth-of-type(3)').css("visibility", "visible");
-              }
-              player.isTurn = true;
-              $("#seat" + player.ID).addClass("active");
-              $("#controls").children(".control-button").removeClass("inactive");
-              this.humanPlayer = player;
-              await this.playerFinished();
-              this.updateDisplay(player);
-              player.isTurn = false;
-              $("#seat" + player.ID).removeClass("active");
-              $("#controls").children(".control-button").addClass("inactive");
-            }
+    for (let i = 0; i < 2; i++) {
+      if (this.subRound == 0 || (this.subRound == 1 && this.didSomeoneRaise)) {
+        for (let player of this.playerList) {
+          if (this.playerList.filter((a) => { return (a.status == "folded" || a.status == "out") && a != player }).length == (this.playerList.length - 1)) {
+            return this.winnerByDefault(player);
+          } else if (!player.isHuman && player.status != "folded" && player.status != "out") {
+            player.isTurn = true; //check if there's any use in this
+            $("#seat" + player.ID).addClass("active");
+            await this.timeout(getRandomInt(500, 500)) // change this back to 5000 or 8000 (ms)
+            this.simulateBetting(player);
+            this.updateDisplay(player);
+            player.isTurn = false;
+            $("#seat" + player.ID).removeClass("active");
           }
-          this.subRound ++;
-          console.log("     this.subround: ============" + this.subRound);
-        } else {
-          this.subRound = 0;
-          this.didSomeoneRaise = false;
-          this.resetRaises();
-          this.subRoundStatus = "active"
+          else if (player.isHuman && player.status != "folded" && player.status != "out") {
+            if (this.didSomeoneRaise && this.didSomeoneRaise != player) {
+              $('.control-button:nth-of-type(1)').css("visibility", "hidden");
+              $('.control-button:nth-of-type(2)').css("visibility", "visible");
+            } else {
+              $('.control-button:nth-of-type(1)').css("visibility", "visible");
+              $('.control-button:nth-of-type(2)').css("visibility", "hidden");
+            }
+            if (this.subRound == 1 || player.chips == 0) {
+              $('.control-button:nth-of-type(3)').css("visibility", "hidden");
+            } else {
+              $('.control-button:nth-of-type(3)').css("visibility", "visible");
+            }
+            player.isTurn = true;
+            $("#seat" + player.ID).addClass("active");
+            $("#controls").children(".control-button").removeClass("inactive");
+            this.humanPlayer = player;
+            await this.playerFinished();
+            this.updateDisplay(player);
+            player.isTurn = false;
+            $("#seat" + player.ID).removeClass("active");
+            $("#controls").children(".control-button").addClass("inactive");
+          }
         }
+        this.subRound++;
+        console.log("     this.subround: ============" + this.subRound);
+      } else {
+        this.subRound = 0;
+        this.didSomeoneRaise = false;
+        this.resetRaises();
+        this.subRoundStatus = "active"
       }
+    }
 
     this.subRoundStatus = "active"
     this.didSomeoneRaise = false;
@@ -363,50 +359,30 @@ class Game {
       this.simulatePlayer(player);
       switch (player.status) {
         case "matched":
-        break;
+          break;
         case "raised":
           this.didSomeoneRaise = player;
           console.log(this.didSomeoneRaise)
-        break;
+          break;
       }
     }
     return this.didSomeoneRaise;
   }
 
   simulatePlayer(player) {
-    let raisedSomeoneElsesBet = false;
     let someoneRaised = false;
     let otherPlayer = this.didSomeoneRaise;
 
     if (this.subRound == 0) {
       // for (let otherPlayer of this.playerList) {
-        if (otherPlayer) {
-          if (otherPlayer.status == "raised" && otherPlayer != player) {
-              someoneRaised = otherPlayer;
-              // break;
-          }
+      if (otherPlayer) {
+        if (otherPlayer.status == "raised" && otherPlayer != player) {
+          someoneRaised = otherPlayer;
+          // break;
         }
+      }
       // }
       this.doRandomPlayerAction(player, someoneRaised);
-    } else if (this.subRound == 2) {
-      switch (getRandomInt(0,3)) {
-        case 0:
-        case 1:
-        case 2:
-          //check or fold if not able to call
-          if (!otherPlayer && player.bet == this.raiseAmount) {
-            return player.Check();
-          } else if (!player.Call(this.raiseAmount)) {
-            return player.Fold();
-          }
-          break;
-        case 3:
-          if (!otherPlayer && player.bet == this.raiseAmount) {
-            return player.Check();
-          } else {
-            player.Fold();
-          }
-      }
     } else {
       if (otherPlayer) {
         if (otherPlayer.status == "raised" && otherPlayer != player) {
@@ -420,18 +396,18 @@ class Game {
   }
 
   startGame() {
-    if(this.running) {
+    if (this.running) {
       this.stopGame()
     }
     this.shouldStartRunning = true;
-    let waitForGameLoopToBeReadyToStart = setInterval(async  ()=> {
-        if(!this.running && this.shouldStartRunning) {
-          clearInterval(waitForGameLoopToBeReadyToStart);
-          await this.gameLoop();
-        }
-        if(!this.shouldStartRunning) {
-          clearInterval(waitForGameLoopToBeReadyToStart);
-        }
+    let waitForGameLoopToBeReadyToStart = setInterval(async () => {
+      if (!this.running && this.shouldStartRunning) {
+        clearInterval(waitForGameLoopToBeReadyToStart);
+        await this.gameLoop();
+      }
+      if (!this.shouldStartRunning) {
+        clearInterval(waitForGameLoopToBeReadyToStart);
+      }
     }, 500)
   }
 
@@ -442,13 +418,13 @@ class Game {
 
   async gameLoop() {
     this.running = true;
-    if(this.shouldStopRunning) {
+    if (this.shouldStopRunning) {
       this.running = false;
       this.shouldStopRunning = false;
       return;
     }
     console.log('%c RUNNING GAME LOOP', 'font-weight: bold; font-size: 28px;')
-    if(await this.simulateRounds()) {
+    if (await this.simulateRounds()) {
       console.log('%c ENDING GAME LOOP', 'font-weight: bold; font-size: 28px;')
       return true;
     } else {
@@ -458,8 +434,9 @@ class Game {
   }
 
   doRandomPlayerAction(player, otherPlayer) {
-    if (this.playerList.filter((a)=>{a.status == "folded" && a != player}).length === (this.playerList.length - 1)) {
-        return player.Check();
+    if (this.playerList.filter((a) => { return (a.status == "folded" || a.status == "out") && a != player }).length === (this.playerList.length - 1)) {
+      console.log("FUCKING HERE YOU GOOOOOOO 2", this.playerList.filter((a) => { (a.status == "folded" || a.status == "out") && a != player }).length)
+      return player.Check();
     }
     switch (getRandomInt(0, 6)) {
       case 0:
@@ -474,13 +451,13 @@ class Game {
         break;
       case 4:
       case 5: //raise
-        console.log("In Raise: player"+player.ID)
+        console.log("In Raise: player" + player.ID)
         let oldRaise = this.raiseAmount;
-        console.log("In normal: oldraise: "+ oldRaise)
+        console.log("In normal: oldraise: " + oldRaise)
         let newRaise = getRandomInt(Math.round(player.chips * 0.02), (player.chips - oldRaise))
         console.log("newraise: " + newRaise)
         newRaise += oldRaise
-        console.log("this.raise: "+ newRaise)
+        console.log("this.raise: " + newRaise)
         this.raiseAmount = newRaise
         if (!player.Raise(this.raiseAmount)) {
           this.raiseAmount = oldRaise;
@@ -491,8 +468,11 @@ class Game {
   }
 
   doSubRoundPlayerAction(player, otherPlayer) {
-    if (this.playerList.filter((a)=>{a.status == "folded" && a != player}).length === (this.playerList.length - 1)) {
-        return player.Check();
+    //Force Check when everyone Folded
+    console.log('@Condition', (this.playerList.filter((a) => { return (a.status == "folded" || a.status == "out") && a != player }).length === (this.playerList.length - 1)), '@playerList length', this.playerList.length, '@post filter', this.playerList.filter((a) => { (a.status == "folded" || a.status == "out") && a != player }))
+    if (this.playerList.filter((a) => { return (a.status == "folded" || a.status == "out") && a != player }).length === (this.playerList.length - 1)) {
+      console.log("FUCKING HERE YOU GOOOOOOO 3", this.playerList.filter((a) => { (a.status == "folded" || a.status == "out") && a != player }).length)
+      return player.Check();
     }
     if (otherPlayer.bet != player.bet) {
       switch (getRandomInt(0, 6)) {
@@ -510,7 +490,7 @@ class Game {
         case 4:
         case 5:
           player.Fold();
-        break;
+          break;
       }
     }
   }
@@ -533,16 +513,16 @@ class Game {
       $("#total-pot").text("Total pot: " + this.Pot);
 
       if (player.status == "active" && player.isHuman) {
-        $(idString  + player.ID).removeClass("folded");
+        $(idString + player.ID).removeClass("folded");
       }
 
       if (player.status == "folded") {
-        $(idString  + player.ID).addClass("folded");
-        $(idString  + player.ID).children(".card1").children("img").attr("src", "/cards/gray_back.png");
+        $(idString + player.ID).addClass("folded");
+        $(idString + player.ID).children(".card1").children("img").attr("src", "/cards/gray_back.png");
         $(idString + player.ID).children(".card2").children("img").attr("src", "/cards/gray_back.png");
       } else if (player.status == "active" && !player.isHuman) {
-        $(idString  + player.ID).removeClass("folded");
-        $(idString  + player.ID).children(".card1").children("img").attr("src", "/cards/purple_back.png");
+        $(idString + player.ID).removeClass("folded");
+        $(idString + player.ID).children(".card1").children("img").attr("src", "/cards/purple_back.png");
         $(idString + player.ID).children(".card2").children("img").attr("src", "/cards/purple_back.png");
       }
     }
@@ -563,8 +543,8 @@ class Game {
       if (
         player.chips > 0 &&
         (player.status == "raised" ||
-        player.status == "matched" ||
-        player.status == "checked")
+          player.status == "matched" ||
+          player.status == "checked")
       ) {
         player.status = "active";
       }
@@ -589,21 +569,21 @@ class Game {
       $("#Call").unbind();
       $("#Raise").unbind();
       $("#Fold").unbind();
-      $("#Check").click(()=> {
+      $("#Check").click(() => {
         this.playerCheck();
         resolve();
       });
-      $("#Call").click(()=> {
+      $("#Call").click(() => {
         if (this.playerCall()) {
           resolve();
         }
       });
-      $("#Raise").click(()=> {
+      $("#Raise").click(() => {
         if (this.playerRaise(parseInt($('#RaiseAmount').val()))) {
           resolve();
         }
       });
-      $("#Fold").click(()=> {
+      $("#Fold").click(() => {
         this.playerFold();
         resolve();
       });
@@ -611,11 +591,11 @@ class Game {
   }
 
   timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve,ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   evaluatePlayerCards() {
-    const board = this.cards.join(" ") +" "+ this.humanPlayer.cards[0] +" "+ this.humanPlayer.cards[1] // GIVES ERRORS IF THERES ONLY 2 PLAYERS
+    const board = this.cards.join(" ") + " " + this.humanPlayer.cards[0] + " " + this.humanPlayer.cards[1] // GIVES ERRORS IF THERES ONLY 2 PLAYERS
     const rank = rankBoard(board)
     const name = rankDescription[rank]
     if (this.humanPlayer.status != "folded") {
@@ -695,13 +675,18 @@ class Game {
       }
     }
     let winner = []
-    winner.push(ranks.reduce((lowest, current) => current[1] < lowest[1] ? current : lowest));
+    // can't reduce an empty array, check if(!ranks) -> return false;
+    if (!ranks) {
+      return false;
+    } else {
+      winner.push(ranks.reduce((lowest, current) => current[1] < lowest[1] ? current : lowest));
+    }
     if (winner.length == 1) {
       console.log(this.playerList);
       console.log(winner);
       console.log("WHEN 2 PLAYER ERROR")
       this.winner = this.getPlayerById([winner[0][0]]);
-      $("#seat" + winner[0][0]).toggleClass("winner");
+      $("#seat" + winner[0][0]).addClass("winner");
       $("#right-sidebar").children("a").text("Winner");
       $("#card-evaluation").children("p").append("The winner is " + this.winner.name + ", who won with " + winner[0][2] + " and a score of " + winner[0][1]);
       this.winner.addChips(this.pot);
@@ -721,9 +706,22 @@ class Game {
       this.resetPot();
       this.updateDisplay(this.winner);
     }
-   this.checkFinalWinner();
+    this.checkFinalWinner();
     // JS user storage to increase win count, win %, games played, overall profit etc
   }
+
+  // winnerByDefault(player) {
+  //   this.winner = player
+  //   if (this.pot > 0) {
+  //     this.winner.addChips(this.pot);
+  //   }
+  //   this.resetPot();
+  //   $("#seat" + this.winner.ID).addClass("winner");
+  //   $("#right-sidebar").children("a").text("Winner");
+  //   $("#card-evaluation").children("p").append("The winner is " + this.winner.name + ", who won because everyone else folded");
+  //   this.updateDisplay(this.winner);
+  //   this.checkFinalWinner();
+  // }
 
   async checkFinalWinner() {
     for (let player of theGame.playerList) {
@@ -767,7 +765,7 @@ class Game {
     $("#controls").children(".control-button").addClass("inactive");
     $("#pot").css("visibility", "visible");
     $(".button-copy").css("display", "block");
-    const initializeGame = ()=> {
+    const initializeGame = () => {
       for (let player of this.playerList) {
         player.bet = 0; // Resets all player's bets
         this.status = "active";
@@ -796,14 +794,14 @@ async function newGame(playerCount, initialChips, playerName) {
       game.addPlayer(new Player(i, "Player " + i, initialChips, game));
     }
   }
-  if(theGame) {
+  if (theGame) {
     lastGame = theGame;
     lastGame.stopGame();
   }
   theGame = game;
   theGame.dealCards();
 
-  const initializeGame = function() {
+  const initializeGame = function () {
     for (let player of theGame.playerList) {
       theGame.updateDisplay(player);
       if (player.isHuman) {
@@ -843,7 +841,7 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
   // JQuery scripts for buttons on menu popup
   $("#playnewgame").click(_ => {
 
@@ -862,13 +860,13 @@ $(document).ready(function() {
   });
 
   $(".button-copy").click(_ => {
-      $(".menu-button").addClass('open');
-      $(".button-copy").css('display', 'none');
+    $(".menu-button").addClass('open');
+    $(".button-copy").css('display', 'none');
   });
 
   $(".submit-button").click(_ => {
-      $(".menu-button").removeClass('open');
-      $(".button-copy").css('display', 'block');
+    $(".menu-button").removeClass('open');
+    $(".button-copy").css('display', 'block');
   });
 
   $(".cancel").click(_ => {
@@ -893,11 +891,11 @@ $(document).ready(function() {
 
   // Script for modal popup and close buttons
   let modal = document.getElementById("modal-popup");
-  $("#poker-hands-button").click(function() {
+  $("#poker-hands-button").click(function () {
     $('#modal-popup').toggle();
   });
   let span = document.getElementsByClassName("close")[0];
-  span.onclick = function() {
+  span.onclick = function () {
     modal.style.display = "none";
   }
 
@@ -910,6 +908,6 @@ $(document).ready(function() {
 /* //TODO:
 * - need to split the pot if one person goes "all in" and others then raise after him, the ones that raise after are then betting on the second pot and the first pot, and the one that went all in beforehand is betting only on the first pot
 * - need to split the pot between two people if they have the same cards if they both win
-* take 'folded' class out on new game and change cards back to purple & status to active everyone still has a go even if chips = 0
 * - Make it so that if everyone else has folded, the last player doesn't fold <-- still does.
+* - Final winner is never shown at the end, it tries to play the game again later.
 */
