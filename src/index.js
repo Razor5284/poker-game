@@ -47,16 +47,16 @@ class Game {
   }
 
   getPlayerById(id) {
-      for (const player of this.playerList) {
-        if(player.ID == id) {
-          return player;
-        }
+    for (const player of this.playerList) {
+      if(player.ID == id) {
+        return player;
       }
-      return false;
+    }
+    return false;
   }
 
   // Returns initial chip count
-   InitialChips() {
+  InitialChips() {
     return this.initialChips;
   }
 
@@ -217,6 +217,13 @@ class Game {
     }
   }
 
+  playerCheck() {
+    if (!this.didSomeoneRaise && this.humanPlayer.bet == this.raiseAmount) {
+      this.humanPlayer.Check();
+      this.advanceTurn();
+    }
+  }
+
   playerCall() {
     if (!this.humanPlayer.Call(this.raiseAmount)) {
       alert("You cannot call this bet, you need more chips.")
@@ -350,7 +357,7 @@ class Game {
     return false; // Loop hasn't finished
   }
 
-   simulateBetting(player) {
+  simulateBetting(player) {
     if (player.chips > 0 && player.status != "folded") {
       // Let Players Raise/Match/Fold
       this.simulatePlayer(player);
@@ -366,7 +373,7 @@ class Game {
     return this.didSomeoneRaise;
   }
 
-   simulatePlayer(player) {
+  simulatePlayer(player) {
     let raisedSomeoneElsesBet = false;
     let someoneRaised = false;
     let otherPlayer = this.didSomeoneRaise;
@@ -412,13 +419,6 @@ class Game {
     }
   }
 
-  playerCheck() {
-    if (!this.didSomeoneRaise && this.humanPlayer.bet == this.raiseAmount) {
-      this.humanPlayer.Check();
-      this.advanceTurn();
-    }
-  }
-
   startGame() {
     if(this.running) {
       this.stopGame()
@@ -454,7 +454,6 @@ class Game {
     } else {
       //return 'loop again';
       return await this.gameLoop();
-
     }
   }
 
@@ -551,8 +550,6 @@ class Game {
       $("#board").children(".tablecard").children("img").css("visibility", "hidden");
       $("#pot").css("visibility", "hidden");
       $(".player").css("visibility", "hidden");
-      $("#seat2").children(".card1").children("img").css("visibility", "hidden");
-      $("#seat2").children(".card2").children("img").css("visibility", "hidden");
       $("#card-evaluation").children("p").text("");
       $('#Call').text("Call");
       $(".player").removeClass("active");
@@ -614,7 +611,7 @@ class Game {
   }
 
   timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve,ms /* /*/));
+    return new Promise(resolve => setTimeout(resolve,ms));
   }
 
   evaluatePlayerCards() {
@@ -713,11 +710,11 @@ class Game {
       this.updateDisplay(this.winner);
     } else {
       // If there are multiple winners
-      $("#right-sidebar").children("a").text("Winner")
+      $("#right-sidebar").children("a").text("Winners")
       $("#card-evaluation").text("The winners are ");
       for (let i = 0; i < winner.length; i++) {
         let winnerName = this.playerList[winner[i][0]].name
-        $("#card-evaluation").append(winnerName + ", ");
+        $("#card-evaluation").append(winnerName + " and ");
       }
       $("#card-evaluation").append("who won with " + winner[0][2] + " and a score of " + winner[0][1]);
       //split pot between equally
@@ -729,22 +726,21 @@ class Game {
   }
 
   async checkFinalWinner() {
-      for (let player of theGame.playerList) {
-        if (player.chips == 0 && player != theGame.winner)
-            player.status = "out"
+    for (let player of theGame.playerList) {
+      if (player.chips == 0 && player != theGame.winner)
+        player.status = "out"
+    }
+    theGame.playerList = theGame.playerList.filter(player => {
+      if (player.chips <= 0 && player != theGame.winner) {
+        return false;
       }
-      theGame.playerList = theGame.playerList.filter(player => {
-          if (((player.chips <= 0  /*player.status == 'out'*/) && player != theGame.winner)) {
-            return false;
-          }
-          player.status = 'active';
-          return true;
-      })
-      // Do pot split logic here
-      await this.timeout(5000);
-
-      theGame.freshGame();
-      return new Promise(resolve => resolve(false));
+      player.status = 'active';
+      return true;
+    })
+    // Do pot split logic here
+    await this.timeout(5000);
+    theGame.freshGame();
+    return new Promise(resolve => resolve(false));
   }
 
   freshGame() {
@@ -768,8 +764,6 @@ class Game {
     this.dealCards();
     this.updateDisplay("reset");
     $("#right-sidebar").children("a").text("Card Ranking")
-    $("#seat2").children("[class^=card]").children("img").css("visibility", "visible");
-    $("#seat2").children("[class^=card]").children("img").css("visibility", "visible");
     $("#controls").children(".control-button").addClass("inactive");
     $("#pot").css("visibility", "visible");
     $(".button-copy").css("display", "block");
@@ -858,8 +852,6 @@ $(document).ready(function() {
       Number($("#playerCount").val()),
       Number($("#initialChips").val()),
       $("#playerName").val())
-    $("#seat2").children("[class^=card]").children("img").css("visibility", "visible");
-    $("#seat2").children("[class^=card]").children("img").css("visibility", "visible");
     $("#controls").children(".control-button").addClass("inactive");
     $(".menu-button").toggleClass("open");
     $(".button-copy").css("display", "block");
@@ -901,9 +893,6 @@ $(document).ready(function() {
 
   // Script for modal popup and close buttons
   let modal = document.getElementById("modal-popup");
-  let btn = document.getElementById("poker-hands-button");
-  let modalImg = document.getElementById("poker-hands-image");
-  let captionText = document.getElementById("caption");
   $("#poker-hands-button").click(function() {
     $('#modal-popup').toggle();
   });
@@ -918,13 +907,9 @@ $(document).ready(function() {
 });
 
 
-
-
 /* //TODO:
 * - need to split the pot if one person goes "all in" and others then raise after him, the ones that raise after are then betting on the second pot and the first pot, and the one that went all in beforehand is betting only on the first pot
 * - need to split the pot between two people if they have the same cards if they both win
-* - fix red CSS for player in new game
 * take 'folded' class out on new game and change cards back to purple & status to active everyone still has a go even if chips = 0
 * - Make it so that if everyone else has folded, the last player doesn't fold <-- still does.
-* - hide humanPlayer's cards when out
 */
