@@ -281,7 +281,14 @@ class Game {
       if (this.subRound == 0 || (this.subRound == 1 && this.didSomeoneRaise)) {
         for (let player of this.playerList) {
           if (this.playerList.filter((a) => { return (a.status == "folded" || a.status == "out") && a != player }).length == (this.playerList.length - 1)) {
-            return this.winnerByDefault(player);
+              this.winner = player
+              this.winner.addChips(this.pot);
+              this.resetPot();
+              $("#seat" + this.winner.ID).addClass("winner");
+              $("#right-sidebar").children("a").text("Winner");
+              $("#card-evaluation").children("p").text("The winner is " + this.winner.name + ", who won because everyone else folded");
+              this.updateDisplay(this.winner);
+              return this.checkFinalWinner();
           } else if (!player.isHuman && player.status != "folded" && player.status != "out") {
             player.isTurn = true; //check if there's any use in this
             $("#seat" + player.ID).addClass("active");
@@ -908,6 +915,5 @@ $(document).ready(function () {
 /* //TODO:
 * - need to split the pot if one person goes "all in" and others then raise after him, the ones that raise after are then betting on the second pot and the first pot, and the one that went all in beforehand is betting only on the first pot
 * - need to split the pot between two people if they have the same cards if they both win
-* - Make it so that if everyone else has folded, the last player doesn't fold <-- still does.
 * - Final winner is never shown at the end, it tries to play the game again later.
 */
