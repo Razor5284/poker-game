@@ -281,12 +281,12 @@ class Game {
               return this.evaluateWinner();
             } else if (!player.isHuman && player.status != "folded" && player.status != "out") {
               player.isTurn = true; //check if there's any use in this
-              $("#seat" + player.ID).toggleClass("active");
+              $("#seat" + player.ID).addClass("active");
               await this.timeout(getRandomInt(500, 500)) // change this back to 5000 or 8000 (ms)
               this.simulateBetting(player);
               this.updateDisplay(player);
               player.isTurn = false;
-              $("#seat" + player.ID).toggleClass("active");
+              $("#seat" + player.ID).removeClass("active");
             }
             else if (player.isHuman && player.status != "folded" && player.status != "out") {
               if (this.didSomeoneRaise && this.didSomeoneRaise != player) {
@@ -302,13 +302,13 @@ class Game {
                 $('.control-button:nth-of-type(3)').css("visibility", "visible");
               }
               player.isTurn = true;
-              $("#seat" + player.ID).toggleClass("active");
+              $("#seat" + player.ID).addClass("active");
               $("#controls").children(".control-button").removeClass("inactive");
               this.humanPlayer = player;
               await this.playerFinished();
               this.updateDisplay(player);
               player.isTurn = false;
-              $("#seat" + player.ID).toggleClass("active");
+              $("#seat" + player.ID).removeClass("active");
               $("#controls").children(".control-button").addClass("inactive");
             }
           }
@@ -555,6 +555,9 @@ class Game {
       $("#seat2").children(".card2").children("img").css("visibility", "hidden");
       $("#card-evaluation").children("p").text("");
       $('#Call').text("Call");
+      $(".player").removeClass("active");
+      $("#seat" + this.winner.ID).removeClass("winner");
+      $("control-button").css("visibility", "visible");
     }
   }
 
@@ -730,15 +733,14 @@ class Game {
         if (player.chips == 0 && player != theGame.winner)
             player.status = "out"
       }
-      let count = 0;
       theGame.playerList = theGame.playerList.filter(player => {
           if (((player.chips <= 0  /*player.status == 'out'*/) && player != theGame.winner)) {
-            count++;
             return false;
           }
           player.status = 'active';
           return true;
       })
+      // Do pot split logic here
       await this.timeout(5000);
 
       theGame.freshGame();
@@ -746,7 +748,8 @@ class Game {
   }
 
   freshGame() {
-    $("#seat" + this.winner.ID).toggleClass("winner");
+    $(".player").removeClass("active");
+    $("#seat" + this.winner.ID).removeClass("winner");
     this.round = 0;
     this.turn = 0;
     this.pot = 0;
@@ -766,7 +769,6 @@ class Game {
     this.dealCards();
     $("#right-sidebar").children("a").text("Card Ranking")
     $("#card-evaluation").text("");
-
     $("#seat2").children("[class^=card]").children("img").css("visibility", "visible");
     $("#seat2").children("[class^=card]").children("img").css("visibility", "visible");
     $("#controls").children(".control-button").addClass("inactive");
@@ -851,7 +853,7 @@ function getRandomInt(min, max) {
 $(document).ready(function() {
   // JQuery scripts for buttons on menu popup
   $("#playnewgame").click(_ => {
-    theGame.updateDisplay("reset");
+
     console.log('%c NEW GAME', 'font-weight: bold; font-size: 28px;')
     newGame(
       Number($("#playerCount").val()),
@@ -863,6 +865,8 @@ $(document).ready(function() {
     $(".menu-button").toggleClass("open");
     $(".button-copy").css("display", "block");
     $("#pot").css("visibility", "visible");
+    theGame.updateDisplay("reset");
+    theGame.freshGame();
     console.log(theGame)
   });
 
@@ -882,6 +886,7 @@ $(document).ready(function() {
   });
 
   $("#endgame").click(_ => {
+    theGame.updateDisplay("reset");
     theGame = 0;
     this.playerList = [];
     this.round = 0;
@@ -893,7 +898,6 @@ $(document).ready(function() {
     this.raiseAmount = 0;
     this.subRound = 0;
     this.subRoundStatus = "active";
-    updateDisplay("reset");
   });
 
   // Script for modal popup and close buttons
@@ -915,12 +919,14 @@ $(document).ready(function() {
 });
 
 
-// - need to split the pot between two people if they have the same cards if they both win
-// - need to split the pot if one person goes "all in" and others then raise after him, the ones that raise after are then betting on the second pot and the first pot, and the one that went all in beforehand is betting only on the first pot
-// - remove gold when new game
-// - fix red CSS for player in new game
-//
-// take 'folded' class out on new game and change cards back to purple & status to active everyone still has a go even if chips = 0
-// - Make it so that if everyone else has folded, the last player doesn't fold <-- still does.
-//
-//
+
+
+/* //TODO:
+* - need to split the pot if one person goes "all in" and others then raise after him, the ones that raise after are then betting on the second pot and the first pot, and the one that went all in beforehand is betting only on the first pot
+* - need to split the pot between two people if they have the same cards if they both win
+* - fix red CSS for player in new game
+* take 'folded' class out on new game and change cards back to purple & status to active everyone still has a go even if chips = 0
+* - Make it so that if everyone else has folded, the last player doesn't fold <-- still does.
+* - card ranking doesn't appear after new game
+* - hide humanPlayer's cards when out
+*/
