@@ -229,7 +229,10 @@ class Game {
   playerRaise(amount) {
     console.log("Raising ----------------------------------------------------------")
     if (this.humanPlayer.bet != this.raiseAmount) {
-      this.playerCall();
+      if (!this.playerCall(amount)) {
+        alert("You cannot raise now, you need more chips.")
+        return false;
+      }
       console.log("called")
       let oldRaise = this.raiseAmount;
       let newRaise = amount + this.raiseAmount;
@@ -296,7 +299,7 @@ class Game {
               $('.control-button:nth-of-type(1)').css("visibility", "visible");
               $('.control-button:nth-of-type(2)').css("visibility", "hidden");
             }
-            if (this.subRound == 1 || player.chips == 0) {
+            if (this.subRound != 0 || player.chips == 0) {
               $('.control-button:nth-of-type(3)').css("visibility", "hidden");
             } else {
               $('.control-button:nth-of-type(3)').css("visibility", "visible");
@@ -311,9 +314,10 @@ class Game {
           }
         }
         this.subRound++;
-        console.log("     this.subround: ============" + this.subRound);
+        console.log(`%c============ Subround %s ============`, "color: blue; font-size: 15px", this.subRound);
         if (this.subRound >= 2 && this.playerList.filter((a) => { return a.status == "raised"}).length > 0) {
-          console.log("&cThe check was true here", "color: blue; font-size: 15px")
+          console.log("%cThe check was true here", "color: blue; font-size: 15px;")
+          console.log("%cBlue! %cGreen", "color: blue; font-size:15px;", "color: green; font-size:12px;");
           for (let player of this.playerList) {
             if (!player.isHuman && player.status != "folded" && player.status != "out") {
               $("#seat" + player.ID).addClass("active");
@@ -333,7 +337,7 @@ class Game {
                 $('.control-button:nth-of-type(1)').css("visibility", "visible");
                 $('.control-button:nth-of-type(2)').css("visibility", "hidden");
               }
-              if (this.subRound == 1 || player.chips == 0) {
+              if (this.subRound != 0 || player.chips == 0) {
                 $('.control-button:nth-of-type(3)').css("visibility", "hidden");
               } else {
                 $('.control-button:nth-of-type(3)').css("visibility", "visible");
@@ -351,7 +355,7 @@ class Game {
       }
        else {
         this.subRound = 0;
-        console.log("&cSubround", "color: blue; font-size: 13px")
+        console.log("%cSubround %s", "color: blue; font-size: 15px", this.subround)
         this.didSomeoneRaise = false;
         this.resetRaises();
         this.subRoundStatus = "active"
@@ -361,7 +365,7 @@ class Game {
     this.subRoundStatus = "active"
     this.didSomeoneRaise = false;
     this.incrementRound();
-    console.log("     Round =============================" + this.round)
+    console.log("%c============================= Round %s =============================", "color: blue; font-size: 17px", this.round)
 
     if (this.round == 1) {
       this.dealFlopCards()
