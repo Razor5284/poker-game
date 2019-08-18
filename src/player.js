@@ -43,7 +43,7 @@ export default class Player {
       return false;
     } else {
        console.log("In Raise: player"+this.ID+" amount " + amount + " this.bet " + this.bet)
-      this.bet = amount;
+      this.bet += amount;
        console.log("new this.bet "+ this.bet + "--------------")
       this.removeChips(amount);
       this.game.addToPot(amount);
@@ -57,7 +57,7 @@ export default class Player {
   Call(otherPlayersBet) {
      console.log("In call: player" + this.ID)
      console.log("Value supposed to be passed through: " + (this.game.raiseAmount))
-    let betDifference = Math.abs(this.bet < otherPlayersBet ? this.bet - otherPlayersBet : otherPlayersBet - this.bet);
+    let betDifference = Math.abs(this.bet < otherPlayersBet ? otherPlayersBet - this.bet : this.bet - otherPlayersBet);
      console.log(" betDifference= " + betDifference + " otherPlayersBet("+otherPlayersBet+") - " + "this.bet("+this.bet+")")
     if (this.chips < betDifference) {
       // create a split pot here instead of returning false

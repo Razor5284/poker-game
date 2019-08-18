@@ -133,8 +133,8 @@ body .container {
   top: 125px;
   left: 350px;
   position: absolute;
-  animation-name: pot;
-  animation-duration: 4s;
+  /* animation-name: pot;
+  animation-duration: 4s; */
 }
 #board {
   top: 60px;

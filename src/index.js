@@ -315,43 +315,43 @@ class Game {
         }
         this.subRound++;
         console.log(`%c============ Subround %s ============`, "color: blue; font-size: 15px", this.subRound);
-        if (this.subRound >= 2 && this.playerList.filter((a) => { return a.status == "raised"}).length > 0) {
-          console.log("%cThe check was true here", "color: blue; font-size: 15px;")
-          console.log("%cBlue! %cGreen", "color: blue; font-size:15px;", "color: green; font-size:12px;");
-          for (let player of this.playerList) {
-            if (!player.isHuman && player.status != "folded" && player.status != "out") {
-              $("#seat" + player.ID).addClass("active");
-              await this.timeout(getRandomInt(500, 500)) // change this back to 5000 or 8000 (ms)
-              if (!this.didSomeoneRaise && player.bet == this.raiseAmount) {
-                return player.Check();
-              } else if (!player.Call(this.raiseAmount)) {
-                return player.Fold();
-              }
-              this.updateDisplay(player);
-              $("#seat" + player.ID).removeClass("active");
-            } else if (player.isHuman && player.status != "folded" && player.status != "out") {
-              if (this.didSomeoneRaise && this.didSomeoneRaise != this.humanPlayer) {
-                $('.control-button:nth-of-type(1)').css("visibility", "hidden");
-                $('.control-button:nth-of-type(2)').css("visibility", "visible");
-              } else {
-                $('.control-button:nth-of-type(1)').css("visibility", "visible");
-                $('.control-button:nth-of-type(2)').css("visibility", "hidden");
-              }
-              if (this.subRound != 0 || player.chips == 0) {
-                $('.control-button:nth-of-type(3)').css("visibility", "hidden");
-              } else {
-                $('.control-button:nth-of-type(3)').css("visibility", "visible");
-              }
-              $("#seat" + player.ID).addClass("active");
-              $("#controls").children(".control-button").removeClass("inactive");
-              this.humanPlayer = player;
-              await this.playerFinished();
-              this.updateDisplay(player);
-              $("#seat" + player.ID).removeClass("active");
-              $("#controls").children(".control-button").addClass("inactive");
-            }
-          }
-        }
+        // if (this.subRound >= 2 && this.playerList.filter((a) => { return a.status == "raised"}).length > 0) {
+        //   console.log("%cThe check was true here", "color: blue; font-size: 15px;")
+        //   console.log("%cBlue! %cGreen", "color: blue; font-size:15px;", "color: green; font-size:12px;");
+        //   for (let player of this.playerList) {
+        //     if (!player.isHuman && player.status != "folded" && player.status != "out") {
+        //       $("#seat" + player.ID).addClass("active");
+        //       await this.timeout(getRandomInt(500, 500)) // change this back to 5000 or 8000 (ms)
+        //       if (!this.didSomeoneRaise && player.bet == this.raiseAmount) {
+        //         return player.Check();
+        //       } else if (!player.Call(this.raiseAmount)) {
+        //         return player.Fold();
+        //       }
+        //       this.updateDisplay(player);
+        //       $("#seat" + player.ID).removeClass("active");
+        //     } else if (player.isHuman && player.status != "folded" && player.status != "out") {
+        //       if (this.didSomeoneRaise && this.didSomeoneRaise != this.humanPlayer) {
+        //         $('.control-button:nth-of-type(1)').css("visibility", "hidden");
+        //         $('.control-button:nth-of-type(2)').css("visibility", "visible");
+        //       } else {
+        //         $('.control-button:nth-of-type(1)').css("visibility", "visible");
+        //         $('.control-button:nth-of-type(2)').css("visibility", "hidden");
+        //       }
+        //       if (this.subRound != 0 || player.chips == 0) {
+        //         $('.control-button:nth-of-type(3)').css("visibility", "hidden");
+        //       } else {
+        //         $('.control-button:nth-of-type(3)').css("visibility", "visible");
+        //       }
+        //       $("#seat" + player.ID).addClass("active");
+        //       $("#controls").children(".control-button").removeClass("inactive");
+        //       this.humanPlayer = player;
+        //       await this.playerFinished();
+        //       this.updateDisplay(player);
+        //       $("#seat" + player.ID).removeClass("active");
+        //       $("#controls").children(".control-button").addClass("inactive");
+        //     }
+        //   }
+        // }
       }
        else {
         this.subRound = 0;
@@ -411,14 +411,14 @@ class Game {
     let otherPlayer = this.didSomeoneRaise;
     if (this.subRound == 0) {
       if (otherPlayer) {
-        if (otherPlayer.status == "raised" && otherPlayer != player) {
+        if (otherPlayer.status === "raised" && otherPlayer.ID != player.ID) {
           someoneRaised = otherPlayer;
         }
       }
       this.doRandomPlayerAction(player, someoneRaised);
     } else {
       if (otherPlayer) {
-        if (otherPlayer.status == "raised" && otherPlayer != player) {
+        if (otherPlayer.status === "raised" && otherPlayer.ID != player.ID) {
           someoneRaised = otherPlayer;
         } else if (otherPlayer.status != "raised" && otherPlayer != player) {
           someoneRaised = false;
@@ -550,7 +550,7 @@ class Game {
       $("#card-evaluation").children("p").text("");
       $('#Call').text("Call");
       $(".player").removeClass("active");
-      $("#seat" + this.winner.ID).removeClass("winner");
+      $(".winner").removeClass("winner");
       $("control-button").css("visibility", "visible");
     }
   }
@@ -696,49 +696,40 @@ class Game {
     if (!ranks) {
       return false;
     } else {
-      winner.push(ranks.reduce((lowest, current) => current[1] < lowest[1] ? current : lowest));
+      ranks = ranks.sort((a, b) => a[1] - b[1])
+      winner = ranks.filter(a => ranks[0][1] === a[1])
+      console.log(winner)
     }
-    if (winner.length == 1) {
+    if (winner.length === 1) {
       console.log(this.playerList);
       console.log(winner);
       console.log("WHEN 2 PLAYER ERROR")
-      this.winner = this.getPlayerById([winner[0][0]]);
+      this.winner = this.getPlayerById(winner[0][0]);
       $("#seat" + winner[0][0]).addClass("winner");
       $("#right-sidebar").children("a").text("Winner");
-      $("#card-evaluation").children("p").append("The winner is " + this.winner.name + ", who won with " + winner[0][2] + " and a score of " + winner[0][1]);
+      $("#card-evaluation").children("p").text("The winner is " + this.winner.name + ", who won with " + winner[0][2] + " and a score of " + winner[0][1]);
       this.winner.addChips(this.pot);
       this.resetPot();
-      console.log(this)
       this.updateDisplay(this.winner);
     } else {
       // If there are multiple winners
       $("#right-sidebar").children("a").text("Winners")
-      $("#card-evaluation").text("The winners are ");
+      $("#card-evaluation").children("p").text("The winners are ");
+      let potSize = Math.floor(this.pot / winner.length)
       for (let i = 0; i < winner.length; i++) {
-        let winnerName = this.playerList[winner[i][0]].name
-        $("#card-evaluation").append(winnerName + " and ");
+        let winnerInfo = this.playerList[winner[i][0]]
+        $("#seat" + winnerInfo.ID).addClass("winner");
+        winnerInfo.addChips(potSize);
+        $("#card-evaluation").children("p").append(winnerInfo.name + " and ");
+        this.updateDisplay(winnerInfo);
       }
-      $("#card-evaluation").append("who won with " + winner[0][2] + " and a score of " + winner[0][1]);
+      $("#card-evaluation").children("p").append("who won with ", winner[0][2], " and a score of ", winner[0][1], ". Each will get a winning of ", potSize, ".");
       //split pot between equally
       this.resetPot();
-      this.updateDisplay(this.winner);
     }
     this.checkFinalWinner();
     // JS user storage to increase win count, win %, games played, overall profit etc
   }
-
-  // winnerByDefault(player) {
-  //   this.winner = player
-  //   if (this.pot > 0) {
-  //     this.winner.addChips(this.pot);
-  //   }
-  //   this.resetPot();
-  //   $("#seat" + this.winner.ID).addClass("winner");
-  //   $("#right-sidebar").children("a").text("Winner");
-  //   $("#card-evaluation").children("p").append("The winner is " + this.winner.name + ", who won because everyone else folded");
-  //   this.updateDisplay(this.winner);
-  //   this.checkFinalWinner();
-  // }
 
   async checkFinalWinner() {
     for (let player of theGame.playerList) {
@@ -759,8 +750,6 @@ class Game {
   }
 
   freshGame() {
-    $(".player").removeClass("active");
-    $("#seat" + this.winner.ID).removeClass("winner");
     this.round = 0;
     this.turn = 0;
     this.pot = 0;
@@ -778,7 +767,11 @@ class Game {
     this.resetRaises();
     this.dealCards();
     this.updateDisplay("reset");
-    $("#right-sidebar").children("a").text("Card Ranking")
+    $(".player").removeClass("active");
+    $(".winner").removeClass("winner");
+    $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 100% 0 0)");
+    $("#right-sidebar").children("a").text("Card Ranking");
+    $("#card-evaluation").children("p").text("");
     $("#controls").children(".control-button").addClass("inactive");
     $("#pot").css("visibility", "visible");
     $(".button-copy").css("display", "block");
@@ -963,4 +956,5 @@ $(document).ready(function () {
 * - need to split the pot if one person goes "all in" and others then raise after him, the ones that raise after are then betting on the second pot and the first pot, and the one that went all in beforehand is betting only on the first pot
 * - need to split the pot between two people if they have the same cards if they both win
 * - Final winner continues to run the game loop instead of calling stopGame()
+* - Add a scale to show users what their score means.
 */
