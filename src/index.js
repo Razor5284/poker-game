@@ -330,6 +330,7 @@ class Game {
       }
     }
     this.resetRaises();
+    this.subRound = 0;
     this.subRoundStatus = "active"
     this.didSomeoneRaise = false;
     this.incrementRound();
@@ -588,7 +589,7 @@ class Game {
     const board = this.cards.join(" ") + " " + this.humanPlayer.cards[0] + " " + this.humanPlayer.cards[1] // GIVES ERRORS IF THERES ONLY 2 PLAYERS
     const rank = rankBoard(board)
     const name = rankDescription[rank]
-    if (this.humanPlayer.status != "folded") {
+    if (this.humanPlayer.status != "folded" && this.humanPlayer.status != "out") {
       $("#card-evaluation").children("p").text("Combined with the cards on the table, you have " + name + ". ");
       if (name == 'A Pair') {
         $("#card-evaluation").children("p").append("<p>With a pair, there is a low chance of you having a winning hand. The higher the pair is, the stronger the chance of winning (e.g. a pair of Jacks vs a pair of 2s).</p><p>If you have a pair with the table, and someone else also has this pair, whoever has the highest other card in their hand wins (e.g. both players have a pair of Kings, one has a 3, and the other has a 5, the player with a 5 wins), otherwise the pot is split between the winners.</p>");
@@ -622,7 +623,7 @@ class Game {
         $("#card-evaluation").children("p").append("<p>You have the strongest hand in the game, play as you please!</p><p>You should probably raise to increase your possible winnings.</p><p>Bear in mind, playing too aggressively may cause other players to fold too early.</p>");
         $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 100% 0 0)");
       }
-    } else {
+    } else if (this.humanPlayer.status != "folded" && this.humanPlayer.status != "out") {
       $("#card-evaluation").children("p").text("Combined with the cards on the table, you had " + name + ". ");
       if (name == 'A Pair') {
         $("#card-evaluation").children("p").append("<p>With a pair, there is a low chance of you having a winning hand. You probably made a good call by folding here, as it's quite possible other players have a stronger hand.</p>");
@@ -691,7 +692,7 @@ class Game {
       let potSize = Math.floor(this.pot / winner.length)
       for (let i = 0; i < winner.length; i++) {
         let winnerInfo = this.playerList[winner[i][0]]
-        if (winnerInfo.humanPlayer) {
+        if (winnerInfo == this.humanPlayer) {
           let roundsWon = (JSON.parse(window.localStorage.getItem('roundsWon')) + 1)
           window.localStorage.setItem('roundsWon', roundsWon);
         }
