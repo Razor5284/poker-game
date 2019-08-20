@@ -15,7 +15,7 @@
 						<div class="form--container -inline">
 							<div class="form--field -short">
 							<label for="initialChips">Starting Chip Count: </label>
-							<input type="number" class="form--element" id="initialChips" required min="100" max="50000" step="50" value="100">
+							<input type="number" class="form--element" id="initialChips" required min="100" max="50000" step="50" value="1000">
 							</div>
 							<div class="form--field -short">
 							<label for="playercount">Number of Opponents: </label>
@@ -30,8 +30,18 @@
 			</div>
 		</div>
 		<div class="main">
-			<div class="sidebar" id="left-sidebar">Left Sidebar</div>
-				<div class="content wrapper">
+			<div class="sidebar" id="left-sidebar"><h3>Your Record</h3>
+				<div class="player-record">
+					<div id="games-played"></div>
+					<div id="rounds-played"></div>
+					<div id="rounds-won"></div>
+					<div id="games-won"></div>
+					<div id="profit"></div>
+					<div id="win-rate"></div>
+					<div class="clear-records-button" id="clear">Clear Record</div>
+				</div>
+			</div>
+			<div class="content wrapper">
 				<div class="content-inner" id="game-table">
 					<div id="seat0" class="player" style="visibility: hidden;">
 						<div class="card1"><img src="/cards/purple_back.png" alt=""></div>
@@ -176,11 +186,11 @@
 					</div>
 				</div>
 			</div>
-			<div class="sidebar" id="right-sidebar"><a>Card Ranking</a>
-			<div id="card-evaluation" style="text-align: left;">
-			<p>
-				</p>
-			</div>
+			<div class="sidebar" id="right-sidebar"><h3>Card Ranking</h3>
+				<div id="card-evaluation" style="text-align: left;">
+				<p>
+					</p>
+				</div>
 				<div id='strength-meter-container'>
 					<div id="strength-meter">
 						<a style="color: black;">Card Strength Meter</a>
@@ -209,6 +219,11 @@
 					<div class="control-button inactive"><div id="Fold">Fold</div></div>
 				</div>
 			</div>
+		</div>
+		<div class="modal-popup" >
+			<div><a>New or existing player?</a></div>
+			<div class="button" id="new-player">New Player</div>
+			<div class="button" id="returning-player">Returning Player</div>
 		</div>
 	</div>
 </body

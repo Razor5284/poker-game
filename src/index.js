@@ -275,17 +275,22 @@ class Game {
         for (let player of this.playerList) {
           if (this.playerList.filter((a) => { return (a.status == "folded" || a.status == "out") && a != player }).length == (this.playerList.length - 1)) {
               this.winner = player
+              if (this.winner == this.humanPlayer) {
+                let roundsWon = (JSON.parse(window.localStorage.getItem('roundsWon')) + 1)
+                window.localStorage.setItem('roundsWon', roundsWon);
+                alert("Don't cheat.")
+              }
               this.winner.addChips(this.pot);
               this.resetPot();
               $("#seat" + this.winner.ID).addClass("winner");
-              $("#right-sidebar").children("a").text("Winner");
+              $("#right-sidebar").children("h3").text("Winner");
               $("#card-evaluation").children("p").text("The winner is " + this.winner.name + ", who won because everyone else folded");
               this.updateDisplay(this.winner);
               return this.checkFinalWinner();
 
           } else if (!player.isHuman && player.status != "folded" && player.status != "out") {
             $("#seat" + player.ID).addClass("active");
-            await this.timeout(getRandomInt(500, 500)) // change this back to 5000 or 8000 (ms)
+            await this.timeout(getRandomInt(500, 500))
             this.simulateBetting(player);
             this.updateDisplay(player);
             $("#seat" + player.ID).removeClass("active");
@@ -315,43 +320,6 @@ class Game {
         }
         this.subRound++;
         console.log(`%c============ Subround %s ============`, "color: blue; font-size: 15px", this.subRound);
-        // if (this.subRound >= 2 && this.playerList.filter((a) => { return a.status == "raised"}).length > 0) {
-        //   console.log("%cThe check was true here", "color: blue; font-size: 15px;")
-        //   console.log("%cBlue! %cGreen", "color: blue; font-size:15px;", "color: green; font-size:12px;");
-        //   for (let player of this.playerList) {
-        //     if (!player.isHuman && player.status != "folded" && player.status != "out") {
-        //       $("#seat" + player.ID).addClass("active");
-        //       await this.timeout(getRandomInt(500, 500)) // change this back to 5000 or 8000 (ms)
-        //       if (!this.didSomeoneRaise && player.bet == this.raiseAmount) {
-        //         return player.Check();
-        //       } else if (!player.Call(this.raiseAmount)) {
-        //         return player.Fold();
-        //       }
-        //       this.updateDisplay(player);
-        //       $("#seat" + player.ID).removeClass("active");
-        //     } else if (player.isHuman && player.status != "folded" && player.status != "out") {
-        //       if (this.didSomeoneRaise && this.didSomeoneRaise != this.humanPlayer) {
-        //         $('.control-button:nth-of-type(1)').css("visibility", "hidden");
-        //         $('.control-button:nth-of-type(2)').css("visibility", "visible");
-        //       } else {
-        //         $('.control-button:nth-of-type(1)').css("visibility", "visible");
-        //         $('.control-button:nth-of-type(2)').css("visibility", "hidden");
-        //       }
-        //       if (this.subRound != 0 || player.chips == 0) {
-        //         $('.control-button:nth-of-type(3)').css("visibility", "hidden");
-        //       } else {
-        //         $('.control-button:nth-of-type(3)').css("visibility", "visible");
-        //       }
-        //       $("#seat" + player.ID).addClass("active");
-        //       $("#controls").children(".control-button").removeClass("inactive");
-        //       this.humanPlayer = player;
-        //       await this.playerFinished();
-        //       this.updateDisplay(player);
-        //       $("#seat" + player.ID).removeClass("active");
-        //       $("#controls").children(".control-button").addClass("inactive");
-        //     }
-        //   }
-        // }
       }
        else {
         this.subRound = 0;
@@ -391,8 +359,8 @@ class Game {
   }
 
   simulateBetting(player) {
-    if (player.chips > 0 && player.status != "folded") {
-      // Let Players Raise/Match/Fold
+    if (player.chips >= 0 && player.status != "folded") {
+      // Let Players Raise/Call/Fold
       this.simulatePlayer(player);
       switch (player.status) {
         case "called":
@@ -457,8 +425,6 @@ class Game {
           if (!player.Call(oldRaise)) {
             return this.doRandomPlayerAction(player, someoneRaised);
           }
-          // newRaise += oldRaise
-          // console.log("this.raise: " + newRaise)
           this.raiseAmount = newRaise + oldRaise
           if (!player.Raise(newRaise)) {
             this.raiseAmount = oldRaise;
@@ -533,6 +499,19 @@ class Game {
         $(idString + player.ID).removeClass("folded");
       }
 
+      if (player.isHuman) {
+        let numOfGames = JSON.parse(window.localStorage.getItem('numOfGames'))
+        let numOfRounds = JSON.parse(window.localStorage.getItem('numOfRounds'))
+        let numOfWins = JSON.parse(window.localStorage.getItem('numOfWins'))
+        let winRate = Math.round((numOfWins / numOfGames) * 100) / 100
+        $("#left-sidebar").children(".player-record").children("#games-played").text("Games played: " + numOfGames);
+        $("#left-sidebar").children(".player-record").children("#rounds-played").text("Rounds played: " + numOfRounds);
+        $("#left-sidebar").children(".player-record").children("#rounds-won").text("Rounds Won: " + JSON.parse(window.localStorage.getItem('roundsWon')));
+        $("#left-sidebar").children(".player-record").children("#games-won").text("Number of Wins: " + numOfWins);
+        $("#left-sidebar").children(".player-record").children("#profit").text("Total Profit: " + JSON.parse(window.localStorage.getItem('profitAmount')));
+        $("#left-sidebar").children(".player-record").children("#win-rate").text("Win Rate: " + winRate + "%");
+      }
+
       if (player.status == "folded") {
         $(idString + player.ID).addClass("folded");
         $(idString + player.ID).children(".card1").children("img").attr("src", "/cards/gray_back.png");
@@ -565,12 +544,6 @@ class Game {
       ) {
         player.status = "active";
       }
-      // This needs to be considered when users go "all in", but can't be placed in resetRaises()
-      // else if (
-      //   player.chips > 0 && player.status != "folded"
-      // ) {
-      //   player.status = "split"
-      //   }
     }
   }
 
@@ -581,7 +554,7 @@ class Game {
       } else {
         $('#RaiseAmount').attr("max", this.humanPlayer.chips);
       }
-      $('#Call').text("Call " + this.raiseAmount);
+      $('#Call').text("Call " + (this.raiseAmount - this.humanPlayer.bet));
       $("#Check").unbind();
       $("#Call").unbind();
       $("#Raise").unbind();
@@ -692,7 +665,6 @@ class Game {
       }
     }
     let winner = []
-    // can't reduce an empty array, check if(!ranks) -> return false;
     if (!ranks) {
       return false;
     } else {
@@ -701,49 +673,73 @@ class Game {
       console.log(winner)
     }
     if (winner.length === 1) {
-      console.log(this.playerList);
-      console.log(winner);
-      console.log("WHEN 2 PLAYER ERROR")
       this.winner = this.getPlayerById(winner[0][0]);
+      if (this.winner == this.humanPlayer) {
+        let roundsWon = (JSON.parse(window.localStorage.getItem('roundsWon')) + 1)
+        window.localStorage.setItem('roundsWon', roundsWon);
+      }
       $("#seat" + winner[0][0]).addClass("winner");
-      $("#right-sidebar").children("a").text("Winner");
+      $("#right-sidebar").children("h3").text("Winner");
       $("#card-evaluation").children("p").text("The winner is " + this.winner.name + ", who won with " + winner[0][2] + " and a score of " + winner[0][1]);
       this.winner.addChips(this.pot);
       this.resetPot();
       this.updateDisplay(this.winner);
     } else {
       // If there are multiple winners
-      $("#right-sidebar").children("a").text("Winners")
+      $("#right-sidebar").children("h3").text("Winners")
       $("#card-evaluation").children("p").text("The winners are ");
       let potSize = Math.floor(this.pot / winner.length)
       for (let i = 0; i < winner.length; i++) {
         let winnerInfo = this.playerList[winner[i][0]]
+        if (winnerInfo.humanPlayer) {
+          let roundsWon = (JSON.parse(window.localStorage.getItem('roundsWon')) + 1)
+          window.localStorage.setItem('roundsWon', roundsWon);
+        }
         $("#seat" + winnerInfo.ID).addClass("winner");
         winnerInfo.addChips(potSize);
         $("#card-evaluation").children("p").append(winnerInfo.name + " and ");
         this.updateDisplay(winnerInfo);
       }
       $("#card-evaluation").children("p").append("who won with ", winner[0][2], " and a score of ", winner[0][1], ". Each will get a winning of ", potSize, ".");
-      //split pot between equally
       this.resetPot();
     }
     this.checkFinalWinner();
-    // JS user storage to increase win count, win %, games played, overall profit etc
   }
 
   async checkFinalWinner() {
-    for (let player of theGame.playerList) {
-      if (player.chips == 0 && player != theGame.winner)
-        player.status = "out"
-    }
     theGame.playerList = theGame.playerList.filter(player => {
+      if (player.isHuman && player.status !== "out" && player.status !== "folded") {
+        let roundsPlayed = (JSON.parse(window.localStorage.getItem('numOfRounds')) + 1)
+        window.localStorage.setItem('numOfRounds', roundsPlayed);
+      }
       if (player.chips <= 0 && player != theGame.winner) {
+        player.status = "out"
+        if (player.isHuman) {
+          let gamesPlayed = (JSON.parse(window.localStorage.getItem('numOfGames')) + 1)
+          window.localStorage.setItem('numOfGames', gamesPlayed);
+          this.updateDisplay(this.humanPlayer)
+        }
         return false;
       }
       player.status = 'active';
       return true;
     })
-    // Do pot split logic here
+    if (theGame.playerList.length === 1) {
+      $("#right-sidebar").children("h3").text("Final Winner")
+      $('#card-evaluation').children('p').text('The final winner is ' + theGame.winner.name + '!')
+      if (theGame.winner === theGame.humanPlayer) { // Saves the player's profit and total number of wins to localstorage
+        let gamesPlayed = (JSON.parse(window.localStorage.getItem('numOfGames')) + 1)
+        window.localStorage.setItem('numOfGames', gamesPlayed);
+        theGame.humanPlayer.wins ++
+        let profit = (JSON.parse(window.localStorage.getItem('profitAmount')) + theGame.humanPlayer.chips)
+        window.localStorage.setItem('profitAmount', profit);
+        let wins = (JSON.parse(window.localStorage.getItem('numOfWins')) + 1)
+        window.localStorage.setItem('numOfWins', wins);
+      }
+      this.updateDisplay(this.humanPlayer)
+      this.stopGame()
+      return
+    }
     await this.timeout(5000);
     theGame.freshGame();
     return new Promise(resolve => resolve(false));
@@ -770,7 +766,7 @@ class Game {
     $(".player").removeClass("active");
     $(".winner").removeClass("winner");
     $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 100% 0 0)");
-    $("#right-sidebar").children("a").text("Card Ranking");
+    $("#right-sidebar").children("h3").text("Card Ranking");
     $("#card-evaluation").children("p").text("");
     $("#controls").children(".control-button").addClass("inactive");
     $("#pot").css("visibility", "visible");
@@ -797,13 +793,13 @@ class Game {
       this.stopGame()
     }
     this.shouldStartRunning = true;
-    let waitForGameLoopToBeReadyToStart = setInterval(async () => {
+    let gameLoopReadyToStart = setInterval(async () => {
       if (!this.running && this.shouldStartRunning) {
-        clearInterval(waitForGameLoopToBeReadyToStart);
+        clearInterval(gameLoopReadyToStart);
         await this.gameLoop();
       }
       if (!this.shouldStartRunning) {
-        clearInterval(waitForGameLoopToBeReadyToStart);
+        clearInterval(gameLoopReadyToStart);
       }
     }, 500)
   }
@@ -830,9 +826,45 @@ class Game {
   }
 }
 
+function playerNewOrOld() {
+  return new Promise(resolve => {
+      $("#new-player").click(_ => {
+        $(".modal-popup").css('visibility', 'hidden');
+        window.localStorage.clear();
+        window.localStorage.setItem('numOfGames', 0);
+        window.localStorage.setItem('numOfRounds', 0);
+        window.localStorage.setItem('roundsWon', 0)
+        window.localStorage.setItem('profitAmount', 0);
+        window.localStorage.setItem('numOfWins', 0);
+        $("#left-sidebar").children(".player-record").children("#games-played").text("Games played: 0");
+        $("#left-sidebar").children(".player-record").children("#rounds-played").text("Rounds played: 0");
+        $("#left-sidebar").children(".player-record").children("#rounds-won").text("Rounds Won: 0");
+        $("#left-sidebar").children(".player-record").children("#games-won").text("Number of Wins: 0");
+        $("#left-sidebar").children(".player-record").children("#profit").text("Total Profit: 0");
+        $("#left-sidebar").children(".player-record").children("#win-rate").text("Win Rate: 0%");
+        resolve()
+      });
+
+      $("#returning-player").click(_ => {
+        $(".modal-popup").css('visibility', 'hidden');
+        resolve()
+      });
+
+  });
+}
+
 var theGame;
 var lastGame;
-async function newGame(playerCount, initialChips, playerName) {
+async function newGame(playerCount, initialChips, playerName, continuedGame) {
+  if (!continuedGame) {
+    await playerNewOrOld()
+  } else {
+    $("#controls").children(".control-button").addClass("inactive");
+    $(".menu-button").removeClass("open");
+    $(".button-copy").css("display", "block");
+    $("#pot").css("visibility", "visible");
+  }
+
   let game = new Game(playerCount, initialChips);
   for (let i = 0; i < playerCount; i++) {
     if (i === 2) {
@@ -847,7 +879,8 @@ async function newGame(playerCount, initialChips, playerName) {
   }
   theGame = game;
   theGame.dealCards();
-
+  theGame.updateDisplay("reset");
+  theGame.freshGame();
   const initializeGame = function () {
     for (let player of theGame.playerList) {
       theGame.updateDisplay(player);
@@ -862,7 +895,6 @@ async function newGame(playerCount, initialChips, playerName) {
   theGame.startGame();
 }
 
-// Use muted Code for training round to show all cards
 function spawnCards(tempList, idString, classString) {
   for (let i = 0; i < tempList.length; i++) {
     let node = document.createElement("img");
@@ -875,10 +907,7 @@ function spawnCards(tempList, idString, classString) {
     } else {
       className = "." + classString;
     }
-    // $(str).css('background-image', "url(" + node.src + ")");
     $("#" + idString).children(className).children("img").attr("src", node.src).attr("alt", node.alt);
-    //code for adding controls to the local player - adapt it for chips for everyone
-    // $("#" + idString).children(".playerinfo").append(" <div id='controls-container'> <div id='controls'><div><button id='Check'>Check</button></div><div><button id='Call'>Call</button></div><div>Amount: <input id='RaiseAmount' type='number' name='amount' max='' min='10' step='5' value='10'><br> <!-- Max = value of chips --><button id='Raise' value='Raise'></div><div><button id='Fold'>Fold</button></div>Controls / Bid / Pass / Add Money</div></div> ");
   }
 }
 
@@ -889,20 +918,15 @@ function getRandomInt(min, max) {
 }
 
 $(document).ready(function () {
-  // JQuery scripts for buttons on menu popup
+  // JQuery scripts for buttons on menu
   $("#playnewgame").click(_ => {
-
+    let continuedGame = true;
     console.log('%c NEW GAME', 'font-weight: bold; font-size: 28px;')
     newGame(
       Number($("#playerCount").val()),
       Number($("#initialChips").val()),
-      $("#playerName").val())
-    $("#controls").children(".control-button").addClass("inactive");
-    $(".menu-button").toggleClass("open");
-    $(".button-copy").css("display", "block");
-    $("#pot").css("visibility", "visible");
-    theGame.updateDisplay("reset");
-    theGame.freshGame();
+      $("#playerName").val(),
+      continuedGame)
     console.log(theGame)
   });
 
@@ -936,6 +960,21 @@ $(document).ready(function () {
     this.subRoundStatus = "active";
   });
 
+  $("#clear").click(_ => {
+    window.localStorage.clear();
+    window.localStorage.setItem('numOfGames', 0);
+    window.localStorage.setItem('numOfRounds', 0);
+    window.localStorage.setItem('roundsWon', 0);
+    window.localStorage.setItem('profitAmount', 0);
+    window.localStorage.setItem('numOfWins', 0);
+    $("#left-sidebar").children(".player-record").children("#games-played").text("Games played: 0");
+    $("#left-sidebar").children(".player-record").children("#rounds-played").text("Rounds played: 0");
+    $("#left-sidebar").children(".player-record").children("#rounds-won").text("Rounds Won: 0");
+    $("#left-sidebar").children(".player-record").children("#games-won").text("Number of Wins: 0");
+    $("#left-sidebar").children(".player-record").children("#profit").text("Total Profit: 0");
+    $("#left-sidebar").children(".player-record").children("#win-rate").text("Win Rate: 0%");
+  });
+
   // Script for modal popup and close buttons
   let modal = document.getElementById("modal-popup");
   $("#poker-hands-button").click(function () {
@@ -953,8 +992,7 @@ $(document).ready(function () {
 
 
 /* //TODO:
-* - need to split the pot if one person goes "all in" and others then raise after him, the ones that raise after are then betting on the second pot and the first pot, and the one that went all in beforehand is betting only on the first pot
-* - need to split the pot between two people if they have the same cards if they both win
-* - Final winner continues to run the game loop instead of calling stopGame()
 * - Add a scale to show users what their score means.
+* - Add chips (visual aid) to center pot w/ animation
+* - Sidepot functionality
 */

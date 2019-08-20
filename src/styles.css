@@ -133,8 +133,8 @@ body .container {
   top: 125px;
   left: 350px;
   position: absolute;
-  /* animation-name: pot;
-  animation-duration: 4s; */
+  animation-name: pot;
+  animation-duration: 4s;
 }
 #board {
   top: 60px;
@@ -189,6 +189,27 @@ body .container {
   border: white ridge;
   border-width: 3px 3px 3px 0px;
   border-radius: 0px 7px 7px 0px;
+}
+.player-record {
+  text-align: left;
+}
+.clear-records-button {
+  display: inline-block;
+  background-color: #3498DB;
+  height: 45px;
+  border-radius: 20px;
+  line-height: 45px;
+  text-align: center;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 0.875em;
+  border: none;
+  font-weight: 700;
+  padding: 0 34px;
+}
+.clear-records-button:hover {
+  background-color: #217dbb;
+  cursor: pointer;
 }
 #right-sidebar {
   border: white ridge;
@@ -260,6 +281,33 @@ div#poker-hands-button {
   .modal-content {
     width: 100%;
   }
+}
+.modal-popup {
+  background-color: #FAFAFA;
+  padding: 15px 20px;
+  color: black;
+  text-align: center;
+  border-radius: 5px;
+  width: 320px;
+  height: 100px;
+  cursor: default;
+  z-index: 2;
+  position: absolute;
+  top: 32%;
+  left: 40.4%;
+}
+#new-player {
+  float: left;
+  display: block;
+  width: 90px;
+  margin-top: 2em;
+}
+#returning-player {
+  float: right;
+  display: block;
+  width: 90px;
+  margin-top: 2em;
+  line-height: 20px;
 }
 
 /* Changes players brightness when folded */
