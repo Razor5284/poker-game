@@ -1,4 +1,3 @@
-
 /*
  *
  *
@@ -14,24 +13,8 @@ export default class Player {
     this.status = "active";
     this.isHuman = false;
     this.bet = 0;
-    this.isTurn = false;
     this.cardRank;
     this.cardEval;
-  }
-
-  // Gets ID number of player
-  get IDNumber() {
-    return this.ID;
-  }
-
-  // Gets player name
-  get Name() {
-    return this.name;
-  }
-
-  // Gets players total chip count
-  get Chips() {
-    return this.chips;
   }
 
   // Adds new chips to players total chip count
@@ -44,37 +27,23 @@ export default class Player {
     this.chips -= value;
   }
 
-  // Gets players current hand
-  get Cards() {
-    return this.cards;
-  }
-
   // Adds a new card to the players hand
   addCard(card) {
     this.cards.push(card);
   }
-
-  // removeCards() {
-  // Removes all cards from players hand
-  //   this.cards = [];
-  // }
 
   Check() {
     this.status = "checked";
     this.game.advanceTurn();
   }
 
-  Bet(amount) {
-    this.game.advanceTurn();
-  }
-
   Raise(amount) {
-    if (this.chips <= amount) {
+    if (this.chips < amount) {
       return false;
     } else {
-       // console.log("In Raise: player"+this.ID+" amount " + amount + " this.bet " + this.bet)
+       console.log("In Raise: player"+this.ID+" amount " + amount + " this.bet " + this.bet)
       this.bet += amount;
-       // console.log("new this.bet "+ this.bet + "--------------")
+       console.log("new this.bet "+ this.bet + "--------------")
       this.removeChips(amount);
       this.game.addToPot(amount);
       this.status = "raised";
@@ -85,15 +54,17 @@ export default class Player {
   }
 
   Call(otherPlayersBet) {
-     // console.log("In call: player" + this.ID)
-     // console.log("Value supposed to be passed through: " + (this.game.raiseAmount - this.bet))
-    let betDifference = Math.abs(otherPlayersBet - this.bet);
-     // console.log(" betDifference= " + betDifference + " otherPlayersBet("+otherPlayersBet+") - " + "this.bet("+this.bet+")")
+     console.log("In call: player" + this.ID)
+     console.log("Value supposed to be passed through: " + (this.game.raiseAmount))
+    let betDifference = Math.abs(this.bet < otherPlayersBet ? otherPlayersBet - this.bet : this.bet - otherPlayersBet);
+     console.log(" betDifference= " + betDifference + " otherPlayersBet("+otherPlayersBet+") - " + "this.bet("+this.bet+")")
     if (this.chips < betDifference) {
+      // create a split pot here instead of returning false
+      // this.status = "All-in"
       return false;
     } else {
       this.bet += betDifference;
-       // console.log("new this.bet " + this.bet + "--------")
+       console.log("new this.bet " + this.bet + "--------")
       this.removeChips(betDifference);
       this.game.addToPot(betDifference);
       this.status = "called";
