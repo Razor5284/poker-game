@@ -504,7 +504,8 @@ class Game {
         let numOfGames = JSON.parse(window.localStorage.getItem('numOfGames'))
         let numOfRounds = JSON.parse(window.localStorage.getItem('numOfRounds'))
         let numOfWins = JSON.parse(window.localStorage.getItem('numOfWins'))
-        let winRate = Math.round((numOfWins / numOfGames) * 100) / 100
+        let winRate = Math.round((numOfWins / numOfGames) * 100)
+        Number.isNaN(winRate) ? winRate = 0 : false
         $("#left-sidebar").children(".player-record").children("#games-played").text("Games played: " + numOfGames);
         $("#left-sidebar").children(".player-record").children("#rounds-played").text("Rounds played: " + numOfRounds);
         $("#left-sidebar").children(".player-record").children("#rounds-won").text("Rounds Won: " + JSON.parse(window.localStorage.getItem('roundsWon')));
