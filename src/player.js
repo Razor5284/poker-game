@@ -15,6 +15,7 @@ export default class Player {
     this.bet = 0;
     this.cardRank;
     this.cardEval;
+    this.bettingPot = [];
   }
 
   // Adds new chips to players total chip count
@@ -41,33 +42,45 @@ export default class Player {
     if (this.chips < amount) {
       return false;
     } else {
-       console.log("In Raise: player"+this.ID+" amount " + amount + " this.bet " + this.bet)
       this.bet += amount;
-       console.log("new this.bet "+ this.bet + "--------------")
+      this.game.didSomeoneAllIn ? this.game.createSidePot() : false
       this.removeChips(amount);
       this.game.addToPot(amount);
-      this.status = "raised";
-      this.game.subRoundStatus = "raised"
+      if (this.bettingPot.indexOf(this.game.activePot) === - 1) this.bettingPot.push(this.game.activePot)
+      if (this.chips === 0) {
+        this.status = "All-In"
+        this.didRaiseAllIn = true
+        this.game.didSomeoneAllIn = true
+      }
+      else this.status = "raised"
+      this.game.subRoundStatus = "raised";
       this.game.advanceTurn();
       return true;
     }
   }
 
   Call(otherPlayersBet) {
-     console.log("In call: player" + this.ID)
-     console.log("Value supposed to be passed through: " + (this.game.raiseAmount))
     let betDifference = Math.abs(this.bet < otherPlayersBet ? otherPlayersBet - this.bet : this.bet - otherPlayersBet);
-     console.log(" betDifference= " + betDifference + " otherPlayersBet("+otherPlayersBet+") - " + "this.bet("+this.bet+")")
+    if (this.bettingPot.indexOf(this.game.activePot) === - 1) this.bettingPot.push(this.game.activePot)
     if (this.chips < betDifference) {
-      // create a split pot here instead of returning false
-      // this.status = "All-in"
-      return false;
+      this.status = "All-In"
+      this.game.didSomeoneAllIn = true
+      this.game.addToPot(this.chips)
+      this.game.pot[this.game.activePot] -= (otherPlayersBet - this.chips)
+      this.game.createSidePot()
+      this.game.addToPot(otherPlayersBet - this.chips)
+      this.removeChips(this.chips)
+      this.game.advanceTurn();
+      return true;
     } else {
       this.bet += betDifference;
-       console.log("new this.bet " + this.bet + "--------")
       this.removeChips(betDifference);
       this.game.addToPot(betDifference);
-      this.status = "called";
+      if (this.chips === 0) {
+        this.status = "All-In"
+        this.game.didSomeoneAllIn = true
+      }
+      else this.status = "called"
       this.game.advanceTurn();
       return true;
     }
@@ -77,7 +90,5 @@ export default class Player {
     // Changes the player's status to folded.
     this.status = "folded";
     this.game.advanceTurn();
-    //in jquery, change graphics of cards to folded
-    //add chips to pot
   }
 }

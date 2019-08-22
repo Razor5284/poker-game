@@ -67,8 +67,8 @@ body .container {
   background-repeat: no-repeat;
   background-size: auto;
   background-position: center;
-  margin-left: 200px;
-  margin-right: 200px;
+  margin-left: 9%;
+  margin-right: 9%;
 }
 .content .content-inner {
   margin: 0 auto;
@@ -193,24 +193,6 @@ body .container {
 .player-record {
   text-align: left;
 }
-.clear-records-button {
-  display: inline-block;
-  background-color: #3498DB;
-  height: 45px;
-  border-radius: 20px;
-  line-height: 45px;
-  text-align: center;
-  color: #fff;
-  text-transform: uppercase;
-  font-size: 0.875em;
-  border: none;
-  font-weight: 700;
-  padding: 0 34px;
-}
-.clear-records-button:hover {
-  background-color: #217dbb;
-  cursor: pointer;
-}
 #right-sidebar {
   border: white ridge;
   border-width: 3px 0px 3px 3px;
@@ -293,8 +275,9 @@ div#poker-hands-button {
   cursor: default;
   z-index: 2;
   position: absolute;
-  top: 32%;
-  left: 40.4%;
+  top: 33%;
+  left: 39%;
+  align-self: center;
 }
 #new-player {
   float: left;
@@ -416,15 +399,20 @@ div#poker-hands-button {
   background-color: #3498DB;
   height: 40px;
   border-radius: 20px;
-  line-height: 36px;
   text-align: center;
   color: #fff;
   text-transform: uppercase;
   font-size: 0.875em;
+  line-height: 2.6em;
   border: none;
   font-weight: 700;
   padding: 0 34px;
   margin: 0 auto;
+}
+@media(max-width: 1415px) {
+  .button {
+    line-height: 19px;
+  }
 }
 .button img {
   position: relative;
