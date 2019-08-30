@@ -6,12 +6,14 @@ import { setInterval } from "timers";
 import { isArray } from "util";
 const { rankBoard, rankDescription, rankCards, evaluateCards } = require('phe')
 
-/*
- *
- *
- *
- */
 class Game {
+  /**
+   * constructor - constructor for the Game class.
+   *
+   * @param  {type} playerCount  description
+   * @param  {type} initialChips description
+   * @return {type}              description
+   */
   constructor(playerCount, initialChips) {
     this.playerCount = playerCount;
     this.playerList = [];
@@ -19,12 +21,14 @@ class Game {
     this.round = 0;
     this.turn = 0;
     this.pot = [0];
+    this.previousPot = 0;
     this.activePot = 0;
     this.didSomeoneAllIn = false;
     this.cards = [];
     this.createCardList();
     this.humanPlayer;
     this.playerTurn = [];
+    this.previousRaiseAmount = 0;
     this.raiseAmount = 0;
     this.subRound = 0;
     this.subRoundStatus = "active";
@@ -32,6 +36,8 @@ class Game {
     this.didSomeoneRaise = false;
     this.running = false;
     this.shouldStopRunning = false;
+    this.debtPotCreated = 0;
+    this.playerFirstSidepot = -1;
   }
 
   // Returns player list
@@ -75,8 +81,6 @@ class Game {
   }
 
   // Advances turn count
-  // bot -> advanceTurn(false);
-  // player -> advanceTurn(true);
   advanceTurn(playerType) {
     if (this.turn < this.playerCount) {
       this.turn++
@@ -105,6 +109,8 @@ class Game {
   }
 
   createSidePot() {
+    if (this.debtPotCreated) this.debtPotCreated = 0
+    this.previousPot = this.activePot
     this.activePot ++
     this.pot.push(0)
     this.didSomeoneAllIn = false
@@ -236,20 +242,14 @@ class Game {
   }
 
   playerRaise(amount) {
-    // console.log("Raising ----------------------------------------------------------")
     if (this.humanPlayer.bet != this.raiseAmount) {
       if (!this.playerCall(amount)) {
         alert("You cannot raise now, you need more chips.")
         return false;
       }
-      // console.log("called")
       let oldRaise = this.raiseAmount;
       let newRaise = amount + this.raiseAmount;
-      // console.log(this.raiseAmount)
       this.raiseAmount = newRaise
-      // console.log("New raiseamount " + this.raiseAmount)
-      // console.log(this.humanPlayer)
-
       if (this.humanPlayer.Raise(amount)) {
         this.didSomeoneRaise = this.humanPlayer;
         return true;
@@ -262,13 +262,9 @@ class Game {
     else {
       let oldRaise = this.raiseAmount;
       let newRaise = amount + this.raiseAmount;
-      // console.log(this.raiseAmount)
       this.raiseAmount = newRaise
-      // console.log("New raiseamount " + this.raiseAmount)
-
       if (this.humanPlayer.Raise(amount)) {
         this.didSomeoneRaise = this.humanPlayer;
-        // console.log(this.didSomeoneRaise)
         return true;
       } else {
         this.raiseAmount = oldRaise;
@@ -278,7 +274,7 @@ class Game {
     }
   }
 
-  async  simulateRounds() {
+  async simulateRounds() {
     for (let i = 0; i < 2; i++) {
       if (this.subRound == 0 || (this.subRound == 1 && this.didSomeoneRaise) || this.subRound == 2) {
         for (let player of this.playerList) {
@@ -387,6 +383,7 @@ class Game {
   }
 
   simulatePlayer(player) {
+    if (this.playerFirstSidepot !== -1 && this.playerFirstSidepot === player.ID) this.playerFirstSidepot = -1;
     let someoneRaised = false;
     let otherPlayer = this.didSomeoneRaise;
     if (this.subRound == 0) {
@@ -730,7 +727,7 @@ class Game {
           }
           $("#seat" + winnersInfo.ID).addClass("winner");
           winnersInfo.addChips(potSize);
-          $("#card-evaluation").children("p").append(winnersInfo.name + "who won " + potSize + ", with ", winnersInfo.cardEval, ", a score of ", winnersInfo.cardRank, " and ");
+          $("#card-evaluation").children("p").append(winnersInfo.name + " who won " + potSize + ", with ", winnersInfo.cardEval, ", a score of ", winnersInfo.cardRank, " and ");
           this.updateDisplay(winnersInfo);
         }
       }
@@ -783,11 +780,13 @@ class Game {
     this.round = 0;
     this.turn = 0;
     this.pot = [0];
+    this.previousPot = 0;
     this.activePot = 0;
     this.didSomeoneAllIn = false;
     this.cards = [];
     this.createCardList();
     this.playerTurn = [];
+    this.previousRaiseAmount = 0;
     this.raiseAmount = 0;
     this.subRound = 0;
     this.subRoundStatus = "active";
@@ -796,6 +795,7 @@ class Game {
     this.running = false;
     this.shouldStopRunning = false;
     this.shouldStartRunning = false;
+    this.playerFirstSidepot = -1;
     this.resetRaises();
     this.dealCards();
     this.updateDisplay("reset");
@@ -991,13 +991,16 @@ $(document).ready(function () {
     this.turn = 0;
     this.pot = [0];
     this.activePot = 0;
+    this.previousPot = 0;
     this.didSomeoneAllIn = false;
     this.cards = [];
     this.humanPlayer;
     this.playerTurn = [];
+    this.previousRaiseAmount = 0;
     this.raiseAmount = 0;
     this.subRound = 0;
     this.subRoundStatus = "active";
+    this.playerFirstSidepot = -1;
   });
 
   $("#clear").click(_ => {

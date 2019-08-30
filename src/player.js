@@ -39,14 +39,27 @@ export default class Player {
   }
 
   Raise(amount) {
-    if (this.chips < amount) {
+    if (this.chips < amount + this.game.previousRaiseAmount) {
       return false;
     } else {
-      this.bet += amount;
-      this.game.didSomeoneAllIn ? this.game.createSidePot() : false
+      this.bet += amount + this.game.previousRaiseAmount;
+
+      let firstTimeAfterCreation = false
+      if (this.game.didSomeoneAllIn) {
+        let otherPlayer = this.game.playerList.filter(player => player.ID !== this.ID && player.status !== "folded").sort((a, b) => b - a)[0]
+        otherPlayer && amount <= otherPlayer.chips ? this.game.createSidePot() : false
+        this.game.playerFirstSidepot = this.ID
+        this.game.previousRaiseAmount = this.game.raiseAmount
+        this.game.raiseAmount = amount - this.game.previousRaiseAmount
+        firstTimeAfterCreation = true
+        this.game.pot[this.game.activePot] += this.game.raiseAmount
+      }
+
+      this.game.pot[this.game.activePot] += amount
+      if ((this.game.playerFirstSidepot !== -1 && this.game.playerFirstSidepot !== this.ID) || firstTimeAfterCreation === true) this.game.pot[this.game.previousPot] += this.game.previousRaiseAmount
+
       this.removeChips(amount);
-      this.game.addToPot(amount);
-      if (this.bettingPot.indexOf(this.game.activePot) === - 1) this.bettingPot.push(this.game.activePot)
+      if (this.bettingPot.indexOf(this.game.activePot) === -1) this.bettingPot.push(this.game.activePot)
       if (this.chips === 0) {
         this.status = "All-In"
         this.didRaiseAllIn = true
@@ -65,17 +78,41 @@ export default class Player {
     if (this.chips < betDifference) {
       this.status = "All-In"
       this.game.didSomeoneAllIn = true
-      this.game.addToPot(this.chips)
-      this.game.pot[this.game.activePot] -= (otherPlayersBet - this.chips)
-      this.game.createSidePot()
-      this.game.addToPot(otherPlayersBet - this.chips)
+      let firstTimeAfterCreation = false
+
+      console.log('Player', this.ID + ':chips < betDifference')
+      if (!this.game.debtPotCreated || this.game.debtPotCreated != (otherPlayersBet - this.chips)) {
+        console.log('NO debt')
+        this.game.addToPot(this.chips)
+        console.log(this.chips, 'added to the main pot')
+        this.game.pot[this.game.activePot] -= (otherPlayersBet - this.chips)
+        console.log((otherPlayersBet - this.chips), 'substracted from the main pot')
+        this.game.createSidePot()
+        firstTimeAfterCreation = true
+        this.game.addToPot(otherPlayersBet - this.chips)
+
+        this.game.playerFirstSidepot = this.ID
+        this.game.raiseAmount = (otherPlayersBet - this.chips)
+        this.game.previousRaiseAmount = this.chips
+        this.game.raiseAmount = otherPlayersBet - this.game.previousRaiseAmount
+        this.game.debtPotCreated = otherPlayersBet - this.chips
+      } else {
+        console.log('Debt')
+        this.game.pot[this.game.activePot - 1] += this.chips
+        console.log(this.chips, 'added to the main pot')
+      }
+
+      if ((this.game.playerFirstSidepot !== -1 && this.game.playerFirstSidepot !== this.ID) || firstTimeAfterCreation === true) this.game.pot[this.game.previousPot] += this.game.previousRaiseAmount
+      console.log((otherPlayersBet - this.chips), 'added to the side pot')
       this.removeChips(this.chips)
       this.game.advanceTurn();
       return true;
     } else {
       this.bet += betDifference;
       this.removeChips(betDifference);
-      this.game.addToPot(betDifference);
+
+      this.game.addToPot(betDifference - this.game.previousRaiseAmount);
+      if (this.game.playerFirstSidepot !== -1 && this.game.playerFirstSidepot !== this.ID) this.game.pot[this.game.previousPot] += this.game.previousRaiseAmount
       if (this.chips === 0) {
         this.status = "All-In"
         this.game.didSomeoneAllIn = true

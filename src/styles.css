@@ -181,7 +181,7 @@ body .container {
 
 /* Sidebars and content */
 .sidebar {
-  width: 360px;
+  width: 100%;
   text-align: center;
   height: fit-content;
 }
