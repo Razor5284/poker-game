@@ -694,9 +694,10 @@ class Game {
 
       winner = winner.map(array => array.filter(a => array[0][1] === a[1]))
     }
-    if (winner.filter(a => a.length > 0).reduce((previous, next) => {
-    if (previous.length === 0) return next
-    return previous.concat(next)}).length === 1) {
+    if (winner.filter(a => a && a.length > 0).reduce((previous, next) => {
+      if (previous.length === 0) return next
+      return previous.concat(next)
+    }).length === 1) {
       console.log(winner)
       let tempPot = winner[0][0][3]
       winner = this.getPlayerById(winner[0][0][0]);
@@ -706,8 +707,9 @@ class Game {
       }
       $("#seat" + winner.ID).addClass("winner");
       $("#right-sidebar").children("h3").text("Winner");
-      $("#card-evaluation").children("p").text("The winner is " + winner.name + ", who won with " + winner.cardEval + " and a score of " + winner.cardRank);
-      winner.addChips(this.pot[tempPot]);
+      $("#card-evaluation").children("p").text("The winner is " + winner.name + ", who won with " + winner.cardEval);
+      winner.addChips(this.pot[tempPot])
+      this.winner = winner
       this.resetPot();
       this.updateDisplay(winner);
     } else {
@@ -719,7 +721,7 @@ class Game {
         let winners = winner[i]
         let potSize = Math.floor(this.pot[i] / winners.length)
         for (let j = 0; j < winners.length; j++) {
-          let winnersInfo = this.playerList[winners[j][0]]
+          let winnersInfo = this.getPlayerById(winners[j][0])
           console.log(winnersInfo)
           if (winnersInfo == this.humanPlayer) {
             let roundsWon = (JSON.parse(window.localStorage.getItem('roundsWon')) + 1)
@@ -727,7 +729,7 @@ class Game {
           }
           $("#seat" + winnersInfo.ID).addClass("winner");
           winnersInfo.addChips(potSize);
-          $("#card-evaluation").children("p").append(winnersInfo.name + " who won " + potSize + ", with ", winnersInfo.cardEval, ", a score of ", winnersInfo.cardRank, " and ");
+          $("#card-evaluation").children("p").append(winnersInfo.name + " who won " + potSize + ", with ", winnersInfo.cardEval, " and ");
           this.updateDisplay(winnersInfo);
         }
       }
@@ -743,7 +745,7 @@ class Game {
         let roundsPlayed = (JSON.parse(window.localStorage.getItem('numOfRounds')) + 1)
         window.localStorage.setItem('numOfRounds', roundsPlayed);
       }
-      if (player.chips <= 0 && player != theGame.winner) {
+      if (player.chips <= 0 && player != this.winner) {
         player.status = "out"
         if (player.isHuman) {
           let gamesPlayed = (JSON.parse(window.localStorage.getItem('numOfGames')) + 1)
@@ -755,14 +757,14 @@ class Game {
       player.status = 'active';
       return true;
     })
-    if (theGame.playerList.length === 1) {
+    if (this.playerList.length === 1) {
       $("#right-sidebar").children("h3").text("Final Winner")
-      $('#card-evaluation').children('p').text('The final winner is ' + theGame.winner.name + '!')
-      if (theGame.winner === theGame.humanPlayer) { // Saves the player's profit and total number of wins to localstorage
+      $('#card-evaluation').children('p').text('The final winner is ' + this.winner.name + '!')
+      if (this.winner === this.humanPlayer) { // Saves the player's profit and total number of wins to localstorage
         let gamesPlayed = (JSON.parse(window.localStorage.getItem('numOfGames')) + 1)
         window.localStorage.setItem('numOfGames', gamesPlayed);
-        theGame.humanPlayer.wins ++
-        let profit = (JSON.parse(window.localStorage.getItem('profitAmount')) + theGame.humanPlayer.chips)
+        this.humanPlayer.wins ++
+        let profit = (JSON.parse(window.localStorage.getItem('profitAmount')) + this.humanPlayer.chips)
         window.localStorage.setItem('profitAmount', profit);
         let wins = (JSON.parse(window.localStorage.getItem('numOfWins')) + 1)
         window.localStorage.setItem('numOfWins', wins);
@@ -772,7 +774,7 @@ class Game {
       return
     }
     await this.timeout(5000);
-    theGame.freshGame();
+    this.freshGame();
     return new Promise(resolve => resolve(false));
   }
 
@@ -1035,7 +1037,6 @@ $(document).ready(function () {
 
 
 /* //TODO:
-* - Add a scale to show users what their score means.
 * - Add chips (visual aid) to center pot w/ animation
-* - Sidepot functionality
+* - Sidepot functionality (limit to two sidepots)
 */

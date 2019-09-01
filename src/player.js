@@ -50,7 +50,7 @@ export default class Player {
         otherPlayer && amount <= otherPlayer.chips ? this.game.createSidePot() : false
         this.game.playerFirstSidepot = this.ID
         this.game.previousRaiseAmount = this.game.raiseAmount
-        this.game.raiseAmount = amount - this.game.previousRaiseAmount
+        this.game.raiseAmount = Math.abs(amount - this.game.previousRaiseAmount)
         firstTimeAfterCreation = true
         this.game.pot[this.game.activePot] += this.game.raiseAmount
       }
@@ -85,16 +85,15 @@ export default class Player {
         console.log('NO debt')
         this.game.addToPot(this.chips)
         console.log(this.chips, 'added to the main pot')
-        this.game.pot[this.game.activePot] -= (otherPlayersBet - this.chips)
+        this.game.pot[this.game.activePot] -= Math.abs(otherPlayersBet - this.chips)
         console.log((otherPlayersBet - this.chips), 'substracted from the main pot')
         this.game.createSidePot()
         firstTimeAfterCreation = true
-        this.game.addToPot(otherPlayersBet - this.chips)
+        this.game.addToPot(Math.abs(otherPlayersBet - this.chips))
 
         this.game.playerFirstSidepot = this.ID
-        this.game.raiseAmount = (otherPlayersBet - this.chips)
+        this.game.raiseAmount = Math.abs(otherPlayersBet - this.chips)
         this.game.previousRaiseAmount = this.chips
-        this.game.raiseAmount = otherPlayersBet - this.game.previousRaiseAmount
         this.game.debtPotCreated = otherPlayersBet - this.chips
       } else {
         console.log('Debt')
@@ -111,7 +110,7 @@ export default class Player {
       this.bet += betDifference;
       this.removeChips(betDifference);
 
-      this.game.addToPot(betDifference - this.game.previousRaiseAmount);
+      this.game.addToPot(Math.abs(betDifference - this.game.previousRaiseAmount));
       if (this.game.playerFirstSidepot !== -1 && this.game.playerFirstSidepot !== this.ID) this.game.pot[this.game.previousPot] += this.game.previousRaiseAmount
       if (this.chips === 0) {
         this.status = "All-In"
