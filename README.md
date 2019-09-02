@@ -4,12 +4,10 @@ A single player web-based poker game
 
 
 ## Instructions
-Install node using 'npm install' via powershell in the root folder.
+Go to the root folder where you found this readme file (in my home directory on campus computers).
 
-Then do 'npm install -g webpack-dev-server'
+Open powershell in this directory and type 'npm start'.
 
-Then 'npm install phe'
+The server will start and open localhost:8080 in the browser.
 
-Finally, do 'npm start'
-
-Navigate to localhost:8080 in browser.
+If that doesn't load, go to http://raptor.kent.ac.uk:8081/~RL394/
