@@ -133,8 +133,6 @@ body .container {
   top: 125px;
   left: 350px;
   position: absolute;
-  animation-name: pot;
-  animation-duration: 4s;
 }
 #board {
   top: 60px;
@@ -150,16 +148,6 @@ body .container {
 #carddeck img {
   width: 100px;
   height: 88px;
-}
-
-#to-pot {
-  animation-name: chips-to-pot;
-  animation-duration: 4s;
-}
-@keyframes pot {
-  to {
-    top: -155px;
-    left: 115px;}
 }
 /* Shows the active player and winner */
 .active {

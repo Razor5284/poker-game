@@ -35,8 +35,6 @@ class Game {
     this.shouldStopRunning = false;
     this.debtPotCreated = 0;
     this.playerFirstSidepot = -1;
-
-    //New Logic
     this.raiseAmounts = [{pot: 0, raiseAmount: 0, debtamount: -1}]
   }
 
@@ -440,7 +438,7 @@ class Game {
           } else if (!player.isHuman && player.status != "folded" && player.status != "out" && player.status != "All-In") {
             // If player is simulated (not human), not folded, etc., allows them to perform checkStatus, then updates display.
             $("#seat" + player.ID).addClass("active");
-            await this.timeout(getRandomInt(500, 500))
+            await this.timeout(getRandomInt(500, 4000))
             this.checkStatus(player);
             this.updateDisplay(player);
             $("#seat" + player.ID).removeClass("active");
@@ -577,6 +575,7 @@ class Game {
       case 1:
       case 2:
       case 3:
+      case 4:
         if (!someoneRaised && player.betCount == this.raiseAmounts[this.activePot].raiseAmount) {
           return player.Check(); // can check if no-one raised.
         } else if (!player.Call(this.raiseAmounts[this.activePot].raiseAmount)) {
@@ -584,7 +583,6 @@ class Game {
           return player.Fold();
         }
         break;
-      case 4:
       case 5:
       case 6: //raise
         if (someoneRaised && player.betCount != this.raiseAmounts[this.activePot].raiseAmount && !player.isHuman) {
@@ -892,7 +890,6 @@ class Game {
       if (previous.length === 0) return next
       return previous.concat(next)
     }).length === 1) {
-      console.log(winner)
       let tempPot = winner[0][0][3]
       winner = this.getPlayerById(winner[0][0][0]);
       if (winner == this.humanPlayer) {
