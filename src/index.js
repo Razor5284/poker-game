@@ -575,7 +575,6 @@ class Game {
       case 1:
       case 2:
       case 3:
-      case 4:
         if (!someoneRaised && player.betCount == this.raiseAmounts[this.activePot].raiseAmount) {
           return player.Check(); // can check if no-one raised.
         } else if (!player.Call(this.raiseAmounts[this.activePot].raiseAmount)) {
@@ -583,6 +582,7 @@ class Game {
           return player.Fold();
         }
         break;
+      case 4:
       case 5:
       case 6: //raise
         if (someoneRaised && player.betCount != this.raiseAmounts[this.activePot].raiseAmount && !player.isHuman) {
@@ -1269,5 +1269,5 @@ $(document).ready(function () {
   span.onclick = function () {
     modal.style.display = "none";
   }
-  newGame(8, 1000, "player");
+  newGame(8, 1000, "you");
 });
