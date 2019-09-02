@@ -1,7 +1,6 @@
 =======
-# poker-game
+# MSc Project - Poker Game
 A single player web-based poker game
-
 
 ## Instructions
 Go to the root folder where you found this readme file (in my home directory on campus computers).
