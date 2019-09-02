@@ -1,7 +1,7 @@
 <body>
 	<div class="container">
 		<div class="header wrapper">
-			<h1>Poker Elite</h1>
+			<h1>Elite Poker</h1>
 		</div>
 		<div class="container wrapper" id="navbar">
 			<div class="menu-container">
@@ -38,7 +38,7 @@
 					<div id="games-won"></div>
 					<div id="profit"></div>
 					<div id="win-rate"></div>
-					<div class="clear-records-button" id="clear">Clear Record</div>
+					<div class="button" id="clear">Clear Record</div>
 				</div>
 			</div>
 			<div class="content wrapper">
@@ -164,7 +164,8 @@
 						</div>
 					</div>
 					<div id="pot">
-						<div id="total-pot"></div>
+						<div id="main-pot"></div>
+						<div id="side-pot"></div>
 					</div>
 					<div id="carddeck"><img src="/cards/carddeck2.png"></div>
 					<div id="board">
@@ -193,7 +194,7 @@
 				</div>
 				<div id='strength-meter-container'>
 					<div id="strength-meter">
-						<a style="color: black;">Card Strength Meter</a>
+						<a style="color: black; z-index: 10;">Card Strength Meter</a>
 						<div id="background"></div>
 					</div>
 				</div>
@@ -214,7 +215,7 @@
 					<div class="control-button inactive"><div id="Call">Call</div></div>
 					<div class="control-button inactive">
 						<div id="Raise">Raise</div>
-						<input id="RaiseAmount" type="number" name="amount" min="1" max="100" step="1" value="10" style="width: 50px;"> <!-- Max = value of chips -->
+						<input id="RaiseAmount" type="number" name="amount" min="1" max="100" step="1" value="10" style="width: 50px;"> <!-- Max is dynamically changed to the maximum the user can raise -->
 					</div>
 					<div class="control-button inactive"><div id="Fold">Fold</div></div>
 				</div>

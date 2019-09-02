@@ -3,44 +3,66 @@ import "./styles.css";
 import Player from './player';
 import HumanPlayer from './humanplayer';
 import { setInterval } from "timers";
-const { rankBoard, rankDescription, rankCards, evaluateCards } = require('phe')
+import { isArray } from "util";
+const { rankBoard, rankDescription, rankCards, evaluateCards } = require('phe') // Imports PHE (poker hand evaluator)
 
-/*
- *
- *
- *
- */
 class Game {
+  /**
+   * constructor - constructor for the Game class.
+   *
+   * @param  {number} playerCount  number of players to add to the game.
+   * @param  {number} initialChips number of chips for each player to start with.
+   * @return {void}
+   */
   constructor(playerCount, initialChips) {
     this.playerCount = playerCount;
     this.playerList = [];
     this.initialChips = initialChips;
     this.round = 0;
     this.turn = 0;
-    this.pot = 0;
+    this.pot = [0];
+    this.activePot = 0;
+    this.didSomeoneAllIn = false;
     this.cards = [];
     this.createCardList();
     this.humanPlayer;
     this.playerTurn = [];
-    this.raiseAmount = 0;
     this.subRound = 0;
     this.subRoundStatus = "active";
     this.winner = 0;
     this.didSomeoneRaise = false;
     this.running = false;
     this.shouldStopRunning = false;
+    this.debtPotCreated = 0;
+    this.playerFirstSidepot = -1;
+    this.raiseAmounts = [{pot: 0, raiseAmount: 0, debtamount: -1}]
   }
 
-  // Returns player list
+  /**
+   * get Players - getter function for a list of players.
+   *
+   * @return {array}  returns array of players.
+   */
   get Players() {
     return this.playerList;
   }
 
-  // Add player to the game
+  /**
+   * addPlayer - adds a player into the game.
+   *
+   * @param  {Player} player Player containing all constructors of a player.
+   * @return {void}
+   */
   addPlayer(player) {
     this.playerList.push(player);
   }
 
+  /**
+   * getPlayerById - returns a player by ID.
+   *
+   * @param  {number} id   ID of the player to return.
+   * @return {Player|boolean}   Returns player object if true, or false if not.
+   */
   getPlayerById(id) {
     for (const player of this.playerList) {
       if (player.ID == id) {
@@ -50,61 +72,119 @@ class Game {
     return false;
   }
 
-  // Returns initial chip count
+  /**
+   * InitialChips - returns the amount of chips each user started with.
+   *
+   * @return {number}  returns initialChips.
+   */
   InitialChips() {
     return this.initialChips;
   }
 
-  // Returns round number
+  /**
+   * get Round - returns the current round number.
+   *
+   * @return {number}  current round number.
+   */
   get Round() {
     return this.round;
   }
 
-  // Increments round by one if less than 5th (final) round
+  /**
+   * incrementRound - increments the round by 1.
+   *
+   * @return {void}
+   */
   incrementRound() {
     this.round++;
     this.resetTurn();
   }
 
-  // Returns whos turn it is
+  /**
+   * get Turn - returns who's turn it is.
+   *
+   * @return {number}  the number position of the person whose turn it is.
+   */
   get Turn() {
     return this.turn;
   }
 
-  // Advances turn count
-  // bot -> advanceTurn(false);
-  // player -> advanceTurn(true);
-  advanceTurn(playerType) {
+  /**
+   * advanceTurn - advances turn count by 1.
+   *
+   * @return {void}
+   */
+  advanceTurn() {
     if (this.turn < this.playerCount) {
-      this.turn++;
+      this.turn++
     } else {
-      this.turn = 0;
+      this.turn = 0
     }
   }
 
+  /**
+   * resetTurn - resets the turn count.
+   *
+   * @return {void}
+   */
   resetTurn() {
-    this.turn = 0;
+    this.turn = 0
   }
 
-  // Returns the total pot value
+  /**
+   * get Pot - Returns the total pot value.
+   *
+   * @return {number}  Returns the current active pot value.
+   */
   get Pot() {
-    return this.pot;
+    return this.pot[this.activePot]
   }
 
-  // Adds a value to the total pot
+  /**
+   * addToPot - Adds a value to the current active pot.
+   *
+   * @param  {number} value Value to add to the current active pot.
+   * @return {void}
+   */
   addToPot(value) {
-    this.pot = this.pot + value;
+    this.pot[this.activePot] += value
   }
 
-  // Resets the pot to 0
+  /**
+   * resetPot - Removes all other pots and sets the main pot to 0.
+   *
+   * @return {void}
+   */
   resetPot() {
-    this.pot = 0;
+    this.pot = [0]
   }
 
+  /**
+   * createSidePot - creates a new sidepot with default value of 0 and makes it the active pot.
+   *
+   * @return {void}
+   */
+  createSidePot() {
+    if (this.debtPotCreated) this.debtPotCreated = 0
+    this.activePot ++
+    this.pot.push(0)
+    this.didSomeoneAllIn = false
+  }
+
+  /**
+   * resetCards - resets all players' cards to an empty array.
+   *
+   * @return {void}
+   */
   resetCards() {
     this.cards = [];
   }
 
+  /**
+   * dealCards - removes all old player cards, shuffles a set of cards and deals 2 cards to each player.
+   *
+   * @return {void}
+   */
   dealCards() {
     this.removeAllPlayerCards();
     this.shuffleCardList();
@@ -115,6 +195,14 @@ class Game {
     }
   }
 
+  /**
+   * async dealFlopCards - Manages dealing flop cards to the table and updating the frontend via JQuery.
+   * Deals from the game cards (this.cards) to the table's cards (this.cardList) and
+   * uses async (500ms) in order to simulate dealing cards in a timely fashion, as opposed to all at once,
+   * uses JQuery to update the frontend.
+   *
+   * @return {void}
+   */
   async dealFlopCards() {
     for (let i = 0; i < 3; i++) {
       this.dealCardToTable(this.cardList, this.cards);
@@ -123,16 +211,31 @@ class Game {
     }
   }
 
+  /**
+   * dealTurnCard - see above description for dealFlopCards, however, only deals the turn card.
+   *
+   * @return {void}
+   */
   dealTurnCard() {
     this.dealCardToTable(this.cardList, this.cards);
     $("#board").children(".tablecard:nth-of-type(4)").children("img").attr("src", "/cards/" + this.cards[3].toUpperCase() + ".png").attr("alt", theGame.cards[3]).css("visibility", "visible");
   }
 
+  /**
+   * dealRiverCard - see above description for dealFlopCards, however, only deals the river card.
+   *
+   * @return {void}
+   */
   dealRiverCard() {
     this.dealCardToTable(this.cardList, this.cards);
     $("#board").children(".tablecard:nth-of-type(5)").children("img").attr("src", "/cards/" + this.cards[4].toUpperCase() + ".png").attr("alt", theGame.cards[4]).css("visibility", "visible");
   }
 
+  /**
+   * removeAllPlayerCards - Resets all players' cards to an empty array.
+   *
+   * @return {void}
+   */
   removeAllPlayerCards() {
     for (let player of this.playerList) {
       player.cards = [];
@@ -140,24 +243,34 @@ class Game {
     }
   }
 
-  // Removes a single card from an array and pushes to another
-  shiftArray(senderArray, recieverArray) {
-    recieverArray.push(senderArray[0]);
-    senderArray.shift();
-  }
-
+  /**
+   * dealCardToTable - Deals the top card from the cardList to the table by moving it to this.cards.
+   * Shifts the array afterwards.
+   *
+   * @return {void}
+   */
   dealCardToTable() {
     this.cards.push(this.cardList[0]);
     this.cardList.shift();
   }
 
-  // Function to deal cards from cardList to players
+  /**
+   * dealCardToPlayer - Deals cards from cardList to players cards.
+   * Shifts the array afterwards.
+   *
+   * @param  {Player} player which player receives the cards.
+   * @return {void}
+   */
   dealCardToPlayer(player) {
     player.cards.push(this.cardList[0]);
     this.cardList.shift();
   }
 
-  // Shuffles an array, which is then assigned to shuffledList
+  /**
+   * shuffleCardList - Shuffles this.cardList.
+   *
+   * @return {void}
+   */
   shuffleCardList() {
     let tempList = this.cardList;
     for (let j = 0; j < this.cardList.length; j++) {
@@ -169,6 +282,11 @@ class Game {
     }
   }
 
+  /**
+   * createCardList - Creates the list of cards and saves to this.cardList.
+   *
+   * @return {void}
+   */
   createCardList() {
     let cardSymbols = [
       "A",
@@ -195,6 +313,11 @@ class Game {
     }
   }
 
+  /**
+   * getHumanPlayer - assigns humanPlayer variable to the human player.
+   *
+   * @return {void}
+   */
   getHumanPlayer() {
     for (player of playerlist) {
       if (this.player.isHuman) {
@@ -203,15 +326,30 @@ class Game {
     }
   }
 
+  /**
+   * playerCheck - Provides functionality for the human player to check.
+   * Checks to see if someone raised and if the user has already called.
+   * Passes through to check function in player.js, advances turn following.
+   *
+   * @return {void}
+   */
   playerCheck() {
-    if (!this.didSomeoneRaise && this.humanPlayer.bet == this.raiseAmount) {
+    if (!this.didSomeoneRaise && this.humanPlayer.betCount == this.raiseAmounts[this.activePot].raiseAmount) {
       this.humanPlayer.Check();
       this.advanceTurn();
     }
   }
 
-  playerCall() {
-    if (!this.humanPlayer.Call(this.raiseAmount)) {
+  /**
+   * playerCall - Provides functionality for the human player to call.
+   * First checks to see if the player can call the raise, returns false
+   * if not, returns true if possible.
+   * Passes through to call function in player.js, advances turn following.
+   *
+   * @return {boolean} true or false
+   */
+  playerCall(raising = false) {
+    if (!this.humanPlayer.Call(this.raiseAmounts[this.activePot].raiseAmount, raising)) {
       alert("You cannot call this bet, you need more chips.")
       return false;
     }
@@ -221,66 +359,75 @@ class Game {
     }
   }
 
+  /**
+   * playerFold - Provides functionality for the human player to fold.
+   * Passes through to fold function in player.js, advances turn following.
+   *
+   * @return {void}
+   */
   playerFold() {
     this.humanPlayer.Fold();
     this.advanceTurn();
   }
 
+
+  /**
+   * playerRaise - Provides functionality for human player to raise.
+   *
+   * @param  {number} amount amount of chips the user wishes to raise.
+   * @return {boolean}  true or false.
+   */
   playerRaise(amount) {
-    console.log("Raising ----------------------------------------------------------")
-    if (this.humanPlayer.bet != this.raiseAmount) {
-      if (!this.playerCall(amount)) {
+    if (this.humanPlayer.betCount != this.raiseAmounts[this.activePot].raiseAmount) { // First checks to see if their bet is equal to the raiseAmount, if so, makes them call first, if not, lets them raise.
+      if (!this.playerCall(amount, true)) {
         alert("You cannot raise now, you need more chips.")
         return false;
-      }
-      console.log("called")
-      let oldRaise = this.raiseAmount;
-      let newRaise = amount + this.raiseAmount;
-      console.log(this.raiseAmount)
-      this.raiseAmount = newRaise
-      console.log("New raiseamount " + this.raiseAmount)
-      console.log(this.humanPlayer)
-
+      } // If users input amount isn't larger than their chip count, allows the raise, changes the raiseAmount and passes through to the raise function.
+      let oldRaise = this.raiseAmounts[this.activePot].raiseAmount;
+      let newRaise = amount + this.raiseAmounts[this.activePot].raiseAmount;
+      this.raiseAmounts[this.activePot].raiseAmount = newRaise
       if (this.humanPlayer.Raise(amount)) {
         this.didSomeoneRaise = this.humanPlayer;
         return true;
-      } else {
-        this.raiseAmount = oldRaise;
+      } else { // If failed on the call, returns false.
+        this.raiseAmounts[this.activePot].raiseAmount = oldRaise;
         alert("You cannot raise now, you need more chips.")
         return false;
       }
     }
-    else {
-      let oldRaise = this.raiseAmount;
-      let newRaise = amount + this.raiseAmount;
-      console.log(this.raiseAmount)
-      this.raiseAmount = newRaise
-      console.log("New raiseamount " + this.raiseAmount)
-
+    else { // If they're allowed to raise, allows for an input of amount.
+      let oldRaise = this.raiseAmounts[this.activePot].raiseAmount;
+      let newRaise = amount + this.raiseAmounts[this.activePot].raiseAmount;
+      this.raiseAmounts[this.activePot].raiseAmount = newRaise
       if (this.humanPlayer.Raise(amount)) {
         this.didSomeoneRaise = this.humanPlayer;
-        console.log(this.didSomeoneRaise)
         return true;
-      } else {
-        this.raiseAmount = oldRaise;
+      } else { // If input amount is too large, returns false and a warning.
+        this.raiseAmounts[this.activePot].raiseAmount = oldRaise;
         alert("You cannot raise now, you need more chips.")
         return false;
       }
     }
   }
 
-  async  simulateRounds() {
-    for (let i = 0; i < 2; i++) {
-      if (this.subRound == 0 || (this.subRound == 1 && this.didSomeoneRaise) || this.subRound == 2) {
+  /**
+   * async simulateRounds - Simulates a round of the game, i.e. four main rounds and subrounds of betting, all table cards dealt.
+   *
+   * @return {boolean} true or false, loops the game until true (when a player has won).
+   */
+  async simulateRounds() {
+    for (let i = 0; i < 2; i++) { // Two sub-rounds of betting
+      if (this.subRound == 0 || (this.subRound == 1 && this.didSomeoneRaise) || this.subRound == 2) { // If it's a subround, or if someone raised, continue to allow calling, checking etc.
         for (let player of this.playerList) {
           if (this.playerList.filter((a) => { return (a.status == "folded" || a.status == "out") && a != player }).length == (this.playerList.length - 1)) {
+            // Completes a check to see if all-but-one players have folded or are out and completes the final winner functionality if so.
               this.winner = player
               if (this.winner == this.humanPlayer) {
                 let roundsWon = (JSON.parse(window.localStorage.getItem('roundsWon')) + 1)
                 window.localStorage.setItem('roundsWon', roundsWon);
                 alert("Don't cheat.")
               }
-              this.winner.addChips(this.pot);
+              this.winner.addChips(this.Pot);
               this.resetPot();
               $("#seat" + this.winner.ID).addClass("winner");
               $("#right-sidebar").children("h3").text("Winner");
@@ -288,16 +435,19 @@ class Game {
               this.updateDisplay(this.winner);
               return this.checkFinalWinner();
 
-          } else if (!player.isHuman && player.status != "folded" && player.status != "out") {
+          } else if (!player.isHuman && player.status != "folded" && player.status != "out" && player.status != "All-In") {
+            // If player is simulated (not human), not folded, etc., allows them to perform checkStatus, then updates display.
             $("#seat" + player.ID).addClass("active");
-            await this.timeout(getRandomInt(500, 500))
-            this.simulateBetting(player);
+            await this.timeout(getRandomInt(500, 4000))
+            this.checkStatus(player);
             this.updateDisplay(player);
             $("#seat" + player.ID).removeClass("active");
           }
 
-          else if (player.isHuman && player.status != "folded" && player.status != "out") {
+          else if (player.isHuman && player.status != "folded" && player.status != "out" && player.status != "All-In") {
+            // If player is human, not folded etc., allows them to perform actions.
             if (this.didSomeoneRaise && this.didSomeoneRaise != this.humanPlayer) {
+              // controls visibility of check and call buttons based on if someone raised.
               $('.control-button:nth-of-type(1)').css("visibility", "hidden");
               $('.control-button:nth-of-type(2)').css("visibility", "visible");
             } else {
@@ -305,6 +455,7 @@ class Game {
               $('.control-button:nth-of-type(2)').css("visibility", "hidden");
             }
             if (this.subRound != 0 || player.chips == 0) {
+              // Controls visibility of raise button.
               $('.control-button:nth-of-type(3)').css("visibility", "hidden");
             } else {
               $('.control-button:nth-of-type(3)').css("visibility", "visible");
@@ -312,18 +463,16 @@ class Game {
             $("#seat" + player.ID).addClass("active");
             $("#controls").children(".control-button").removeClass("inactive");
             this.humanPlayer = player;
-            await this.playerFinished();
+            await this.playerFinished(); // awaits user input via button press on frontend.
             this.updateDisplay(player);
             $("#seat" + player.ID).removeClass("active");
             $("#controls").children(".control-button").addClass("inactive");
           }
         }
         this.subRound++;
-        console.log(`%c============ Subround %s ============`, "color: blue; font-size: 15px", this.subRound);
       }
        else {
         this.subRound = 0;
-        console.log("%cSubround %s", "color: blue; font-size: 15px", this.subround)
         this.didSomeoneRaise = false;
         this.resetRaises();
         this.subRoundStatus = "active"
@@ -334,117 +483,128 @@ class Game {
     this.subRoundStatus = "active"
     this.didSomeoneRaise = false;
     this.incrementRound();
-    console.log("%c============================= Round %s =============================", "color: blue; font-size: 17px", this.round)
 
     if (this.round == 1) {
       this.dealFlopCards()
-      console.log(this)
       await this.timeout(3000)
       this.evaluatePlayerCards()
     } else if (this.round == 2) {
       this.dealTurnCard()
-      console.log(this)
       await this.timeout(2000)
       this.evaluatePlayerCards()
     } else if (this.round == 3) {
       this.dealRiverCard()
-      console.log(this)
       await this.timeout(2000)
       this.evaluatePlayerCards()
     } else if (this.round == 4) {
       this.evaluateWinner()
-      console.log('Returning resolve of round')
       return true;
     }
-    return false; // Loop hasn't finished
+    return false; // Game loop hasn't finished
   }
 
-  simulateBetting(player) {
+  /**
+   * checkStatus - checks the player's status and updates variables accordingly.
+   *
+   * @param  {Player} player which player to perform the action on.
+   * @return {Player | boolean}        returns value of if someone raised, which can be false, or the player which raised.
+   */
+  checkStatus(player) {
     if (player.chips >= 0 && player.status != "folded") {
       // Let Players Raise/Call/Fold
       this.simulatePlayer(player);
       switch (player.status) {
+        case "All-In":
+          player.didRaiseAllIn ? this.didSomeoneRaise = true : false
+          break;
         case "called":
           break;
         case "raised":
           this.didSomeoneRaise = player;
-          console.log(this.didSomeoneRaise)
           break;
       }
     }
     return this.didSomeoneRaise;
   }
 
+  /**
+   * simulatePlayer - checks if a player has raised and passes through to doRandomPlayerAction and doSubRoundPlayerAction.
+   *
+   * @param  {Player} player the player to perform actions on.
+   * @return {void}
+   */
   simulatePlayer(player) {
+    if (this.playerFirstSidepot !== -1 && this.playerFirstSidepot === player.ID) this.playerFirstSidepot = -1;
     let someoneRaised = false;
     let otherPlayer = this.didSomeoneRaise;
     if (this.subRound == 0) {
       if (otherPlayer) {
         if (otherPlayer.status === "raised" && otherPlayer.ID != player.ID) {
+          // if otherPlayer = true, makes sure the person who raised isn't the current player.
           someoneRaised = otherPlayer;
         }
       }
-      this.doRandomPlayerAction(player, someoneRaised);
+      this.doRandomPlayerAction(player, someoneRaised); //passes through the player to perform the action on and the person who raised, if it's set.
     } else {
       if (otherPlayer) {
         if (otherPlayer.status === "raised" && otherPlayer.ID != player.ID) {
+          // ensures the player who raised isn't the current player.
           someoneRaised = otherPlayer;
         } else if (otherPlayer.status != "raised" && otherPlayer != player) {
           someoneRaised = false;
         }
       }
-      this.doSubRoundPlayerAction(player, someoneRaised);
+      this.doSubRoundPlayerAction(player, someoneRaised); //passes through the player to perform the action on and the person who raised, if it's set.
     }
   }
 
+  /**
+   * doRandomPlayerAction - randomly chooses the action/s to perform, i.e. raise, call, check or fold.
+   *
+   * @param  {Player} player        the player to perform the actions on.
+   * @param  {Player} someoneRaised the player that previously raised, if required.
+   * @return {void}
+   */
   doRandomPlayerAction(player, someoneRaised) {
     if (this.playerList.filter((a) => { return (a.status == "folded" || a.status == "out") && a != player }).length === (this.playerList.length - 1)) {
+      // if all other players have folded, returns check instead of folding or other actions.
       return player.Check();
     }
     switch (getRandomInt(0, 6)) {
       case 0:
       case 1:
       case 2:
-      case 3: //check or fold if not able to call
-        if (!someoneRaised && player.bet == this.raiseAmount) {
-          return player.Check();
-        } else if (!player.Call(this.raiseAmount)) {
+      case 3:
+      case 4:
+        if (!someoneRaised && player.betCount == this.raiseAmounts[this.activePot].raiseAmount) {
+          return player.Check(); // can check if no-one raised.
+        } else if (!player.Call(this.raiseAmounts[this.activePot].raiseAmount)) {
+          // fold if unable to call due to insufficient chips
           return player.Fold();
         }
         break;
-      case 4:
       case 5:
       case 6: //raise
-        if (someoneRaised && player.bet != this.raiseAmount && !player.isHuman) {
-          console.log("In Raise: player" + player.ID)
-          let oldRaise = this.raiseAmount;
-          console.log("player chips", player.chips)
-          console.log("In normal: oldraise: " + oldRaise)
-          let newRaise = getRandomInt(Math.round(1), (player.bet == oldRaise ? player.chips : player.bet < oldRaise ? ((player.chips - (oldRaise - player.bet) <= 0 ? false : player.chips - (oldRaise - player.bet))) : (player.bet - oldRaise) )) //getRandomInt(Math.round(min, max)
-          console.log("newraise: " + newRaise)
-
-          if (!player.Call(oldRaise)) {
-            return this.doRandomPlayerAction(player, someoneRaised);
-          }
-          this.raiseAmount = newRaise + oldRaise
+        if (someoneRaised && player.betCount != this.raiseAmounts[this.activePot].raiseAmount && !player.isHuman) {
+          let oldRaise = this.raiseAmounts[this.activePot].raiseAmount;
+          let newRaise = getRandomInt(Math.round(1), (player.betCount == oldRaise ? player.chips : player.betCount < oldRaise ? ((player.chips - (oldRaise - player.betCount) <= 0 ? false : player.chips - (oldRaise - player.betCount))) : (player.betCount - oldRaise) )) // Random integer between 1 and a maximum, maximum is based off of the current chip count, raise amount and player's bet.
+          if (!player.Call(oldRaise, true)) {return this.doRandomPlayerAction(player, someoneRaised)} // if the player can't call, try to doRandomPlayerAction again
+          this.raiseAmounts[this.activePot].raiseAmount = newRaise + oldRaise
+          if (isNaN(newRaise)) debugger
           if (!player.Raise(newRaise)) {
-            this.raiseAmount = oldRaise;
-            return this.doRandomPlayerAction(player, someoneRaised);
+            this.raiseAmounts[this.activePot].raiseAmount = oldRaise;
+            return this.doRandomPlayerAction(player, someoneRaised); // if the player can't raise the amount, try to doRandomPlayerAction again
           }
           break;
         }
         else {
-          console.log("In Raise: player" + player.ID)
-          let oldRaise = this.raiseAmount;
-          console.log("player chips", player.chips)
-          console.log("In normal: oldraise: " + oldRaise)
-          let newRaise = getRandomInt(Math.round(1), (player.bet == oldRaise ? player.chips : player.bet < oldRaise ? ((player.chips - (oldRaise - player.bet) <= 0 ? false : player.chips - (oldRaise - player.bet))) : (player.bet - oldRaise) )) //getRandomInt(Math.round(min, max)
-          console.log("newraise: " + newRaise)
-          if (newRaise == 0) {return this.doRandomPlayerAction(player, someoneRaised)}
-          this.raiseAmount = newRaise + oldRaise
+          let oldRaise = this.raiseAmounts[this.activePot].raiseAmount;
+          let newRaise = getRandomInt(Math.round(1), (player.betCount == oldRaise ? player.chips : player.betCount < oldRaise ? ((player.chips - (oldRaise - player.betCount) <= 0 ? false : player.chips - (oldRaise - player.betCount))) : (player.betCount - oldRaise) )) // Random integer between 1 and a maximum, maximum is based off of the current chip count, raise amount and player's bet.
+          if (newRaise == 0) {return this.doRandomPlayerAction(player, someoneRaised)} // Precaution to ensure that no-one raises a value of 0.
+          this.raiseAmounts[this.activePot].raiseAmount = newRaise + oldRaise
           if (!player.Raise(newRaise)) {
-            this.raiseAmount = oldRaise;
-            return this.doRandomPlayerAction(player, someoneRaised);
+            this.raiseAmounts[this.activePot].raiseAmount = oldRaise;
+            return this.doRandomPlayerAction(player, someoneRaised); // if the player can't raise the amount, try to doRandomPlayerAction again
           }
           break;
         }
@@ -452,22 +612,28 @@ class Game {
   }
 
 
+  /**
+   * doSubRoundPlayerAction - randomly chooses the action/s to perform, i.e. call, check or fold, but not raise.
+   *
+   * @param  {Player} player        description
+   * @param  {Player} someoneRaised description
+   * @return {void}
+   */
   doSubRoundPlayerAction(player, someoneRaised) {
-    //Force check when everyone else folded
+    // Force check when everyone else folded
     if (this.playerList.filter((a) => { return (a.status == "folded" || a.status == "out") && a != player }).length === (this.playerList.length - 1)) {
       return player.Check();
     }
-    if (someoneRaised.bet != player.bet) {
+    if (someoneRaised.bet != player.betCount) {
       switch (getRandomInt(0, 6)) {
         case 0:
         case 1:
         case 2:
         case 3:
         case 4:
-          //check or fold if not able to call
-          if (!someoneRaised && player.bet == this.raiseAmount) {
+          if (!someoneRaised && player.betCount == this.raiseAmounts[this.activePot].raiseAmount) {
             return player.Check();
-          } else if (!player.Call(this.raiseAmount)) {
+          } else if (!player.Call(this.raiseAmounts[this.activePot].raiseAmount)) {
             return player.Fold();
           }
           break;
@@ -479,6 +645,11 @@ class Game {
     }
   }
 
+  /**
+   * playerDisplay - Re-enables visibility of each player's display when called, with their name, new chip amount etc.
+   *
+   * @return {void}
+   */
   playerDisplay() {
     let idString = "#seat"
     for (let player of this.playerList) {
@@ -488,14 +659,25 @@ class Game {
     }
   }
 
+  /**
+   * updateDisplay - Updates the display based on input.
+   *
+   * @param  {Player | string} info Can be Player or string, function performs different actions based on input.
+   * @return {void}
+   */
   updateDisplay(info) {
     if (info instanceof Player) {
       let idString = "#seat"
       let player = info
       $(idString + player.ID).children(".playerinfo").children(".chips").text("Chips: " + player.chips);
       $(idString + player.ID).children(".playerinfo").children(".status").text(player.status)
-      $("#total-pot").text("Total pot: " + this.Pot);
-
+      $("#main-pot").text("Main pot: " + this.pot[0]);
+      $("#side-pot").text("");
+      if (this.pot.length > 1) {
+        for (let i = 1; i < this.pot.length; i++) {
+          $("#side-pot").append("Side pot " + i + ": " + this.pot[i] + "<br>");
+        }
+      }
       if (player.status == "active" && player.isHuman) {
         $(idString + player.ID).removeClass("folded");
       }
@@ -536,6 +718,11 @@ class Game {
     }
   }
 
+  /**
+   * resetRaises - resets status of all players who raised.
+   *
+   * @return {void}
+   */
   resetRaises() {
     for (let player of this.playerList) {
       if (
@@ -549,21 +736,26 @@ class Game {
     }
   }
 
+  /**
+   * playerFinished - awaits user input via button press on frontend.
+   *
+   * @return {void}
+   */
   playerFinished() {
-    return new Promise(resolve => {
-      if (this.humanPlayer.bet != this.raiseAmount) {
-        $('#RaiseAmount').attr("max", Math.abs(this.raiseAmount - this.humanPlayer.chips));
+    return new Promise(resolve => { // awaits promise resolve
+      if (this.humanPlayer.betCount != this.raiseAmounts[this.activePot].raiseAmount) { // sets the maximum the user can raise to, in the raise input box
+        $('#RaiseAmount').attr("max", Math.abs(this.raiseAmounts[this.activePot].raiseAmount - this.humanPlayer.chips));
       } else {
         $('#RaiseAmount').attr("max", this.humanPlayer.chips);
       }
-      $('#Call').text("Call " + (this.raiseAmount - this.humanPlayer.bet));
-      $("#Check").unbind();
+      $('#Call').text("Call " + (this.raiseAmounts[this.activePot].raiseAmount - this.humanPlayer.betCount)); // Adds the call amount to the button text
+      $("#Check").unbind(); // unbinds in case of a previous button press
       $("#Call").unbind();
       $("#Raise").unbind();
       $("#Fold").unbind();
-      $("#Check").click(() => {
+      $("#Check").click(() => { // if clicked, perform this.playerCheck()
         this.playerCheck();
-        resolve();
+        resolve(); // resolves the promise when finished
       });
       $("#Call").click(() => {
         if (this.playerCall()) {
@@ -582,12 +774,24 @@ class Game {
     });
   }
 
+  /**
+   * timeout - performs a timeout of a number of ms.
+   *
+   * @param  {number} ms amount of milliseconds to pause for.
+   * @return {void}
+   */
   timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  /**
+   * evaluatePlayerCards - evaluates the user's cards and outputs text (including advice) into the right sidebar.
+   * Also updates the strength meter based on which cards the user has.
+   *
+   * @return {void}
+   */
   evaluatePlayerCards() {
-    const board = this.cards.join(" ") + " " + this.humanPlayer.cards[0] + " " + this.humanPlayer.cards[1] // GIVES ERRORS IF THERES ONLY 2 PLAYERS
+    const board = this.cards.join(" ") + " " + this.humanPlayer.cards[0] + " " + this.humanPlayer.cards[1]
     const rank = rankBoard(board)
     const name = rankDescription[rank]
     if (this.humanPlayer.status != "folded" && this.humanPlayer.status != "out") {
@@ -624,7 +828,7 @@ class Game {
         $("#card-evaluation").children("p").append("<p>You have the strongest hand in the game, play as you please!</p><p>You should probably raise to increase your possible winnings.</p><p>Bear in mind, playing too aggressively may cause other players to fold too early.</p>");
         $("#strength-meter-container").children("#strength-meter").children("#background").css("clip-path", "inset(0 100% 0 0)");
       }
-    } else if (this.humanPlayer.status != "folded" && this.humanPlayer.status != "out") {
+    } else if (this.humanPlayer.status != "out") { // Changes to past tense and what the user could've done or won, had they not folded.
       $("#card-evaluation").children("p").text("Combined with the cards on the table, you had " + name + ". ");
       if (name == 'A Pair') {
         $("#card-evaluation").children("p").append("<p>With a pair, there is a low chance of you having a winning hand. You probably made a good call by folding here, as it's quite possible other players have a stronger hand.</p>");
@@ -651,6 +855,12 @@ class Game {
     }
   }
 
+  /**
+   * evaluateWinner - Evaluates the winner.
+   *    Uses imported PHE for evaluation.
+   *
+   * @return {void}
+   */
   evaluateWinner() {
     let ranks = []
     for (let player of this.playerList) {
@@ -663,58 +873,73 @@ class Game {
         let name = rankDescription[rankNumber]
         player.cardRank = rank
         player.cardEval = name
-        ranks.push([player.ID, player.cardRank, player.cardEval]);
+        player.bettingPot.forEach(potID => ranks.push([player.ID, player.cardRank, player.cardEval, potID]))
       }
     }
     let winner = []
-    if (!ranks) {
-      return false;
-    } else {
-      ranks = ranks.sort((a, b) => a[1] - b[1])
-      winner = ranks.filter(a => ranks[0][1] === a[1])
-      console.log(winner)
-    }
-    if (winner.length === 1) {
-      this.winner = this.getPlayerById(winner[0][0]);
-      if (this.winner == this.humanPlayer) {
+    ranks = ranks.sort((a, b) => a[1] - b[1])
+    ranks.forEach(a => {
+      if (!winner[a[3]]) {
+        winner[a[3]] = []
+      }
+      winner[a[3]].push(a)
+    })
+    winner = winner.map(array => array.filter(a => array[0][1] === a[1]))
+
+    if (winner.filter(a => a && a.length > 0).reduce((previous, next) => {
+      if (previous.length === 0) return next
+      return previous.concat(next)
+    }).length === 1) {
+      let tempPot = winner[0][0][3]
+      winner = this.getPlayerById(winner[0][0][0]);
+      if (winner == this.humanPlayer) {
         let roundsWon = (JSON.parse(window.localStorage.getItem('roundsWon')) + 1)
         window.localStorage.setItem('roundsWon', roundsWon);
       }
-      $("#seat" + winner[0][0]).addClass("winner");
+      $("#seat" + winner.ID).addClass("winner");
       $("#right-sidebar").children("h3").text("Winner");
-      $("#card-evaluation").children("p").text("The winner is " + this.winner.name + ", who won with " + winner[0][2] + " and a score of " + winner[0][1]);
-      this.winner.addChips(this.pot);
+      $("#card-evaluation").children("p").text("The winner is " + winner.name + ", who won with " + winner.cardEval);
+      winner.addChips(this.pot[tempPot])
+      this.winner = winner
       this.resetPot();
-      this.updateDisplay(this.winner);
+      this.updateDisplay(winner);
     } else {
       // If there are multiple winners
       $("#right-sidebar").children("h3").text("Winners")
       $("#card-evaluation").children("p").text("The winners are ");
-      let potSize = Math.floor(this.pot / winner.length)
       for (let i = 0; i < winner.length; i++) {
-        let winnerInfo = this.playerList[winner[i][0]]
-        if (winnerInfo == this.humanPlayer) {
-          let roundsWon = (JSON.parse(window.localStorage.getItem('roundsWon')) + 1)
-          window.localStorage.setItem('roundsWon', roundsWon);
+        let winners = winner[i]
+        let potSize = Math.floor(this.pot[i] / winners.length)
+        for (let j = 0; j < winners.length; j++) {
+          let winnersInfo = this.getPlayerById(winners[j][0])
+          if (winnersInfo == this.humanPlayer) {
+            let roundsWon = (JSON.parse(window.localStorage.getItem('roundsWon')) + 1)
+            window.localStorage.setItem('roundsWon', roundsWon);
+          }
+          $("#seat" + winnersInfo.ID).addClass("winner");
+          winnersInfo.addChips(potSize);
+          $("#card-evaluation").children("p").append(winnersInfo.name + " who won " + potSize + ", with ", winnersInfo.cardEval, " and ");
+          this.updateDisplay(winnersInfo);
         }
-        $("#seat" + winnerInfo.ID).addClass("winner");
-        winnerInfo.addChips(potSize);
-        $("#card-evaluation").children("p").append(winnerInfo.name + " and ");
-        this.updateDisplay(winnerInfo);
       }
-      $("#card-evaluation").children("p").append("who won with ", winner[0][2], " and a score of ", winner[0][1], ". Each will get a winning of ", potSize, ".");
+      $("#card-evaluation").children("p").append(".");
       this.resetPot();
     }
     this.checkFinalWinner();
   }
 
+  /**
+   * async checkFinalWinner - Checks to see if there is one final winner to end the game.
+   *
+   * @return {Promise <boolean>}  Returns true if there is a final winner, false otherwise, then the game continues to run.
+   */
   async checkFinalWinner() {
     theGame.playerList = theGame.playerList.filter(player => {
       if (player.isHuman && player.status !== "out" && player.status !== "folded") {
         let roundsPlayed = (JSON.parse(window.localStorage.getItem('numOfRounds')) + 1)
         window.localStorage.setItem('numOfRounds', roundsPlayed);
       }
-      if (player.chips <= 0 && player != theGame.winner) {
+      if (player.chips <= 0 && player != this.winner) {
         player.status = "out"
         if (player.isHuman) {
           let gamesPlayed = (JSON.parse(window.localStorage.getItem('numOfGames')) + 1)
@@ -726,14 +951,14 @@ class Game {
       player.status = 'active';
       return true;
     })
-    if (theGame.playerList.length === 1) {
+    if (this.playerList.length === 1) {
       $("#right-sidebar").children("h3").text("Final Winner")
-      $('#card-evaluation').children('p').text('The final winner is ' + theGame.winner.name + '!')
-      if (theGame.winner === theGame.humanPlayer) { // Saves the player's profit and total number of wins to localstorage
+      $('#card-evaluation').children('p').text('The final winner is ' + this.winner.name + '!')
+      if (this.winner === this.humanPlayer) { // Saves the player's profit and total number of games & wins to localstorage
         let gamesPlayed = (JSON.parse(window.localStorage.getItem('numOfGames')) + 1)
         window.localStorage.setItem('numOfGames', gamesPlayed);
-        theGame.humanPlayer.wins ++
-        let profit = (JSON.parse(window.localStorage.getItem('profitAmount')) + theGame.humanPlayer.chips)
+        this.humanPlayer.wins ++
+        let profit = (JSON.parse(window.localStorage.getItem('profitAmount')) + this.humanPlayer.chips)
         window.localStorage.setItem('profitAmount', profit);
         let wins = (JSON.parse(window.localStorage.getItem('numOfWins')) + 1)
         window.localStorage.setItem('numOfWins', wins);
@@ -743,18 +968,24 @@ class Game {
       return
     }
     await this.timeout(5000);
-    theGame.freshGame();
+    this.freshGame();
     return new Promise(resolve => resolve(false));
   }
 
+  /**
+   * freshGame - creates a new game for all remaining players with new cards etc., but keeps their remaining chips.
+   *
+   * @return {void}
+   */
   freshGame() {
     this.round = 0;
     this.turn = 0;
-    this.pot = 0;
+    this.pot = [0];
+    this.activePot = 0;
+    this.didSomeoneAllIn = false;
     this.cards = [];
     this.createCardList();
     this.playerTurn = [];
-    this.raiseAmount = 0;
     this.subRound = 0;
     this.subRoundStatus = "active";
     this.winner = 0;
@@ -762,6 +993,8 @@ class Game {
     this.running = false;
     this.shouldStopRunning = false;
     this.shouldStartRunning = false;
+    this.playerFirstSidepot = -1;
+    this.raiseAmounts = [{pot: 0, raiseAmount: 0, debtamount: -1}]
     this.resetRaises();
     this.dealCards();
     this.updateDisplay("reset");
@@ -775,21 +1008,27 @@ class Game {
     $(".button-copy").css("display", "block");
     const initializeGame = () => {
       for (let player of this.playerList) {
-        player.bet = 0; // Resets all player's bets
-        this.status = "active";
-        this.updateDisplay(player);
+        player.bet = [0]
+        player.didRaiseAllIn = false
+        player.bettingPot = []
+        player.status = "active"
+        this.updateDisplay(player)
         if (player.isHuman) {
           spawnCards(player.cards, "seat" + (player.ID).toString(), "card");
         }
       }
-      this.playerDisplay();
+      this.playerDisplay()
     }
 
-    initializeGame();
-    console.log(this);
-    this.startGame();
+    initializeGame()
+    this.startGame()
   }
 
+  /**
+   * startGame - runs the game on a loop until set to false.
+   *
+   * @return {void}
+   */
   startGame() {
     if (this.running) {
       this.stopGame()
@@ -806,11 +1045,21 @@ class Game {
     }, 500)
   }
 
+  /**
+   * stopGame - stops the game if called.
+   *
+   * @return {void}
+   */
   stopGame() {
     this.shouldStopRunning = true;
     this.shouldStartRunning = false;
   }
 
+  /**
+   * async gameLoop - Loops the game whilst true, awaits until next loop before continuing.
+   *
+   * @return {Promise <boolean>}  return true or a function to run the game loop again if false.
+   */
   async gameLoop() {
     this.running = true;
     if (this.shouldStopRunning) {
@@ -818,16 +1067,19 @@ class Game {
       this.shouldStopRunning = false;
       return;
     }
-    console.log('%c RUNNING GAME LOOP', 'font-weight: bold; font-size: 28px;')
     if (await this.simulateRounds()) {
-      console.log('%c ENDING GAME LOOP', 'font-weight: bold; font-size: 28px;')
       return true;
     } else {
-      return await this.gameLoop(); // Loops the game again
+      return await this.gameLoop(); // Loops the game again if false
     }
   }
 }
 
+/**
+ * playerNewOrOld - Handles JQuery and local storage for if a player is new or old.
+ *
+ * @return {Promise} awaits promise resolve.
+ */
 function playerNewOrOld() {
   return new Promise(resolve => {
       $("#new-player").click(_ => {
@@ -857,9 +1109,19 @@ function playerNewOrOld() {
 
 var theGame;
 var lastGame;
+
+/**
+ * newGame - Creates a new game, adds players, deals cards and starts/stops the game.
+ *
+ * @param  {number} playerCount   amount of players to be added to the game.
+ * @param  {number} initialChips  amount of chips given to each player to start with.
+ * @param  {string} playerName    name of the human player.
+ * @param  {boolean} continuedGame true/false depending on if game is continued from before or a new game.
+ * @return {void}
+ */
 async function newGame(playerCount, initialChips, playerName, continuedGame) {
   if (!continuedGame) {
-    await playerNewOrOld()
+    await playerNewOrOld() // awaits input from user via modal popup box
   } else {
     $("#controls").children(".control-button").addClass("inactive");
     $(".menu-button").removeClass("open");
@@ -887,7 +1149,7 @@ async function newGame(playerCount, initialChips, playerName, continuedGame) {
     for (let player of theGame.playerList) {
       theGame.updateDisplay(player);
       if (player.isHuman) {
-        spawnCards(player.cards, "seat" + (player.ID).toString(), "card");
+        spawnCards(player.cards, "seat" + (player.ID).toString(), "card"); // makes the user's cards visible
       }
     }
     theGame.playerDisplay();
@@ -897,6 +1159,14 @@ async function newGame(playerCount, initialChips, playerName, continuedGame) {
   theGame.startGame();
 }
 
+/**
+ * spawnCards - spawns cards to make them visible either to the table or player/s
+ *
+ * @param  {array} tempList    list of the cards to display
+ * @param  {string} idString   seat id's of the players of which to display cards
+ * @param  {type} classString class string of the players of which to display cards
+ * @return {void}
+ */
 function spawnCards(tempList, idString, classString) {
   for (let i = 0; i < tempList.length; i++) {
     let node = document.createElement("img");
@@ -913,56 +1183,69 @@ function spawnCards(tempList, idString, classString) {
   }
 }
 
+/**
+ * getRandomInt - gets a random number between minimum and maximum
+ *
+ * @param  {number} min minimum number to create from
+ * @param  {number} max maximum number to create to
+ * @return {number}     returns the random number
+ */
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+
+/**
+ * JQuery function - JQuery scripts for buttons on menu
+ *
+ * @return {void}
+ */
 $(document).ready(function () {
-  // JQuery scripts for buttons on menu
-  $("#playnewgame").click(_ => {
+  $("#playnewgame").click(_ => { // starts a new game if clicked
     let continuedGame = true;
-    console.log('%c NEW GAME', 'font-weight: bold; font-size: 28px;')
     newGame(
       Number($("#playerCount").val()),
       Number($("#initialChips").val()),
       $("#playerName").val(),
       continuedGame)
-    console.log(theGame)
   });
 
-  $(".button-copy").click(_ => {
+  $(".button-copy").click(_ => { // opens the play menu
     $(".menu-button").addClass('open');
     $(".button-copy").css('display', 'none');
   });
 
-  $(".submit-button").click(_ => {
+  $(".submit-button").click(_ => { // closes the play menu
     $(".menu-button").removeClass('open');
     $(".button-copy").css('display', 'block');
   });
 
-  $(".cancel").click(_ => {
+  $(".cancel").click(_ => { // closes the play menu
     $(".menu-button").removeClass('open');
     $(".button-copy").css('display', 'block');
   });
 
-  $("#endgame").click(_ => {
+  $("#endgame").click(_ => { // ends the game and removes all visible elements of the game
     theGame.updateDisplay("reset");
     theGame = 0;
     this.playerList = [];
     this.round = 0;
     this.turn = 0;
-    this.pot = 0;
+    this.pot = [0];
+    this.activePot = 0;
+    this.didSomeoneAllIn = false;
     this.cards = [];
     this.humanPlayer;
     this.playerTurn = [];
-    this.raiseAmount = 0;
     this.subRound = 0;
     this.subRoundStatus = "active";
+    this.playerFirstSidepot = -1;
+    this.raiseAmounts = [{pot: 0, raiseAmount: 0, debtamount: -1}]
   });
 
-  $("#clear").click(_ => {
+  $("#clear").click(_ => { // clears the stored user data
     window.localStorage.clear();
     window.localStorage.setItem('numOfGames', 0);
     window.localStorage.setItem('numOfRounds', 0);
@@ -977,7 +1260,7 @@ $(document).ready(function () {
     $("#left-sidebar").children(".player-record").children("#win-rate").text("Win Rate: 0%");
   });
 
-  // Script for modal popup and close buttons
+  // Script for poker hands popup and close buttons
   let modal = document.getElementById("modal-popup");
   $("#poker-hands-button").click(function () {
     $('#modal-popup').toggle();
@@ -986,15 +1269,5 @@ $(document).ready(function () {
   span.onclick = function () {
     modal.style.display = "none";
   }
-
-  newGame(8, 1000, "ryan");
-  console.log(theGame)
-
+  newGame(8, 1000, "player");
 });
-
-
-/* //TODO:
-* - Add a scale to show users what their score means.
-* - Add chips (visual aid) to center pot w/ animation
-* - Sidepot functionality
-*/

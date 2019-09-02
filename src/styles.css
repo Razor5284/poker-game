@@ -67,8 +67,8 @@ body .container {
   background-repeat: no-repeat;
   background-size: auto;
   background-position: center;
-  margin-left: 200px;
-  margin-right: 200px;
+  margin-left: 9%;
+  margin-right: 9%;
 }
 .content .content-inner {
   margin: 0 auto;
@@ -133,8 +133,6 @@ body .container {
   top: 125px;
   left: 350px;
   position: absolute;
-  animation-name: pot;
-  animation-duration: 4s;
 }
 #board {
   top: 60px;
@@ -150,16 +148,6 @@ body .container {
 #carddeck img {
   width: 100px;
   height: 88px;
-}
-
-#to-pot {
-  animation-name: chips-to-pot;
-  animation-duration: 4s;
-}
-@keyframes pot {
-  to {
-    top: -155px;
-    left: 115px;}
 }
 /* Shows the active player and winner */
 .active {
@@ -181,7 +169,7 @@ body .container {
 
 /* Sidebars and content */
 .sidebar {
-  width: 360px;
+  width: 100%;
   text-align: center;
   height: fit-content;
 }
@@ -192,24 +180,6 @@ body .container {
 }
 .player-record {
   text-align: left;
-}
-.clear-records-button {
-  display: inline-block;
-  background-color: #3498DB;
-  height: 45px;
-  border-radius: 20px;
-  line-height: 45px;
-  text-align: center;
-  color: #fff;
-  text-transform: uppercase;
-  font-size: 0.875em;
-  border: none;
-  font-weight: 700;
-  padding: 0 34px;
-}
-.clear-records-button:hover {
-  background-color: #217dbb;
-  cursor: pointer;
 }
 #right-sidebar {
   border: white ridge;
@@ -293,8 +263,9 @@ div#poker-hands-button {
   cursor: default;
   z-index: 2;
   position: absolute;
-  top: 32%;
-  left: 40.4%;
+  top: 33%;
+  left: 39%;
+  align-self: center;
 }
 #new-player {
   float: left;
@@ -416,15 +387,20 @@ div#poker-hands-button {
   background-color: #3498DB;
   height: 40px;
   border-radius: 20px;
-  line-height: 36px;
   text-align: center;
   color: #fff;
   text-transform: uppercase;
   font-size: 0.875em;
+  line-height: 2.6em;
   border: none;
   font-weight: 700;
   padding: 0 34px;
   margin: 0 auto;
+}
+@media(max-width: 1415px) {
+  .button {
+    line-height: 19px;
+  }
 }
 .button img {
   position: relative;
@@ -580,4 +556,5 @@ form * {
   clip-path: inset(0 100% 0 0);
   transition: all 3s;
   -webkit-transition: all 3s;
+  z-index: -10;
 }
