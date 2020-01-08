@@ -258,13 +258,13 @@ div#poker-hands-button {
   color: black;
   text-align: center;
   border-radius: 5px;
-  width: 320px;
+  width: 340px;
   height: 100px;
   cursor: default;
   z-index: 2;
   position: absolute;
   top: 33%;
-  left: 39%;
+  left: 40%;
   align-self: center;
 }
 #new-player {
