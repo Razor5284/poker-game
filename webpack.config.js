@@ -10,7 +10,7 @@ const config = {
   },
   devServer: {
     contentBase: "./dist",
-    host: 'raptor', 
+    host: 'localhost', 
     disableHostCheck: true
   },
   devtool: 'inline-source-map',

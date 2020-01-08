@@ -1,15 +1,230 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-		<meta content="ie=edge" http-equiv="x-ua-compatible">
-		<meta name="viewport" content="width=1024">
-		<title>Ryan's Poker Game</title>
-  </head>
-  	<body>
-		  <div id="app"></div>
-	  </body>
-	<script src="runtime.e5cec0d29bcbf898d7b0.js" type="text/javascript"></script>
-	<script src="vendors.6c30907c9dbb97c41a5e.js" type="text/javascript"></script>
-	<script src="main.2c2c16d1cea565f0582f.js" type="text/javascript"></script>
-</html>
+<head><script type="text/javascript" src="runtime.aca6efc3821e8427371d.js"></script><script type="text/javascript" src="vendors.94f00266e6aa02cd00db.js"></script><script type="text/javascript" src="main.673c37b7456623e7e254.js"></script></head><body>
+	<div class="container">
+		<div class="header wrapper">
+			<h1>Elite Poker</h1>
+		</div>
+		<div class="container wrapper" id="navbar">
+			<div class="menu-container">
+				<div class="menu-button">
+					<div class="button-copy">Play</div>
+					<form>
+						<div class="form--field">
+							<label for="playerName">Your name: </label>
+							<input class="form--element" id="playerName" required>
+						</div>
+						<div class="form--container -inline">
+							<div class="form--field -short">
+							<label for="initialChips">Starting Chip Count: </label>
+							<input type="number" class="form--element" id="initialChips" required min="100" max="50000" step="50" value="1000">
+							</div>
+							<div class="form--field -short">
+							<label for="playercount">Number of Opponents: </label>
+							<input id="playerCount" class="form--element" type="number" max="8" value="8" required>
+							</div>
+						</div>
+						<div type="submit" class="button" id="playnewgame">Play Game</div>
+						<div class="cancel"><span>Cancel</span></div>
+					</form>
+				</div>
+				<div class="end-button" id="endgame">End Game</div>
+			</div>
+		</div>
+		<div class="main">
+			<div class="sidebar" id="left-sidebar"><h3>Your Record</h3>
+				<div class="player-record">
+					<div id="games-played"></div>
+					<div id="rounds-played"></div>
+					<div id="rounds-won"></div>
+					<div id="games-won"></div>
+					<div id="profit"></div>
+					<div id="win-rate"></div>
+					<div class="button" id="clear">Clear Record</div>
+				</div>
+			</div>
+			<div class="content wrapper">
+				<div class="content-inner" id="game-table">
+					<div id="seat0" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player1" style="padding-left: 100px;">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+						<div id="table-player-cards" style="top: 73px; right: 228px;	position: absolute;">
+							<img src="cards/purple_back_pair.png" style="transform: scaleY(-1) rotateZ(-40deg);">
+						</div>
+						<div id="table-player-chips" style="top: 115px; right: 265px; position: absolute;">
+							<img src="images/Poker-Chips-Player-Pile.png" style="transform: scaleY(-1) rotateZ(90deg);">
+						</div>
+					</div>
+					<div id="seat1" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player2" style="padding-left: 100px;">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+						<div id="table-player-cards" style="top: 0px; right: 245px;	position: absolute;">
+							<img src="cards/purple_back_pair.png" style="transform: scaleY(-1) rotateZ(-92deg);">
+						</div>
+						<div id="table-player-chips" style="top: 5px; right: 320px; position: absolute;">
+							<img src="images/Poker-Chips-Player-Pile.png" style="transform: scaleY(-1) rotateZ(45deg);">
+						</div>
+					</div>
+					<div id="seat2" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player3">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+						<div id="table-player-cards" style="top: -67px; right: 123px; position: absolute;">
+							<img src="cards/purple_back_pair.png" style="transform: scaleX(-1) rotateZ(45deg);">
+						</div>
+						<div id="table-player-chips" style="top: -105px; right: 170px; position: absolute;">
+							<img src="images/Poker-Chips-Player-Pile.png" style="transform: scaleY(-1) rotateZ(-10deg);">
+						</div>
+					</div>
+					<div id="seat3" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player4">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+						<div id="table-player-cards" style="top: -69px; right: 48px; position: absolute;">
+							<img src="cards/purple_back_pair.png">
+						</div>
+						<div id="table-player-chips" style="top: -105px; right: 45px; position: absolute;">
+							<img src="images/Poker-Chips-Player-Pile.png" style="transform: scaleY(-1) rotateZ(-50deg);">
+						</div>
+					</div>
+					<div id="seat4" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player5">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+						<div id="table-player-cards" style="top: -69px; right: 48px; position: absolute;">
+							<img src="cards/purple_back_pair.png">
+						</div>
+						<div id="table-player-chips" style="top: -105px; right: 45px; position: absolute;">
+							<img src="images/Poker-Chips-Player-Pile.png" style="transform: scaleY(-1) rotateZ(-50deg);">
+						</div>
+					</div>
+					<div id="seat5" class="player" style="visibility: hidden;">
+						<div class="card1"><img src="cards/purple_back.png" alt=""></div>
+						<div class="card2"><img src="cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player6">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+						<div id="table-player-cards" style="top: -68px; right: -32px; position: absolute;">
+							<img src="cards/purple_back_pair.png" style="transform: rotateZ(45deg);">
+						</div>
+						<div id="table-player-chips" style="top: -100px; right: -65px; position: absolute;">
+							<img src="images/Poker-Chips-Player-Pile.png" style="transform: scaleY(-1) rotateZ(-86deg);">
+						</div>
+					</div>
+					<div id="seat6" class="player" style="visibility: hidden;">
+						<div class="card1" style="float: right"><img src="cards/purple_back.png" alt=""></div>
+						<div class="card2" style="float: right"><img src="cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player7" style="float: left">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+						<div id="table-player-cards" style="top: 0px; right: -77px; position: absolute;">
+							<img src="cards/purple_back_pair.png" style="transform: rotateZ(90deg);">
+						</div>
+						<div id="table-player-chips" style="top: 10px; right: -135px; position: absolute;">
+							<img src="images/Poker-Chips-Player-Pile.png" style="transform: scaleY(-1) rotateZ(45deg);">
+						</div>
+					</div>
+					<div id="seat7" class="player" style="visibility: hidden;">
+						<div class="card1" style="float: right"><img src="cards/purple_back.png" alt=""></div>
+						<div class="card2" style="float: right"><img src="cards/purple_back.png" alt=""></div>
+						<div class="playerinfo" id="player8" style="float: left">
+							<div class="name"><p></p></div>
+							<div class="chips"><p></p></div>
+							<div class="status"><p></p></div>
+						</div>
+						<div id="table-player-cards" style="top: 67px; right: -60px; position: absolute;">
+							<img src="cards/purple_back_pair.png" style="transform: rotateZ(130deg);">
+						</div>
+						<div id="table-player-chips" style="top: 115px; right: -100px; position: absolute;">
+							<img src="images/Poker-Chips-Player-Pile.png" style="transform: scaleY(-1) rotateZ(-5deg);">
+						</div>
+					</div>
+					<div id="pot">
+						<div id="main-pot"></div>
+						<div id="side-pot"></div>
+					</div>
+					<div id="carddeck"><img src="cards/carddeck2.png"></div>
+					<div id="board">
+						<div id="flop1" class="tablecard">
+							<img src="cards/blue_back.png" alt="tablecard">
+						</div>
+						<div id="flop2" class="tablecard">
+							<img src="cards/blue_back.png" alt="tablecard">
+						</div>
+						<div id="flop3" class="tablecard">
+							<img src="cards/blue_back.png" alt="tablecard">
+						</div>
+						<div id="turn" class="tablecard">
+							<img src="cards/blue_back.png" alt="tablecard">
+						</div>
+						<div id="river" class="tablecard">
+							<img src="cards/blue_back.png" alt="tablecard" style="visibility: hidden">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="sidebar" id="right-sidebar"><h3>Card Ranking</h3>
+				<div id="card-evaluation" style="text-align: left;">
+				<p>
+					</p>
+				</div>
+				<div id='strength-meter-container'>
+					<div id="strength-meter">
+						<a style="color: black; z-index: 10;">Card Strength Meter</a>
+						<div id="background"></div>
+					</div>
+				</div>
+				<div id="poker-hands">
+					<div class="button" id="poker-hands-button">Poker Hands</div>
+					<div id="modal-popup" class="modal">
+					  <span class="close">&times;</span>
+					  <img class="modal-content" id="poker-hands-image" src="images/poker-hand-rankings.png">
+					  <div id="caption">Credit: <a href="https://www.cardschat.com/poker-hands.php" target="_blank">Cardschat.com</a></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer wrapper">
+			<div id="controls-container">
+				<div id="controls">
+					<div class="control-button inactive"><div id="Check">Check</div></div>
+					<div class="control-button inactive"><div id="Call">Call</div></div>
+					<div class="control-button inactive">
+						<div id="Raise">Raise</div>
+						<input id="RaiseAmount" type="number" name="amount" min="1" max="100" step="1" value="10" style="width: 50px;"> <!-- Max is dynamically changed to the maximum the user can raise -->
+					</div>
+					<div class="control-button inactive"><div id="Fold">Fold</div></div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-popup" >
+			<div><a>New or existing player?</a></div>
+			<div class="button" id="new-player">New Player</div>
+			<div class="button" id="returning-player">Returning Player</div>
+		</div>
+	</div>
+</body
